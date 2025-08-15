@@ -9,8 +9,17 @@ function App() {
 
   const location = useLocation()
 
-  const noLayoutRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email']
-  const isLayoutExcluded = noLayoutRoutes.includes(location.pathname)
+      const noLayoutRoutes = [
+      '/login',
+      '/register',
+      '/forgot-password',
+      '/verify-email',
+    ]
+
+    const isResetPasswordRoute = location.pathname.startsWith('/reset-password')
+
+    const isLayoutExcluded = noLayoutRoutes.includes(location.pathname) || isResetPasswordRoute
+
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">

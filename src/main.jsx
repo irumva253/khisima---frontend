@@ -18,6 +18,9 @@ import ContactScreen from './(public)/screens/ContactScreen'
 
 import LoginScreen from './(public)/screens/LoginScreen'
 import SignupScreen from './(public)/screens/SignupScreen'
+import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen'
+import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen'
+
 
 
 const router = createBrowserRouter(
@@ -29,6 +32,8 @@ const router = createBrowserRouter(
 
       <Route path="login" element={<LoginScreen />} />
       <Route path="register" element={<SignupScreen />} />
+      <Route path="forgot-password" element={<ForgotPasswordScreen />} />
+      <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
     </Route>
   )
 )
