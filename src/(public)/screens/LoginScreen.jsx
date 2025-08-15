@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, Chrome } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '@/slices/userApiSlice';
+import { setCredentials } from '@/slices/authSlice';
+import { useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 
-// Utility function for class names
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-// shadcn/ui Button component
 const Button = ({ className, variant = 'default', size = 'default', children, ...props }) => {
-  const baseClasses =
-    'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
-
+  const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+  
   const variants = {
     default: 'bg-primary text-primary-foreground hover:bg-primary/90 bg-slate-900 text-white hover:bg-slate-800',
     outline: 'border border-input hover:bg-accent hover:text-accent-foreground border-slate-200 hover:bg-slate-50',
     ghost: 'hover:bg-accent hover:text-accent-foreground',
   };
-
+  
   const sizes = {
     default: 'h-10 py-2 px-4',
     sm: 'h-9 px-3',
     lg: 'h-11 px-8',
   };
-
+  
   return (
     <button
       className={cn(baseClasses, variants[variant], sizes[size], className)}
@@ -31,7 +32,6 @@ const Button = ({ className, variant = 'default', size = 'default', children, ..
     </button>
   );
 };
-
 
 const Card = ({ className, children, ...props }) => (
   <div
@@ -66,7 +66,6 @@ const CardContent = ({ className, children, ...props }) => (
   </div>
 );
 
-// shadcn/ui Input component
 const Input = ({ className, type, ...props }) => (
   <input
     type={type}
@@ -78,7 +77,6 @@ const Input = ({ className, type, ...props }) => (
     {...props}
   />
 );
-
 
 const Label = ({ className, children, ...props }) => (
   <label
@@ -98,8 +96,11 @@ function LoginScreen({ className, ...props }) {
     email: '',
     password: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -143,22 +144,28 @@ function LoginScreen({ className, ...props }) {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Login attempt:', formData);
-      alert('Login successful! (This is a demo)');
-    } catch (error) {
-      console.error('Login error:', error);
-      setErrors({ general: 'Login failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
+  const userData = await login(formData).unwrap();
+
+  if (!userData || !userData.token) {
+    throw new Error('Invalid login response from server');
+  }
+
+  dispatch(setCredentials(userData));
+  toast.success('Login successful!');
+  navigate('/dashboard');
+} catch (err) {
+  console.error('Login failed:', err);
+  setErrors({ 
+    general: err.data?.message || err.message || 'Login failed. Please try again.' 
+  });
+  toast.error(err.data?.message || err.message || 'Login failed');
+}
+
   };
 
   const handleGoogleLogin = () => {
-    alert('Google login clicked! (This is a demo)');
+    toast.info('Google login coming soon!');
   };
 
   return (
@@ -186,7 +193,7 @@ function LoginScreen({ className, ...props }) {
               </div>
             )}
 
-            <div onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="flex flex-col gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="flex items-center gap-2">
@@ -250,7 +257,7 @@ function LoginScreen({ className, ...props }) {
 
                 <div className="flex flex-col gap-3 mt-6">
                   <Button
-                    onClick={handleSubmit}
+                    type="submit"
                     className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg"
                     disabled={isLoading}
                   >
@@ -284,15 +291,16 @@ function LoginScreen({ className, ...props }) {
                   </Button>
                 </div>
               </div>
-            </div>
+            </form>
 
             <div className="mt-6 text-center text-sm text-slate-600">
               Don't have an account?{" "}
-              <button
+              <Link
+                to="/register"
                 className="font-medium text-blue-600 hover:text-blue-800 underline underline-offset-4 transition-colors"
               >
-              <Link to="/register">Create an account</Link>
-              </button>
+                Create an account
+              </Link>
             </div>
           </CardContent>
         </Card>

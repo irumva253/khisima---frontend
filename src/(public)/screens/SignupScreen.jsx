@@ -1,32 +1,32 @@
 /* eslint-disable no-useless-escape */
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Phone, Chrome, Check, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, Phone, Chrome, Check, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useRegisterMutation } from '@/slices/userApiSlice';
+import { toast } from 'sonner';
 
-// Utility function for class names
-const cn = (...classes) => {
-  return classes.filter(Boolean).join(' ');
-};
+const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-// shadcn/ui Button component
 const Button = ({ className, variant = 'default', size = 'default', children, ...props }) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
-  
   const variants = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90 bg-slate-900 text-white hover:bg-slate-800',
-    outline: 'border border-input hover:bg-accent hover:text-accent-foreground border-slate-200 hover:bg-slate-50',
-    ghost: 'hover:bg-accent hover:text-accent-foreground',
+    default: 'bg-slate-900 text-white hover:bg-slate-800',
+    outline: 'border border-slate-200 hover:bg-slate-50',
   };
   
   const sizes = {
     default: 'h-10 py-2 px-4',
-    sm: 'h-9 px-3',
     lg: 'h-11 px-8',
   };
   
   return (
     <button
-      className={cn(baseClasses, variants[variant], sizes[size], className)}
+      className={cn(
+        'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+        variants[variant],
+        sizes[size],
+        className
+      )}
       {...props}
     >
       {children}
@@ -34,85 +34,66 @@ const Button = ({ className, variant = 'default', size = 'default', children, ..
   );
 };
 
-// shadcn/ui Card components
-const Card = ({ className, children, ...props }) => (
-  <div
-    className={cn('rounded-lg border bg-card text-card-foreground shadow-sm bg-white border-slate-200', className)}
-    {...props}
-  >
+const Card = ({ children, ...props }) => (
+  <div className="rounded-lg border bg-white border-slate-200 shadow-sm" {...props}>
     {children}
   </div>
 );
 
-const CardHeader = ({ className, children, ...props }) => (
-  <div className={cn('flex flex-col space-y-1.5 p-6', className)} {...props}>
+const CardHeader = ({ children }) => (
+  <div className="flex flex-col space-y-1.5 p-6">
     {children}
   </div>
 );
 
-const CardTitle = ({ className, children, ...props }) => (
-  <h3 className={cn('text-2xl font-semibold leading-none tracking-tight text-slate-900', className)} {...props}>
+const CardTitle = ({ children }) => (
+  <h3 className="text-2xl font-semibold leading-none tracking-tight text-slate-900">
     {children}
   </h3>
 );
 
-const CardDescription = ({ className, children, ...props }) => (
-  <p className={cn('text-sm text-muted-foreground text-slate-600', className)} {...props}>
+const CardDescription = ({ children }) => (
+  <p className="text-sm text-slate-600">
     {children}
   </p>
 );
 
-const CardContent = ({ className, children, ...props }) => (
-  <div className={cn('p-6 pt-0', className)} {...props}>
+const CardContent = ({ children }) => (
+  <div className="p-6 pt-0">
     {children}
   </div>
 );
 
-// shadcn/ui Input component
-const Input = ({ className, type, ...props }) => (
+const Input = ({ type, className, ...props }) => (
   <input
     type={type}
     className={cn(
-      'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-      'border-slate-200 bg-white placeholder:text-slate-400 focus-visible:ring-slate-400',
+      'flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
       className
     )}
     {...props}
   />
 );
 
-// shadcn/ui Label component
-const Label = ({ className, children, ...props }) => (
-  <label
-    className={cn(
-      'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900',
-      className
-    )}
-    {...props}
-  >
+const Label = ({ children, ...props }) => (
+  <label className="text-sm font-medium leading-none text-slate-900" {...props}>
     {children}
   </label>
 );
 
-// Checkbox component
-const Checkbox = ({ checked, onChange, className, ...props }) => (
-  <button
-    type="button"
-    role="checkbox"
-    aria-checked={checked}
-    onClick={onChange}
+// ✅ Fixed Checkbox component
+const Checkbox = ({ checked, onChange, name }) => (
+  <div
+    onClick={() => onChange(name, !checked)}
     className={cn(
-      'h-4 w-4 rounded border border-slate-300 flex items-center justify-center transition-colors',
-      checked ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white hover:border-slate-400',
-      className
+      'h-4 w-4 rounded border flex items-center justify-center cursor-pointer transition-colors',
+      checked ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 hover:border-slate-400'
     )}
-    {...props}
   >
     {checked && <Check size={12} />}
-  </button>
+  </div>
 );
 
-// Password strength indicator
 const PasswordStrength = ({ password }) => {
   const requirements = [
     { label: 'At least 8 characters', test: password.length >= 8 },
@@ -169,7 +150,7 @@ const PasswordStrength = ({ password }) => {
   );
 };
 
-function SignupScreen({ className, ...props }) {
+function SignupScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -180,28 +161,31 @@ function SignupScreen({ className, ...props }) {
     password: '',
     confirmPassword: '',
     agreeToTerms: false,
-    agreeToMarketing: false
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
+  
+  const [register, { isLoading }] = useRegisterMutation();
+  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+  // ✅ Updated input/checkbox handler
+  const handleInputChange = (eOrName, maybeValue) => {
+    if (typeof eOrName === 'string') {
+      // Checkbox toggle
+      const name = eOrName;
+      const value = maybeValue;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    } else {
+      const { name, value, type, checked } = eOrName.target;
+      setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    }
+
+    if (errors[eOrName.target?.name || eOrName]) {
+      setErrors(prev => ({ ...prev, [eOrName.target?.name || eOrName]: '' }));
     }
   };
 
+  // --- validation functions remain the same ---
   const validateStep1 = () => {
     const newErrors = {};
     
@@ -254,12 +238,10 @@ function SignupScreen({ className, ...props }) {
 
   const handleNextStep = () => {
     const newErrors = validateStep1();
-    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
     setErrors({});
     setCurrentStep(2);
   };
@@ -269,38 +251,37 @@ function SignupScreen({ className, ...props }) {
     setErrors({});
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = validateStep2();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = validateStep2();
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  try {
+    // Include agreeToTerms
+    const { confirmPassword, ...userData } = formData;
+    await register(userData).unwrap(); // send agreeToTerms to backend
     
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Signup attempt:', formData);
-      // Handle successful signup here
-      alert('Account created successfully! (This is a demo)');
-    } catch (error) {
-      console.error('Signup error:', error);
-      setErrors({ general: 'Signup failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    toast.success('Account created successfully! Please log in.');
+    navigate('/login');
+  } catch (err) {
+    setErrors({ 
+      general: err.data?.message || 'Registration failed. Please try again.' 
+    });
+    toast.error(err.data?.message || 'Registration failed');
+  }
+};
+
 
   const handleGoogleSignup = () => {
-    alert('Google signup clicked! (This is a demo)');
+    toast.info('Google signup coming soon!');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className={cn("w-full max-w-md", className)} {...props}>
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
             K
@@ -309,7 +290,7 @@ function SignupScreen({ className, ...props }) {
           <p className="text-slate-600">Create your account to get started</p>
         </div>
 
-        {/* Progress indicator */}
+        {/* Step Progress */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-slate-600">Step {currentStep} of 2</span>
@@ -319,13 +300,13 @@ function SignupScreen({ className, ...props }) {
             <div 
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${(currentStep / 2) * 100}%` }}
-            ></div>
+            />
           </div>
         </div>
 
         <Card className="shadow-xl border-0">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl">
+          <CardHeader>
+            <CardTitle>
               {currentStep === 1 ? 'Personal Information' : 'Create Password'}
             </CardTitle>
             <CardDescription>
@@ -343,7 +324,7 @@ function SignupScreen({ className, ...props }) {
             )}
 
             {currentStep === 1 ? (
-              // Step 1: Personal Information
+              /* --- Step 1 Form --- */
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -357,9 +338,7 @@ function SignupScreen({ className, ...props }) {
                       onChange={handleInputChange}
                       className={errors.firstName ? 'border-red-300 focus-visible:ring-red-400' : ''}
                     />
-                    {errors.firstName && (
-                      <p className="text-sm text-red-600">{errors.firstName}</p>
-                    )}
+                    {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
@@ -372,9 +351,7 @@ function SignupScreen({ className, ...props }) {
                       onChange={handleInputChange}
                       className={errors.lastName ? 'border-red-300 focus-visible:ring-red-400' : ''}
                     />
-                    {errors.lastName && (
-                      <p className="text-sm text-red-600">{errors.lastName}</p>
-                    )}
+                    {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
                   </div>
                 </div>
 
@@ -392,9 +369,7 @@ function SignupScreen({ className, ...props }) {
                     onChange={handleInputChange}
                     className={errors.email ? 'border-red-300 focus-visible:ring-red-400' : ''}
                   />
-                  {errors.email && (
-                    <p className="text-sm text-red-600">{errors.email}</p>
-                  )}
+                  {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -411,9 +386,7 @@ function SignupScreen({ className, ...props }) {
                     onChange={handleInputChange}
                     className={errors.phone ? 'border-red-300 focus-visible:ring-red-400' : ''}
                   />
-                  {errors.phone && (
-                    <p className="text-sm text-red-600">{errors.phone}</p>
-                  )}
+                  {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
                 </div>
 
                 <div className="flex flex-col gap-3 mt-6">
@@ -423,34 +396,15 @@ function SignupScreen({ className, ...props }) {
                   >
                     Continue
                   </Button>
-                  
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-slate-500">Or continue with</span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="button"
-                    variant="outline" 
-                    className="w-full h-11 hover:bg-slate-50 transition-all duration-200"
-                    onClick={handleGoogleSignup}
-                  >
-                    <Chrome size={16} className="mr-2" />
-                    Sign up with Google
-                  </Button>
                 </div>
               </div>
             ) : (
-              // Step 2: Password and Terms
+              /* --- Step 2 Form --- */
               <div className="space-y-4">
+                {/* Password fields */}
                 <div className="space-y-2">
                   <Label htmlFor="password" className="flex items-center gap-2">
-                    <Lock size={16} />
-                    Password
+                    <Lock size={16} /> Password
                   </Label>
                   <div className="relative">
                     <Input
@@ -460,10 +414,7 @@ function SignupScreen({ className, ...props }) {
                       placeholder="Create a strong password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className={cn(
-                        "pr-10",
-                        errors.password ? 'border-red-300 focus-visible:ring-red-400' : ''
-                      )}
+                      className={cn("pr-10", errors.password ? 'border-red-300 focus-visible:ring-red-400' : '')}
                     />
                     <button
                       type="button"
@@ -473,16 +424,13 @@ function SignupScreen({ className, ...props }) {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {errors.password && (
-                    <p className="text-sm text-red-600">{errors.password}</p>
-                  )}
+                  {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                   <PasswordStrength password={formData.password} />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="flex items-center gap-2">
-                    <Lock size={16} />
-                    Confirm Password
+                    <Lock size={16} /> Confirm Password
                   </Label>
                   <div className="relative">
                     <Input
@@ -492,10 +440,7 @@ function SignupScreen({ className, ...props }) {
                       placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
-                      className={cn(
-                        "pr-10",
-                        errors.confirmPassword ? 'border-red-300 focus-visible:ring-red-400' : ''
-                      )}
+                      className={cn("pr-10", errors.confirmPassword ? 'border-red-300 focus-visible:ring-red-400' : '')}
                     />
                     <button
                       type="button"
@@ -505,92 +450,44 @@ function SignupScreen({ className, ...props }) {
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-                  )}
+                  {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword}</p>}
                 </div>
 
-                <div className="space-y-3 mt-6">
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      checked={formData.agreeToTerms}
-                      onChange={() => setFormData(prev => ({
-                        ...prev,
-                        agreeToTerms: !prev.agreeToTerms
-                      }))}
-                      className={errors.agreeToTerms ? 'border-red-300' : ''}
-                    />
-                    <div className="text-sm">
-                      <span className="text-slate-700">I agree to the </span>
-                      <button className="text-blue-600 hover:text-blue-800 underline underline-offset-4">
-                        Terms of Service
-                      </button>
-                      <span className="text-slate-700"> and </span>
-                      <button className="text-blue-600 hover:text-blue-800 underline underline-offset-4">
-                        Privacy Policy
-                      </button>
-                    </div>
-                  </div>
-                  {errors.agreeToTerms && (
-                    <p className="text-sm text-red-600 ml-7">{errors.agreeToTerms}</p>
-                  )}
-
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      checked={formData.agreeToMarketing}
-                      onChange={() => setFormData(prev => ({
-                        ...prev,
-                        agreeToMarketing: !prev.agreeToMarketing
-                      }))}
-                    />
-                    <span className="text-sm text-slate-700">
-                      I'd like to receive marketing emails about new features and updates
-                    </span>
-                  </div>
+                {/* Terms checkbox */}
+                <div className="space-y-3 mt-6 flex items-center">
+                  <Checkbox
+                    name="agreeToTerms"
+                    checked={formData.agreeToTerms}
+                    onChange={handleInputChange}
+                  />
+                  <span className="text-sm text-slate-700 ml-2">
+                    I agree to the{" "}
+                    <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>{" "}
+                    and{" "}
+                    <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+                  </span>
                 </div>
+                {errors.agreeToTerms && <p className="text-sm text-red-600">{errors.agreeToTerms}</p>}
 
-                <div className="flex flex-col gap-3 mt-6">
-                  <Button 
-                    onClick={handleSubmit}
-                    className="w-full h-11 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Creating Account...
-                      </div>
-                    ) : (
-                      'Create Account'
-                    )}
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    onClick={handlePrevStep}
-                    className="w-full h-11 hover:bg-slate-50 transition-all duration-200"
-                  >
+                <div className="flex justify-between gap-4 mt-6">
+                  <Button variant="outline" onClick={handlePrevStep} className="flex-1">
                     Back
+                  </Button>
+                  <Button type="submit" onClick={handleSubmit} className="flex-1">
+                    Sign Up
+                  </Button>
+                </div>
+
+                <div className="mt-4 text-center text-sm text-slate-600">
+                  Or continue with
+                  <Button variant="outline" size="sm" onClick={handleGoogleSignup} className="ml-2">
+                    <Chrome size={16} /> Google
                   </Button>
                 </div>
               </div>
             )}
-            
-            <div className="mt-6 text-center text-sm text-slate-600">
-              Already have an account?{" "}
-              <Link 
-                className="font-medium text-blue-600 hover:text-blue-800 underline underline-offset-4 transition-colors"
-                to="/login"
-              >
-                Sign in
-              </Link>
-            </div>
           </CardContent>
         </Card>
-
-        <div className="mt-8 text-center text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Khisima Language Solutions. All rights reserved.</p>
-        </div>
       </div>
     </div>
   );
