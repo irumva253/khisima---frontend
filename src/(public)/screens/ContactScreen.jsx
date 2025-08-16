@@ -1,4 +1,4 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,9 @@ import {
   ChatBubbleLeftRightIcon,
   LanguageIcon,
   HeartIcon,
+  ClockIcon,
+  PaperAirplaneIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import {
   FaTwitter,
@@ -20,94 +23,22 @@ import {
   FaInstagram,
   FaWhatsapp,
   FaTelegram,
+  
 } from "react-icons/fa";
+import DynamicText from "@/components/kokonutui/dynamic-text";
 
 // Enhanced African symbols with Google Translate and Rwanda flag representation
 const africanSymbols = ["🗣️", "📜", "🖤", "🌍", "🔷", "🟧", "🎭", "🏺", "🌿", "⭐", "🔤", "🇷🇼", "🌐", "📖", "💬", "🎨"]; 
 
 const ContactScreen = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log("Message submitted:", formData);
-    setSubmitted(true);
-    setIsSubmitting(false);
-    
-    // Reset form after success message
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
-  };
-
-  const contactMethods = [
-    {
-      icon: <MapPinIcon className="w-10 h-10" />,
-      title: "Visit Us",
-      description: "123 Language Street, Kigali, Rwanda",
-      subtext: "East Africa Hub",
-      color: "emerald",
-      pattern: "🌍"
-    },
-    {
-      icon: <PhoneIcon className="w-10 h-10" />,
-      title: "Call Us",
-      description: "+250 700 123 456",
-      subtext: "24/7 Support",
-      color: "blue",
-      pattern: "📞"
-    },
-    {
-      icon: <EnvelopeIcon className="w-10 h-10" />,
-      title: "Email Us",
-      description: "info@khisima.com",
-      subtext: "Quick Response",
-      color: "purple",
-      pattern: "✉️"
-    },
-    {
-      icon: <GlobeAltIcon className="w-10 h-10" />,
-      title: "Online",
-      description: "www.khisima.com",
-      subtext: "Digital Services",
-      color: "orange",
-      pattern: "🌐"
-    },
-  ];
-
-  const socialLinks = [
-    { Icon: FaTwitter, color: "bg-blue-500 hover:bg-blue-600", name: "Twitter", handle: "@khisima" },
-    { Icon: FaFacebookF, color: "bg-blue-700 hover:bg-blue-800", name: "Facebook", handle: "/khisima" },
-    { Icon: FaLinkedinIn, color: "bg-blue-600 hover:bg-blue-700", name: "LinkedIn", handle: "/company/khisima" },
-    { Icon: FaInstagram, color: "bg-pink-500 hover:bg-pink-600", name: "Instagram", handle: "@khisima" },
-    { Icon: FaWhatsapp, color: "bg-green-500 hover:bg-green-600", name: "WhatsApp", handle: "+250 700 123" },
-    { Icon: FaTelegram, color: "bg-blue-400 hover:bg-blue-500", name: "Telegram", handle: "@khisima" },
-  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 relative overflow-hidden">
-      
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-yellow-50 relative overflow-hidden">
+
       {/* African-inspired geometric patterns */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-20 w-32 h-32 border-4 border-orange-500 rotate-45 animate-spin-slow"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 border-4 border-blue-500 rotate-45 animate-spin-slow"></div>
         <div className="absolute top-40 right-32 w-24 h-24 border-4 border-red-500 rounded-full animate-pulse-gentle"></div>
         <div className="absolute bottom-40 left-40 w-28 h-28 border-4 border-yellow-500 rotate-12 animate-bounce-subtle"></div>
         <div className="absolute bottom-20 right-20 w-36 h-36 border-4 border-green-500 rounded-full rotate-45 animate-spin-reverse"></div>
@@ -145,9 +76,9 @@ const ContactScreen = () => {
                 <span>🏠</span>
                 <span>Home</span>
               </a>
-              <span className="text-orange-400">•</span>
-              <span className="text-orange-700 font-bold flex items-center space-x-1">
-                <span>📞</span>
+              <span className="text-blue-400">•</span>
+              <span className="text-blue-700 font-bold flex items-center space-x-1">
+                <span><PhoneIcon className="w-4 h-4" /></span>
                 <span>Contact</span>
               </span>
             </div>
@@ -156,9 +87,9 @@ const ContactScreen = () => {
           {/* Main heading with cultural flair */}
           <div className="relative mb-8">
             <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-              <LanguageIcon className="w-12 h-12 text-orange-400 animate-bounce-gentle" />
+              <LanguageIcon className="w-12 h-12 text-blue-400 animate-bounce-gentle" />
             </div>
-            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-red-600 to-yellow-600 mb-4 leading-tight">
+            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-red-600 to-yellow-600 mb-4 leading-tight">
               Muraho!
             </h1>
             <p className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
@@ -167,11 +98,12 @@ const ContactScreen = () => {
             <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-red-500 mx-auto rounded-full"></div>
           </div>
 
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-            <span className="font-semibold text-orange-700">"Muraho"</span> means "Hello" in Kinyarwanda. 
-            We're passionate about bridging cultures through language, bringing African voices to the digital world. 
-            Let's start a conversation that transcends borders.
-          </p>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8"> 
+              <span className="font-semibold text-orange-700">"Muraho"</span> means{" "}
+              "<DynamicText />" in Kinyarwanda. 
+              We're passionate about bridging cultures through language, bringing African voices to the digital world. 
+              Let's start a conversation that transcends borders.
+            </p>
 
           <div className="flex justify-center space-x-6 text-4xl mb-8">
             <span className="animate-bounce" style={{ animationDelay: '0s' }}>🇷🇼</span>
@@ -182,213 +114,270 @@ const ContactScreen = () => {
         </div>
       </section>
 
-      {/* Contact Methods - Clean Modern Style */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {contactMethods.map((method, i) => (
-            <div 
-              key={i}
-              className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200/50 animate-slide-in-up"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {method.icon}
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  {method.title}
-                </h3>
-                <p className="text-gray-700 font-medium mb-1">{method.description}</p>
-                <p className="text-sm text-[#4993f2] font-medium bg-blue-50 px-3 py-1 rounded-full">
-                  {method.subtext}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Contact us form main section */}
 
-      {/* Main Content - Improved Layout */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4">
-        
-        {/* Contact Form - Full Width */}
-        <div className="mb-12">
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-            {/* Form Header */}
-            <div className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                  <ChatBubbleLeftRightIcon className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Let's Start a Conversation</h2>
-                  <p className="text-blue-100">Share your language needs with us</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8">
-              {submitted ? (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 text-center animate-scale-in">
-                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <HeartIcon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-green-800 mb-2">Murakoze! (Thank you!)</h3>
-                  <p className="text-green-700 text-lg">Your message has been received. We'll respond within 24 hours.</p>
-                  <div className="flex justify-center mt-4 space-x-2 text-2xl">
-                    <span>🙏</span>
-                    <span>✨</span>
-                    <span>🌍</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Form Fields */}
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
-                        <span>👤</span>
-                        <span>Full Name</span>
-                      </label>
-                      <Input
-                        placeholder="Enter your full name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="h-12 border-2 border-gray-200 focus:border-[#4993f2] rounded-xl transition-all duration-300 bg-gray-50 focus:bg-white"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
-                        <span>📧</span>
-                        <span>Email Address</span>
-                      </label>
-                      <Input
-                        type="email"
-                        placeholder="your.email@example.com"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="h-12 border-2 border-gray-200 focus:border-[#4993f2] rounded-xl transition-all duration-300 bg-gray-50 focus:bg-white"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
-                        <span>📝</span>
-                        <span>Subject</span>
-                      </label>
-                      <Input
-                        placeholder="What would you like to discuss?"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                        className="h-12 border-2 border-gray-200 focus:border-[#4993f2] rounded-xl transition-all duration-300 bg-gray-50 focus:bg-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Message and Submit */}
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
-                        <span>💬</span>
-                        <span>Message</span>
-                      </label>
-                      <Textarea
-                        placeholder="Tell us about your language service needs, project details, or any questions you have..."
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                        rows={8}
-                        className="border-2 border-gray-200 focus:border-[#4993f2] rounded-xl transition-all duration-300 bg-gray-50 focus:bg-white resize-none"
-                      />
-                    </div>
-                    
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting}
-                      className="w-full h-14 bg-[#4993f2] hover:bg-[#3b82f6] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-lg"
-                    >
-                      {isSubmitting ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Sending...</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <span>Send Message</span>
-                          <span>🚀</span>
-                        </div>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Grid - Map and Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Map - 2/3 width */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-              <div className="p-6 border-b border-gray-100">
-                <h3 className="text-xl font-semibold text-gray-800 flex items-center space-x-2">
-                  <span>📍</span>
-                  <span>Visit Our Office in Kigali</span>
-                </h3>
-                <p className="text-gray-600 mt-1">The Heart of Africa</p>
-              </div>
-              <div className="h-80 relative group">
-                <iframe
-                  title="Kigali Map"
-                  src="https://maps.google.com/maps?q=kigali,%20rwanda&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                  className="w-full h-full border-0 transition-all duration-300"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar Info - 1/3 width */}
-          <div className="space-y-8">
+      {/* Contact Form Section */}
+      <section className="relative z-10 py-16 px-4 -mt-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             
-            {/* Social Media - Simple List */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-                <span>🌐</span>
-                <span>Follow Us</span>
-              </h3>
-              <div className="space-y-3">
-                {socialLinks.map((social, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="flex items-center justify-between p-3 hover:bg-[#4993f2] hover:text-white rounded-xl transition-all duration-300 group"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <social.Icon className="w-5 h-5 text-[#4993f2] group-hover:text-white transition-colors" />
-                      <span className="font-medium">{social.name}</span>
-                    </div>
-                    <span className="text-sm text-gray-500 group-hover:text-blue-100">{social.handle}</span>
-                  </a>
-                ))}
+            {/* Contact Form - Left Side */}
+            <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden 
+              animate-slide-in-up hover:scale-[1.02] transition-transform duration-500">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
+                <h2 className="text-3xl font-bold text-white flex items-center space-x-3">
+                  <ChatBubbleLeftRightIcon className="w-8 h-8" />
+                  <span>Let's Talk</span>
+                </h2>
+                <p className="text-blue-100 mt-2">Share your thoughts with us in any language</p>
               </div>
-            </div>
+              
+              <CardContent className="p-8">
+                <form className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                        <UserIcon className="w-4 h-4 text-blue-600" />
+                        <span>First Name</span>
+                      </label>
+                      <Input 
+                        placeholder="Your first name" 
+                        className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <span>Last Name</span>
+                      </label>
+                      <Input 
+                        placeholder="Your last name" 
+                        className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                      <EnvelopeIcon className="w-4 h-4 text-blue-600" />
+                      <span>Email Address</span>
+                    </label>
+                    <Input 
+                      type="email" 
+                      placeholder="your.email@example.com" 
+                      className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                      <PhoneIcon className="w-4 h-4 text-blue-600" />
+                      <span>Phone Number</span>
+                    </label>
+                    <Input 
+                      type="tel" 
+                      placeholder="+250 xxx xxx xxx" 
+                      className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                    />
+                  </div>
+                  
+                  {/* Preferred Language */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                      <LanguageIcon className="w-4 h-4 text-blue-600" />
+                      <span>Preferred Language</span>
+                    </label>
+                    <select 
+                      id="languageSelect"
+                      onChange={(e) => {
+                        const otherInput = document.getElementById("otherLanguageInput");
+                        if (e.target.value === "Other") {
+                          otherInput.classList.remove("hidden");
+                        } else {
+                          otherInput.classList.add("hidden");
+                        }
+                      }}
+                      className="w-full h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 px-4 bg-white"
+                    >
+                      <option>English</option>
+                      <option>Kinyarwanda</option>
+                      <option>French</option>
+                      <option>Swahili</option>
+                      <option>Other</option>
+                    </select>
 
-          <br/>
+                    {/* Input appears if Other selected */}
+                    <Input
+                      id="otherLanguageInput"
+                      placeholder="Enter your language"
+                      className="mt-3 h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 hidden"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                      <SparklesIcon className="w-4 h-4 text-blue-600" />
+                      <span>Your Message</span>
+                    </label>
+                    <Textarea 
+                      placeholder="Tell us about your project, questions, or how we can help you..." 
+                      rows={5}
+                      className="border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 resize-none"
+                    />
+                  </div>
+                  
+                  <Button className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-700 
+                    hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl 
+                    transition-all duration-300 transform hover:scale-105 shadow-lg animate-scale-in">
+                    <PaperAirplaneIcon className="w-5 h-5 mr-2" />
+                    Send Message
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Contact Information - Right Side */}
+            <div className="space-y-8">
+              
+              {/* Contact Details */}
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-xl rounded-3xl 
+                overflow-hidden hover:scale-[1.03] hover:shadow-2xl transition-transform duration-500 animate-slide-in-right"
+                style={{ animationDelay: "0.2s" }}>
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-3">
+                    <MapPinIcon className="w-6 h-6 text-blue-600" />
+                    <span>Get in Touch</span>
+                  </h3>
+                  
+                  <div className="space-y-6">
+                    {/* Location */}
+                    <a href="https://maps.google.com/?q=Kigali,Rwanda" target="_blank" rel="noreferrer"
+                      className="flex items-start space-x-4 p-4 bg-white/70 rounded-xl transition-transform transform hover:scale-[1.02] hover:shadow-md">
+                      <div className="bg-blue-100 p-3 rounded-full">
+                        <MapPinIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">Our Location</h4>
+                        <p className="text-gray-600">Kigali, Rwanda</p>
+                        <p className="text-sm text-gray-500">East Africa's Silicon Valley</p>
+                      </div>
+                    </a>
+
+                    {/* Email */}
+                    <a href="mailto:hello@khisima.com"
+                      className="flex items-start space-x-4 p-4 bg-white/70 rounded-xl transition-transform transform hover:scale-[1.02] hover:shadow-md">
+                      <div className="bg-blue-100 p-3 rounded-full">
+                        <EnvelopeIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">Email Us</h4>
+                        <p className="text-gray-600">hello@khisima.com</p>
+                        <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                      </div>
+                    </a>
+
+                    {/* Phone */}
+                    <a href="tel:+250788123456"
+                      className="flex items-start space-x-4 p-4 bg-white/70 rounded-xl transition-transform transform hover:scale-[1.02] hover:shadow-md">
+                      <div className="bg-blue-100 p-3 rounded-full">
+                        <PhoneIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">Call Us</h4>
+                        <p className="text-gray-600">+250 788 123 456</p>
+                        <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM (CAT)</p>
+                      </div>
+                    </a>
+
+                    {/* Business Hours */}
+                    <div className="flex items-start space-x-4 p-4 bg-white/70 rounded-xl transition-transform transform hover:scale-[1.02] hover:shadow-md">
+                      <div className="bg-blue-100 p-3 rounded-full">
+                        <ClockIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">Business Hours</h4>
+                        <p className="text-gray-600">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                        <p className="text-sm text-gray-500">Central Africa Time (CAT)</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Why Choose Us */}
+              <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-0 shadow-xl rounded-3xl 
+                overflow-hidden hover:scale-[1.03] hover:shadow-2xl transition-transform duration-500 animate-slide-in-right"
+                style={{ animationDelay: "0.4s" }}>
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-3">
+                    <HeartIcon className="w-6 h-6 text-blue-600" />
+                    <span>Why Choose Khisima?</span>
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <p className="text-gray-700">Native African language expertise</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <p className="text-gray-700">Cultural sensitivity & authenticity</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <p className="text-gray-700">24/7 multilingual support</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <p className="text-gray-700">Technology meets tradition</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
+
+     {/* Social Media & Additional Sections */}
+      <section className="relative z-10 py-16 px-4 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="max-w-6xl mx-auto">
+          
+          {/* Social Media Section */}
+          <div className="text-center mb-16">
+            <h3 className="text-3xl font-bold text-gray-800 mb-4 flex items-center justify-center space-x-3">
+              <GlobeAltIcon className="w-8 h-8 text-blue-600" />
+              <span>Connect with Us</span>
+            </h3>
+            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+              Follow our journey as we bridge cultures and languages across Africa and beyond
+            </p>
+            
+            <div className="flex flex-wrap justify-center gap-4 px-4">
+              {[
+                { icon: FaTwitter, color: "bg-gray-800 hover:bg-gray-900", label: "X (Twitter)" },
+                { icon: FaFacebookF, color: "bg-blue-600 hover:bg-blue-700", label: "Facebook" },
+                { icon: FaLinkedinIn, color: "bg-blue-700 hover:bg-blue-800", label: "LinkedIn" },
+                { icon: FaInstagram, color: "bg-pink-500 hover:bg-pink-600", label: "Instagram" },
+                { icon: FaWhatsapp, color: "bg-green-500 hover:bg-green-600", label: "WhatsApp" },
+                { icon: FaTelegram, color: "bg-blue-500 hover:bg-blue-600", label: "Telegram" },
+              ].map(({ icon: Icon, color, label }) => (
+                <button
+                  key={label}
+                  className={`${color} p-3 sm:p-4 rounded-full text-white text-lg sm:text-xl transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl animate-scale-in`}
+                  style={{ animationDelay: `${Math.random() * 0.5}s` }}
+                  title={label}
+                >
+                  <Icon />
+                </button>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+
 
       {/* Custom Animations */}
       <style jsx>{`

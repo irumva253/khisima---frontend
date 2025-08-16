@@ -23,6 +23,7 @@ import {
   Calendar,
   Quote
 } from 'lucide-react';
+import SocialButton from '@/components/kokonutui/social-button';
 
 const AboutScreen = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -272,6 +273,9 @@ const AboutScreen = () => {
                     <div className="flex items-center space-x-2">
                       <Languages className="w-6 h-6" style={{ color: '#3a7acc' }} />
                       <span className="font-semibold text-gray-900">6+ Languages</span>
+                    </div>
+                    <div className="mt-2">
+                      <SocialButton  />
                     </div>
                   </div>
                 </div>
