@@ -249,6 +249,7 @@ function LoginScreen({ className, ...props }) {
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
+                    
                   </div>
                   {errors.password && (
                     <p className="text-sm text-red-600">{errors.password}</p>

@@ -64,15 +64,28 @@ const Footer = () => {
               Get updates on African language technology, industry insights, and our latest projects.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              />
-              <Button className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 font-semibold">
-                Subscribe <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </div>
+  <input
+    type="email"
+    placeholder="Enter your email"
+    className="flex-1 px-4 py-3 rounded-xl 
+               bg-background text-foreground 
+               placeholder-muted-foreground
+               border border-border
+               focus:outline-none focus:ring-2 focus:ring-blue-500 
+               transition-colors"
+  />
+  <Button
+    className="px-6 py-3 rounded-xl font-semibold 
+               flex items-center justify-center gap-2
+               bg-blue-600 text-white hover:bg-blue-700 
+               dark:bg-blue-500 dark:hover:bg-blue-600 
+               shadow-md transition-colors"
+  >
+    Subscribe
+    <ArrowRight className="w-4 h-4" />
+  </Button>
+</div>
+
           </div>
         </div>
       </div>

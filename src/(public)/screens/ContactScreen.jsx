@@ -22,16 +22,80 @@ import {
   FaLinkedinIn,
   FaInstagram,
   FaWhatsapp,
-  FaTelegram,
-  
+  FaTelegram,  
 } from "react-icons/fa";
 import { IconBrandX } from '@tabler/icons-react';
 import DynamicText from "@/components/kokonutui/dynamic-text";
+import { toast } from "sonner";
+import { useSubmitContactFormMutation } from "@/slices/notificationSlice";
+import { useState } from "react";
 
 // Enhanced African symbols with Google Translate and Rwanda flag representation
 const africanSymbols = ["🗣️", "📜", "🖤", "🌍", "🔷", "🟧", "🎭", "🏺", "🌿", "⭐", "🔤", "🇷🇼", "🌐", "📖", "💬", "🎨"]; 
 
 const ContactScreen = () => {
+  const [submitContactForm, { isLoading }] = useSubmitContactFormMutation();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    language: 'English',
+    otherLanguage: '',
+    message: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const finalLanguage = formData.language === 'Other' 
+    ? formData.otherLanguage.trim() 
+    : formData.language;
+
+  if (!finalLanguage) {
+    toast.error('Please select or specify a language');
+    return;
+  }
+
+  const contactData = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    preferredLanguage: finalLanguage, // make sure key matches backend
+    message: formData.message
+  };
+
+  console.log("Submitting:", contactData);
+
+  try {
+    const res = await submitContactForm(contactData).unwrap();
+    toast.success('Message sent successfully!');
+
+    // Reset form
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      language: 'English',
+      otherLanguage: '',
+      message: ''
+    });
+
+  } catch (err) {
+    console.error(err);
+    toast.error(err?.data?.message || 'Failed to send message');
+  }
+};
 
 
   return (
@@ -115,8 +179,6 @@ const ContactScreen = () => {
         </div>
       </section>
 
-      {/* Contact us form main section */}
-
       {/* Contact Form Section */}
       <section className="relative z-10 py-16 px-4 -mt-16">
         <div className="max-w-7xl mx-auto">
@@ -134,7 +196,7 @@ const ContactScreen = () => {
               </div>
               
               <CardContent className="p-8">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center space-x-2">
@@ -142,8 +204,12 @@ const ContactScreen = () => {
                         <span>First Name</span>
                       </label>
                       <Input 
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
                         placeholder="Your first name" 
                         className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                        required
                       />
                     </div>
                     <div>
@@ -151,8 +217,12 @@ const ContactScreen = () => {
                         <span>Last Name</span>
                       </label>
                       <Input 
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
                         placeholder="Your last name" 
                         className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                        required
                       />
                     </div>
                   </div>
@@ -164,8 +234,12 @@ const ContactScreen = () => {
                     </label>
                     <Input 
                       type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       placeholder="your.email@example.com" 
                       className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                      required
                     />
                   </div>
                   
@@ -176,6 +250,9 @@ const ContactScreen = () => {
                     </label>
                     <Input 
                       type="tel" 
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
                       placeholder="+250 xxx xxx xxx" 
                       className="h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
                     />
@@ -188,16 +265,11 @@ const ContactScreen = () => {
                       <span>Preferred Language</span>
                     </label>
                     <select 
-                      id="languageSelect"
-                      onChange={(e) => {
-                        const otherInput = document.getElementById("otherLanguageInput");
-                        if (e.target.value === "Other") {
-                          otherInput.classList.remove("hidden");
-                        } else {
-                          otherInput.classList.add("hidden");
-                        }
-                      }}
+                      name="language"
+                      value={formData.language}
+                      onChange={handleChange}
                       className="w-full h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 px-4 bg-white"
+                      required
                     >
                       <option>English</option>
                       <option>Kinyarwanda</option>
@@ -207,11 +279,16 @@ const ContactScreen = () => {
                     </select>
 
                     {/* Input appears if Other selected */}
-                    <Input
-                      id="otherLanguageInput"
-                      placeholder="Enter your language"
-                      className="mt-3 h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 hidden"
-                    />
+                    {formData.language === 'Other' && (
+                      <Input
+                        name="otherLanguage"
+                        value={formData.otherLanguage}
+                        onChange={handleChange}
+                        placeholder="Enter your language"
+                        className="mt-3 h-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300"
+                        required
+                      />
+                    )}
                   </div>
                   
                   <div>
@@ -220,17 +297,31 @@ const ContactScreen = () => {
                       <span>Your Message</span>
                     </label>
                     <Textarea 
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       placeholder="Tell us about your project, questions, or how we can help you..." 
                       rows={5}
                       className="border-2 border-gray-200 rounded-xl focus:border-blue-500 transition-all duration-300 resize-none"
+                      required
                     />
                   </div>
                   
-                  <Button className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-700 
+                  <Button 
+                    type="submit"
+                    className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-700 
                     hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl 
-                    transition-all duration-300 transform hover:scale-105 shadow-lg animate-scale-in">
-                    <PaperAirplaneIcon className="w-5 h-5 mr-2" />
-                    Send Message
+                    transition-all duration-300 transform hover:scale-105 shadow-lg animate-scale-in"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      'Sending...'
+                    ) : (
+                      <>
+                        <PaperAirplaneIcon className="w-5 h-5 mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
@@ -251,7 +342,7 @@ const ContactScreen = () => {
                   
                   <div className="space-y-6">
                     {/* Location */}
-                    <a href="https://maps.google.com/?q=Kigali,Rwanda" target="_blank" rel="noreferrer"
+                    <a href="https://goo.gl/maps/example" target="_blank" rel="noreferrer"
                       className="flex items-start space-x-4 p-4 bg-white/70 rounded-xl transition-transform transform hover:scale-[1.02] hover:shadow-md">
                       <div className="bg-blue-100 p-3 rounded-full">
                         <MapPinIcon className="w-6 h-6 text-blue-600" />
@@ -339,7 +430,7 @@ const ContactScreen = () => {
         </div>
       </section>
 
-     {/* Social Media & Additional Sections */}
+      {/* Social Media & Additional Sections */}
       <section className="relative z-10 py-16 px-4 bg-gradient-to-r from-gray-50 to-blue-50">
         <div className="max-w-6xl mx-auto">
           
@@ -355,13 +446,12 @@ const ContactScreen = () => {
             
             <div className="flex flex-wrap justify-center gap-4 px-4">
               {[
-               { 
+                { 
                   icon: IconBrandX, 
                   iconProps: { stroke: 2 }, 
                   color: "bg-gray-800 hover:bg-gray-900", 
                   label: "X (Twitter)" 
                 },
-
                 { icon: FaFacebookF, color: "bg-blue-600 hover:bg-blue-700", label: "Facebook" },
                 { icon: FaLinkedinIn, color: "bg-blue-700 hover:bg-blue-800", label: "LinkedIn" },
                 { icon: FaInstagram, color: "bg-pink-500 hover:bg-pink-600", label: "Instagram" },
@@ -379,15 +469,11 @@ const ContactScreen = () => {
               ))}
             </div>
           </div>
-
         </div>
       </section>
 
-
-
-
       {/* Custom Animations */}
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }

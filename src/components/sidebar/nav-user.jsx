@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { IconUserCircle, IconCreditCard, IconNotification, IconLogout, IconDotsVertical } from '@tabler/icons-react';
+import { IconUserCircle, IconNotification, IconLogout, IconDotsVertical } from '@tabler/icons-react';
+import {Link} from 'react-router-dom';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -72,12 +73,13 @@ export function NavUser() {
             <DropdownMenuItem>
               <IconUserCircle /> Account
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <IconCreditCard /> Billing
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard/notifications" className="flex items-center gap-2">
+                <IconNotification />
+                <span>Notifications</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <IconNotification /> Notifications
-            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout /> Log out

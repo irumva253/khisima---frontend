@@ -92,7 +92,7 @@ const AboutScreen = () => {
 
   const team = [
     {
-      name: "Dr. Amina Uwimana",
+      name: "Mr. Olivier NIYOMUGISHA",
       role: "Founder & CEO",
       bio: "Computational linguist with 10+ years in African language research and NLP.",
       languages: "Kinyarwanda, English, French, Swahili",
@@ -146,7 +146,7 @@ const AboutScreen = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
@@ -193,6 +193,7 @@ const AboutScreen = () => {
           </div>
         </div>
       </section>
+      
 
       {/* Stats Section */}
       <section id="stats" className="py-16 bg-white">

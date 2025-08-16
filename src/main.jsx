@@ -25,6 +25,8 @@ import PrivateRoute from './(public)/components/PrivateRoute';
 import AdminDashboard from './layouts/admin-layout';
 import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
 
+import NotificationScreen from './(public)/screens/admin/NotificationScreen';
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -45,6 +47,7 @@ const router = createBrowserRouter(
       <Route element={<PrivateRoute allowedRoles={['admin']} />}>
         <Route path="/dashboard" element={<AdminDashboard />}>
           <Route index element={<AdminIndexPage />} />
+          <Route path="notifications" element={<NotificationScreen />} />
         </Route>
       </Route>
 

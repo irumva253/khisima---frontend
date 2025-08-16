@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Toaster } from 'sonner';
+import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@//(public)/components/Navbar";
 import Footer from "@//(public)/components/Footer";
 
@@ -21,7 +21,20 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <Toaster position="top-right" richColors /> 
+      <Toaster 
+        position="top-right" 
+        richColors 
+        expand={false}
+        closeButton
+        toastOptions={{
+          style: {
+            background: 'white',
+            color: 'black',
+            border: '1px solid #e2e8f0',
+            zIndex: 100000,
+          },
+        }}
+      />
       {isLayoutExcluded ? (
         <Outlet />
       ) : (

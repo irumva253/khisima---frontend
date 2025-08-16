@@ -106,7 +106,7 @@ const HomeScreen = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
