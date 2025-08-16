@@ -25,6 +25,7 @@ import {
   FaTelegram,
   
 } from "react-icons/fa";
+import { IconBrandX } from '@tabler/icons-react';
 import DynamicText from "@/components/kokonutui/dynamic-text";
 
 // Enhanced African symbols with Google Translate and Rwanda flag representation
@@ -354,7 +355,13 @@ const ContactScreen = () => {
             
             <div className="flex flex-wrap justify-center gap-4 px-4">
               {[
-                { icon: FaTwitter, color: "bg-gray-800 hover:bg-gray-900", label: "X (Twitter)" },
+               { 
+                  icon: IconBrandX, 
+                  iconProps: { stroke: 2 }, 
+                  color: "bg-gray-800 hover:bg-gray-900", 
+                  label: "X (Twitter)" 
+                },
+
                 { icon: FaFacebookF, color: "bg-blue-600 hover:bg-blue-700", label: "Facebook" },
                 { icon: FaLinkedinIn, color: "bg-blue-700 hover:bg-blue-800", label: "LinkedIn" },
                 { icon: FaInstagram, color: "bg-pink-500 hover:bg-pink-600", label: "Instagram" },

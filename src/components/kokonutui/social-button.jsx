@@ -14,7 +14,8 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Twitter, Instagram, Linkedin, Link as LinkIcon } from "lucide-react";
+import { Instagram, Linkedin, Link as LinkIcon } from "lucide-react";
+import { IconBrandX } from '@tabler/icons-react';
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -23,7 +24,7 @@ export default function SocialButton({ className, ...props }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const shareButtons = [
-    { icon: Twitter, label: "Share on Twitter" },
+    { icon: IconBrandX, label: "Share on Twitter" },
     { icon: Instagram, label: "Share on Instagram" },
     { icon: Linkedin, label: "Share on LinkedIn" },
     { icon: FaWhatsapp, label: "Share on WhatsApp" },

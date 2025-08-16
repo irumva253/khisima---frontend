@@ -146,7 +146,7 @@ function ResetPasswordScreen({ className, ...props }) {
     }
 
     try {
-      await resetPassword({ token, password: formData.password }).unwrap();
+      await resetPassword({ token, password: formData.password }).unwrap(); 
       toast.success('Password reset successfully, please login');
       navigate('/login');
     } catch (err) {
@@ -157,6 +157,7 @@ function ResetPasswordScreen({ className, ...props }) {
       toast.error(err.data?.message || err.message || 'Reset failed');
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">

@@ -4,8 +4,8 @@ import authReducer from './slices/authSlice';
 
 const preloadedState = {
   auth: {
-    userInfo: localStorage.getItem('user') 
-      ? JSON.parse(localStorage.getItem('user')) 
+    userInfo: localStorage.getItem('userInfo')
+      ? JSON.parse(localStorage.getItem('userInfo'))
       : null,
   },
 };
@@ -18,9 +18,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these paths in the state
         ignoredPaths: ['api.mutations', 'api.queries'],
-        // Ignore these field paths in all actions
         ignoredActionPaths: ['meta.baseQueryMeta.request', 'meta.baseQueryMeta.response'],
       },
     }).concat(apiSlice.middleware),

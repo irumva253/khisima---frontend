@@ -1,36 +1,41 @@
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+/* eslint-disable no-unused-vars */
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUser, logout as logoutAction } from '@/slices/authSlice';
+import { useGetUserDetailsQuery } from '@/slices/userApiSlice';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { IconUserCircle, IconCreditCard, IconNotification, IconLogout, IconDotsVertical } from '@tabler/icons-react';
 
-export function NavUser({
-  user
-}) {
-  const { isMobile } = useSidebar()
+export function NavUser() {
+  const { isMobile } = useSidebar();
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  // Fetch latest user data from backend and update Redux
+  const { data, isLoading } = useGetUserDetailsQuery(userInfo?.id, {
+    skip: !userInfo?.id,
+  });
+
+  useEffect(() => {
+    if (data) {
+      dispatch(updateUser(data));
+    }
+  }, [data, dispatch]);
+
+  const handleLogout = () => {
+    dispatch(logoutAction());
+  };
+
+  const initials = `${userInfo?.firstName?.[0] || ''}${userInfo?.lastName?.[0] || ''}`.toUpperCase();
 
   return (
     <SidebarMenu>
@@ -39,58 +44,43 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                {userInfo?.profileImage ? <AvatarImage src={userInfo.profileImage} alt={userInfo.firstName} /> : <AvatarFallback>{initials}</AvatarFallback>}
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
-                </span>
+                <span className="truncate font-medium">{`${userInfo?.firstName} ${userInfo?.lastName}`}</span>
+                <span className="text-muted-foreground truncate text-xs">{userInfo?.email}</span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}>
+          <DropdownMenuContent side={isMobile ? 'bottom' : 'right'} align="end" sideOffset={4}>
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  {userInfo?.profileImage ? <AvatarImage src={userInfo.profileImage} alt={userInfo.firstName} /> : <AvatarFallback>{initials}</AvatarFallback>}
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </span>
+                  <span className="truncate font-medium">{`${userInfo?.firstName} ${userInfo?.lastName}`}</span>
+                  <span className="text-muted-foreground truncate text-xs">{userInfo?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <IconLogout />
-              Log out
+              <IconUserCircle /> Account
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <IconCreditCard /> Billing
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <IconNotification /> Notifications
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <IconLogout /> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

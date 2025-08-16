@@ -34,19 +34,21 @@ export const userApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ['Auth']
     }),
     forgotPassword: builder.mutation({
-      query: (email) => ({
+      query: (data) => ({
         url: API_ENDPOINTS.USERS.FORGOT_PASSWORD,
         method: 'POST',
-        body: { email }
-      })
+        body: data, 
+      }),
     }),
+
     resetPassword: builder.mutation({
-      query: (data) => ({
-        url: API_ENDPOINTS.USERS.RESET_PASSWORD,
+      query: ({ token, password }) => ({
+        url: `/api/auth/reset-password/${token}`, 
         method: 'POST',
-        body: data
-      })
+        body: { password },
+      }),
     }),
+
     getUsers: builder.query({
       query: () => ({
         url: API_ENDPOINTS.USERS.GET_ALL
