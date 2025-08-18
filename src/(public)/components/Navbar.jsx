@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { 
   IconPhone,
@@ -10,6 +11,10 @@ import {
 } from '@tabler/icons-react';
 
 import {Link, useLocation} from 'react-router-dom';
+import {
+  useGetServiceCategoriesQuery,
+} from "@/slices/serviceCategoriesSlice"
+
 
 // Enhanced SVG Icons with better styling
 const MapPinIcon = (props) => (
@@ -60,6 +65,9 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
+  const { data: categoriesData, isLoading, isError } = useGetServiceCategoriesQuery();
+  const categories = categoriesData?.data || [];
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -83,8 +91,8 @@ const Navbar = () => {
 
   // Helper function to check if any service is active
   const isServiceActive = () => {
-    return ['/translation', '/interpretation', '/localization'].some(path => 
-      location.pathname.startsWith(path)
+    return categories.some(cat => 
+      location.pathname.startsWith(`/services/${cat._id}`)
     );
   };
 
@@ -141,12 +149,6 @@ const Navbar = () => {
     { name: "Home", path: "/", icon: <IconHome stroke={2} />, desc: "Back to homepage" },
     { name: "About Us", path: "/about-us", icon: <IconInfoSquareRounded stroke={2} />, desc: "Our story & mission" },
     { name: "Contact", path: "/contact", icon: <IconPhone stroke={2} />, desc: "Get in touch" },
-  ];
-
-  const solutionsItems = [
-    { name: "Translation", path: "/translation", icon: "🔤", desc: "Professional translation services" },
-    { name: "Interpretation", path: "/interpretation", icon: "🗣️", desc: "Real-time interpretation" },
-    { name: "Localization", path: "/localization", icon: "🌍", desc: "Cultural adaptation" },
   ];
 
   const languageItems = [
@@ -256,20 +258,24 @@ const Navbar = () => {
                         Our Services
                       </h3>
                     </div>
-                    {solutionsItems.map((item) => (
+                    {categories.map((cat) => (
                       <Link
-                        key={item.name}
-                        to={item.path}
+                        key={cat._id}
+                        to={`/services/${cat._id}`}
                         className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                          isActive(item.path) 
+                          isActive(`/services/${cat._id}`) 
                             ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
                             : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
                         }`}
                       >
-                        <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
+                        {cat.iconSvg ? (
+                          <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
+                        )}
                         <div>
-                          <div className="font-medium">{item.name}</div>
-                          <div className="text-xs text-gray-500">{item.desc}</div>
+                          <div className="font-medium">{cat.title}</div>
+                          <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
                         </div>
                       </Link>
                     ))}
@@ -443,19 +449,23 @@ const Navbar = () => {
                   )}
                 </h3>
                 <div className="space-y-1">
-                  {solutionsItems.map((item) => (
+                  {categories.map((cat) => (
                     <Link
-                      key={item.name}
-                      to={item.path}
-                      className={getMobileNavClasses(item.path, true)}
+                      key={cat._id}
+                      to={`/services/${cat._id}`}
+                      className={getMobileNavClasses(`/services/${cat._id}`, true)}
                       onClick={handleLinkClick}
                     >
-                      <span className="text-lg mr-3 group-hover:scale-110 transition-transform">{item.icon}</span>
+                      {cat.iconSvg ? (
+                        <div className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover:scale-110 transition-transform" />
+                      )}
                       <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="text-xs text-gray-500">{item.desc}</div>
+                        <div className="font-medium">{cat.title}</div>
+                        <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
                       </div>
-                      {isActive(item.path) && (
+                      {isActive(`/services/${cat._id}`) && (
                         <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
                       )}
                     </Link>

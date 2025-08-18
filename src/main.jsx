@@ -28,6 +28,7 @@ import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
 import NotificationScreen from './(public)/screens/admin/NotificationScreen';
 import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
 import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
+import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
         <Route path="/register" element={<SignupScreen />} />
         <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
         <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
+        <Route path="/services/:id" element={<ServicePageScreen />} />
 
       </Route>
 
@@ -54,6 +56,7 @@ const router = createBrowserRouter(
            <Route path="notifications" element={<NotificationScreen />} />
            <Route path="services" element={<ServiceManagementScreen />} />
            <Route path="services/create" element={<CreateNewServiceScreen />} />
+
 
         </Route>
       </Route>

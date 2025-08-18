@@ -53,6 +53,8 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id) => `${SERVICES_URL}/${id}`,
     CREATE: SERVICES_URL,
     UPDATE: (id) => `${SERVICES_URL}/${id}`,
-    DELETE: (id) => `${SERVICES_URL}/${id}`
+    DELETE: (id) => `${SERVICES_URL}/${id}`,
+    GET_BY_CATEGORY: (categoryId) => `${SERVICES_URL}/category/${categoryId}`,
+    GET_CATEGORIES: `${SERVICES_URL}/categories`,
   }
 };
