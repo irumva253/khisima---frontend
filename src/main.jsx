@@ -30,17 +30,18 @@ import NotificationScreen from './(public)/screens/admin/NotificationScreen';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {/* Public routes (no navbar/footer) */}
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<SignupScreen />} />
-      <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
-      <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
-
-      {/* Routes with main layout (App) */}
+      {/* Public routes */}
+      
       <Route path="/" element={<App />}>
         <Route index element={<HomeScreen />} />
         <Route path="about-us" element={<AboutScreen />} />
         <Route path="contact" element={<ContactScreen />} />
+
+        <Route path="/login" element={<LoginScreen />} />
+        <Route path="/register" element={<SignupScreen />} />
+        <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
+
       </Route>
 
       {/* Admin protected routes */}

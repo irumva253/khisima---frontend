@@ -6,12 +6,12 @@ import {
   IconHome,
   IconInfoSquareRounded,
   IconCircleDottedLetterK,     
-  IconUser,
-  IconX
+  IconUser
 } from '@tabler/icons-react';
-import { Link, useLocation } from 'react-router-dom';
 
-// SVG Icons
+import {Link, useLocation} from 'react-router-dom';
+
+// Enhanced SVG Icons with better styling
 const MapPinIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4" {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -55,50 +55,9 @@ const SparkleIcon = () => (
   </svg>
 );
 
-const GoogleTranslate = ({ language }) => {
-  useEffect(() => {
-    if (language && language !== 'en') {
-      const script = document.createElement('script');
-      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      document.body.appendChild(script);
-
-      window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,fr,rw,sw',
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false
-        }, 'google_translate_element');
-        
-        const select = document.querySelector('.goog-te-combo');
-        if (select) {
-          select.value = language;
-          select.dispatchEvent(new Event('change'));
-        }
-      };
-
-      return () => {
-        const googleTranslateElement = document.querySelector('.goog-te-combo');
-        if (googleTranslateElement) {
-          googleTranslateElement.remove();
-        }
-        const script = document.querySelector('script[src*="translate.google.com"]');
-        if (script) {
-          script.remove();
-        }
-      };
-    }
-  }, [language]);
-
-  return <div id="google_translate_element" style={{ display: 'none' }}></div>;
-};
-
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [showLanguageReset, setShowLanguageReset] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -109,18 +68,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    if (savedLanguage) {
-      setSelectedLanguage(savedLanguage);
-      setShowLanguageReset(true);
-    }
-  }, []);
-
+  // Helper function to check if a path is active
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -128,16 +81,19 @@ const Navbar = () => {
     return location.pathname.startsWith(path);
   };
 
+  // Helper function to check if any service is active
   const isServiceActive = () => {
     return ['/translation', '/interpretation', '/localization'].some(path => 
       location.pathname.startsWith(path)
     );
   };
 
+  // Helper function to check if any language page is active
   const isLanguageActive = () => {
     return location.pathname.startsWith('/languages');
   };
 
+  // Get active link classes
   const getNavLinkClasses = (path, isDropdown = false) => {
     const baseClasses = "px-4 py-2 rounded-lg font-medium transition-all duration-300 relative group";
     const dropdownClasses = "flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300";
@@ -149,6 +105,7 @@ const Navbar = () => {
     return `${isDropdown ? dropdownClasses : baseClasses} text-gray-700 hover:text-[#4993f2] hover:bg-blue-50`;
   };
 
+  // Get dropdown trigger classes
   const getDropdownClasses = (checkFunction) => {
     const baseClasses = "flex items-center px-4 py-2 text-gray-700 hover:text-[#4993f2] hover:bg-blue-50 rounded-lg font-medium transition-all duration-300";
     
@@ -159,6 +116,7 @@ const Navbar = () => {
     return baseClasses;
   };
 
+  // Get mobile nav item classes
   const getMobileNavClasses = (path, isService = false, isLanguage = false) => {
     const baseClasses = "flex items-center py-3 px-4 rounded-xl transition-all duration-300 group";
     
@@ -178,6 +136,7 @@ const Navbar = () => {
     return `${baseClasses} text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]`;
   };
 
+  // Organized menu items with icons and descriptions
   const companyItems = [
     { name: "Home", path: "/", icon: <IconHome stroke={2} />, desc: "Back to homepage" },
     { name: "About Us", path: "/about-us", icon: <IconInfoSquareRounded stroke={2} />, desc: "Our story & mission" },
@@ -191,432 +150,422 @@ const Navbar = () => {
   ];
 
   const languageItems = [
-    { name: "English", path: "/languages/english", icon: "🇬🇧", desc: "Global business language", code: "en" },
-    { name: "French", path: "/languages/french", icon: "🇫🇷", desc: "International communication", code: "fr" },
-    { name: "Kinyarwanda", path: "/languages/kinyarwanda", icon: "🇷🇼", desc: "Local expertise", code: "rw" },
-    { name: "Swahili", path: "/languages/swahili", icon: "🌍", desc: "East African hub", code: "sw" },
+    { name: "English", path: "/languages/english", icon: "🇬🇧", desc: "Global business language" },
+    { name: "French", path: "/languages/french", icon: "🇫🇷", desc: "International communication" },
+    { name: "Kinyarwanda", path: "/languages/kinyarwanda", icon: "🇷🇼", desc: "Local expertise" },
+    { name: "Swahili", path: "/languages/swahili", icon: "🌍", desc: "East African hub" },
   ];
 
   const handleLinkClick = () => {
     setMobileMenuOpen(false);
   };
 
-  const handleLanguageSelect = (languageCode) => {
-    setSelectedLanguage(languageCode);
-    localStorage.setItem('selectedLanguage', languageCode);
-    setShowLanguageReset(true);
-    setMobileMenuOpen(false);
-  };
-
-  const resetLanguage = () => {
-    setSelectedLanguage(null);
-    setShowLanguageReset(false);
-    localStorage.removeItem('selectedLanguage');
-  };
-
   return (
-    <>
-      <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "shadow-2xl" : ""}`}>
-        <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-800 text-white py-3 px-4 text-sm hidden lg:block relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#4993f2]/10 via-transparent to-[#4993f2]/10 animate-pulse"></div>
-          <div className="container mx-auto flex justify-between items-center relative z-10">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center hover:text-blue-300 transition-colors duration-300 group">
-                <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-500/30 transition-colors">
-                  <MapPinIcon className="h-4 w-4 text-blue-300" />
-                </div>
-                <span className="font-medium">123 Language St, Kigali, Rwanda</span>
+    <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "shadow-2xl" : ""}`}>
+      {/* Enhanced Top Navigation Bar */}
+      <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-800 text-white py-3 px-4 text-sm hidden lg:block relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#4993f2]/10 via-transparent to-[#4993f2]/10 animate-pulse"></div>
+        <div className="container mx-auto flex justify-between items-center relative z-10">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center hover:text-blue-300 transition-colors duration-300 group">
+              <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-500/30 transition-colors">
+                <MapPinIcon className="h-4 w-4 text-blue-300" />
               </div>
-              <div className="flex items-center hover:text-green-300 transition-colors duration-300 group">
-                <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-500/30 transition-colors">
-                  <PhoneIcon className="h-4 w-4 text-green-300" />
-                </div>
-                <span className="font-medium">+250 700 123 456</span>
-              </div>
+              <span className="font-medium">123 Language St, Kigali, Rwanda</span>
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center hover:text-purple-300 transition-colors duration-300 group">
-                <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-purple-500/30 transition-colors">
-                  <EnvelopeIcon className="h-4 w-4 text-purple-300" />
-                </div>
-                <span className="font-medium">info@khisima.com</span>
+            <div className="flex items-center hover:text-green-300 transition-colors duration-300 group">
+              <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-500/30 transition-colors">
+                <PhoneIcon className="h-4 w-4 text-green-300" />
               </div>
-              <div className="flex items-center space-x-2 text-xs">
-                <SparkleIcon />
-                <span className="text-yellow-300 font-semibold">24/7 Support Available</span>
+              <span className="font-medium">+250 700 123 456</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center hover:text-purple-300 transition-colors duration-300 group">
+              <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-purple-500/30 transition-colors">
+                <EnvelopeIcon className="h-4 w-4 text-purple-300" />
               </div>
+              <span className="font-medium">info@khisima.com</span>
+            </div>
+            <div className="flex items-center space-x-2 text-xs">
+              <SparkleIcon />
+              <span className="text-yellow-300 font-semibold">24/7 Support Available</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className={`bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 ${
-          scrolled ? "py-3 shadow-lg" : "py-5"
-        }`}>
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-8">
-                <button
-                  className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-[#4993f2]/10 hover:text-[#4993f2] transition-all duration-300 group"
-                  onClick={() => setMobileMenuOpen(true)}
-                >
-                  <MenuIcon />
-                </button>
+      {/* Enhanced Main Navigation Bar */}
+      <div className={`bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 ${
+        scrolled ? "py-3 shadow-lg" : "py-5"
+      }`}>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            {/* Left side - Mobile menu + Logo + Navigation */}
+            <div className="flex items-center space-x-8">
+              {/* Enhanced Mobile menu button */}
+              <button
+                className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-[#4993f2]/10 hover:text-[#4993f2] transition-all duration-300 group"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <MenuIcon />
+              </button>
 
-                <Link to="/" className="flex items-center group">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                    <span className="text-lg">K</span>
-                  </div>
-                  <div className="hidden sm:block">
-                    <span className="text-2xl font-black text-gray-800 group-hover:text-[#4993f2] transition-colors duration-300">
-                      Khis<span className="text-[#4993f2]">ima</span>
-                    </span>
-                    <div className="text-xs text-gray-500 font-medium -mt-1">Language Solutions</div>
-                  </div>
-                </Link>
+              {/* Enhanced Logo */}
+              <Link to="/" className="flex items-center group">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                  <span className="text-lg">K</span>
+                </div>
+                <div className="hidden sm:block">
+                  <span className="text-2xl font-black text-gray-800 group-hover:text-[#4993f2] transition-colors duration-300">
+                    Khis<span className="text-[#4993f2]">ima</span>
+                  </span>
+                  <div className="text-xs text-gray-500 font-medium -mt-1">Language Solutions</div>
+                </div>
+              </Link>
 
-                <nav className="hidden lg:flex items-center space-x-1">
-                  {companyItems.filter(item => item.name !== "Contact").map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.path}
-                      className={getNavLinkClasses(item.path)}
-                    >
-                      {item.name}
-                      <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                        isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}></div>
-                    </Link>
-                  ))}
-                  
-                  <div className="group relative">
-                    <button className={getDropdownClasses(isServiceActive)}>
-                      Services
-                      <ChevronDownIcon />
-                      {isServiceActive() && (
-                        <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
-                      )}
-                    </button>
-                    <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-800 flex items-center">
-                          <span className="text-lg mr-2"><IconApps stroke={1} /></span>
-                          Our Services
-                        </h3>
-                      </div>
-                      {solutionsItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.path}
-                          className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                            isActive(item.path) 
-                              ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
-                              : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                          }`}
-                        >
-                          <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
-                          <div>
-                            <div className="font-medium">{item.name}</div>
-                            <div className="text-xs text-gray-500">{item.desc}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
+              {/* Enhanced Desktop Navigation */}
+              <nav className="hidden lg:flex items-center space-x-1">
+                {companyItems.filter(item => item.name !== "Contact").map((item) => (
                   <Link
-                    to="/technologies"
-                    className={getNavLinkClasses("/technologies")}
+                    key={item.name}
+                    to={item.path}
+                    className={getNavLinkClasses(item.path)}
                   >
-                    Technologies
+                    {item.name}
                     <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                      isActive("/technologies") ? 'w-full' : 'w-0 group-hover:w-full'
+                      isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}></div>
                   </Link>
-
-                  <Link
-                    to="/industries"
-                    className={getNavLinkClasses("/industries")}
-                  >
-                    Industries
-                    <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                      isActive("/industries") ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}></div>
-                  </Link>
-
-                  <div className="group relative">
-                    <button className={getDropdownClasses(isLanguageActive)}>
-                      Languages
-                      <ChevronDownIcon />
-                      {isLanguageActive() && (
-                        <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
-                      )}
-                    </button>
-                    <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-800 flex items-center">
-                          <span className="text-lg mr-2"><IconLanguage stroke={2} /></span>
-                          Supported Languages
-                        </h3>
-                      </div>
-                      {languageItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.path}
-                          onClick={() => handleLanguageSelect(item.code)}
-                          className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                            isActive(item.path) 
-                              ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
-                              : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                          }`}
-                        >
-                          <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
-                          <div>
-                            <div className="font-medium">{item.name}</div>
-                            <div className="text-xs text-gray-500">{item.desc}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </nav>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/contact"
-                  className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
-                    isActive("/contact") 
-                      ? 'text-[#4993f2] bg-blue-50' 
-                      : 'text-gray-700 hover:text-[#4993f2]'
-                  }`}
-                >
-                  <span className="mr-2 group-hover:scale-110 transition-transform"><IconPhone stroke={2} /></span>
-                  Contact
-                </Link>
-                <Link
-                  to="/login"
-                  className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
-                    isActive("/login") 
-                      ? 'text-[#4993f2] bg-blue-50' 
-                      : 'text-gray-700 hover:text-[#4993f2]'
-                  }`}
-                >
-                  <span className="mr-2 group-hover:scale-110 transition-transform"><IconUser stroke={2} /></span>
-                  Login
-                </Link>
-                <Link
-                  to="/get-quote"
-                  className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
-                >
-                  <span>Get Quote</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all duration-300 ${
-            mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          <div
-            className={`absolute left-0 top-0 h-full w-80 bg-white shadow-2xl transition-all duration-500 ${
-              mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 h-full flex flex-col">
-              <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-200">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3">
-                    K
-                  </div>
-                  <div>
-                    <span className="text-xl font-black text-gray-800">
-                      Khis<span className="text-[#4993f2]">ima</span>
-                    </span>
-                    <div className="text-xs text-gray-500">Language Solutions</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-xl hover:bg-gray-100 transition-colors duration-300"
-                >
-                  <CloseIcon />
-                </button>
-              </div>
-
-              <nav className="flex-1 overflow-y-auto space-y-6">
-                <div>
-                  <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                    <span className="mr-2"><IconCircleDottedLetterK stroke={2} /></span>
-                    Company
-                  </h3>
-                  <div className="space-y-1">
-                    {companyItems.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        className={getMobileNavClasses(item.path)}
-                        onClick={handleLinkClick}
-                      >
-                        <span className="text-lg mr-3 group-hover:scale-110 transition-transform">{item.icon}</span>
-                        <div>
-                          <div className="font-medium">{item.name}</div>
-                          <div className="text-xs text-gray-500">{item.desc}</div>
-                        </div>
-                        {isActive(item.path) && (
-                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                    <span className="mr-2"><IconApps stroke={1}/></span>
+                ))}
+                
+                {/* Enhanced Services Dropdown */}
+                <div className="group relative">
+                  <button className={getDropdownClasses(isServiceActive)}>
                     Services
+                    <ChevronDownIcon />
                     {isServiceActive() && (
-                      <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
                     )}
-                  </h3>
-                  <div className="space-y-1">
+                  </button>
+                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                        <span className="text-lg mr-2"><IconApps stroke={1} /></span>
+                        Our Services
+                      </h3>
+                    </div>
                     {solutionsItems.map((item) => (
                       <Link
                         key={item.name}
                         to={item.path}
-                        className={getMobileNavClasses(item.path, true)}
-                        onClick={handleLinkClick}
+                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                          isActive(item.path) 
+                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
+                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                        }`}
                       >
-                        <span className="text-lg mr-3 group-hover:scale-110 transition-transform">{item.icon}</span>
+                        <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
                         <div>
                           <div className="font-medium">{item.name}</div>
                           <div className="text-xs text-gray-500">{item.desc}</div>
                         </div>
-                        {isActive(item.path) && (
-                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                        )}
                       </Link>
                     ))}
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <Link
-                    to="/technologies"
-                    className={getMobileNavClasses("/technologies")}
-                    onClick={handleLinkClick}
-                  >
-                    <span className="text-lg mr-3 group-hover:scale-110 transition-transform">⚙️</span>
-                    <div>
-                      <div className="font-medium">Technologies</div>
-                      <div className="text-xs text-gray-500">Our tech stack</div>
-                    </div>
-                    {isActive("/technologies") && (
-                      <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                    )}
-                  </Link>
+                <Link
+                  to="/technologies"
+                  className={getNavLinkClasses("/technologies")}
+                >
+                  Technologies
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                    isActive("/technologies") ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></div>
+                </Link>
 
-                  <Link
-                    to="/industries"
-                    className={getMobileNavClasses("/industries")}
-                    onClick={handleLinkClick}
-                  >
-                    <span className="text-lg mr-3 group-hover:scale-110 transition-transform">🏭</span>
-                    <div>
-                      <div className="font-medium">Industries</div>
-                      <div className="text-xs text-gray-500">Sectors we serve</div>
-                    </div>
-                    {isActive("/industries") && (
-                      <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                    )}
-                  </Link>
-                </div>
+                <Link
+                  to="/industries"
+                  className={getNavLinkClasses("/industries")}
+                >
+                  Industries
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                    isActive("/industries") ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></div>
+                </Link>
 
-                <div>
-                  <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                    <span className="mr-2"><IconLanguage stroke={2}/></span>
+                {/* Enhanced Languages Dropdown */}
+                <div className="group relative">
+                  <button className={getDropdownClasses(isLanguageActive)}>
                     Languages
+                    <ChevronDownIcon />
                     {isLanguageActive() && (
-                      <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
                     )}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  </button>
+                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                        <span className="text-lg mr-2"><IconLanguage stroke={2} /></span>
+                        Supported Languages
+                      </h3>
+                    </div>
                     {languageItems.map((item) => (
                       <Link
                         key={item.name}
                         to={item.path}
-                        onClick={() => handleLanguageSelect(item.code)}
-                        className={`flex flex-col items-center p-3 rounded-xl transition-all duration-300 group text-center relative ${
-                          isActive(item.path)
-                            ? 'text-[#4993f2] bg-blue-50 shadow-sm border border-blue-200'
+                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                          isActive(item.path) 
+                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
                             : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
                         }`}
                       >
-                        <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">{item.icon}</span>
-                        <span className="text-sm font-medium">{item.name}</span>
-                        {isActive(item.path) && (
-                          <div className="absolute top-2 right-2 w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                        )}
+                        <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
+                        <div>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-gray-500">{item.desc}</div>
+                        </div>
                       </Link>
                     ))}
                   </div>
                 </div>
               </nav>
+            </div>
 
-              <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">
+            {/* Right side - Contact + CTA */}
+            <div className="flex items-center space-x-4">
+              <Link
+                to="/contact"
+                className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
+                  isActive("/contact") 
+                    ? 'text-[#4993f2] bg-blue-50' 
+                    : 'text-gray-700 hover:text-[#4993f2]'
+                }`}
+              >
+                <span className="mr-2 group-hover:scale-110 transition-transform"><IconPhone stroke={2} /></span>
+                Contact
+              </Link>
+              <Link
+                to="/login"
+                className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
+                  isActive("/login") 
+                    ? 'text-[#4993f2] bg-blue-50' 
+                    : 'text-gray-700 hover:text-[#4993f2]'
+                }`}
+              >
+                <span className="mr-2 group-hover:scale-110 transition-transform"><IconUser stroke={2} /></span>
+                Login
+              </Link>
+              <Link
+                to="/get-quote"
+                className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
+              >
+                <span>Get Quote</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Mobile Drawer */}
+      <div
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all duration-300 ${
+          mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <div
+          className={`absolute left-0 top-0 h-full w-80 bg-white shadow-2xl transition-all duration-500 ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-6 h-full flex flex-col">
+            {/* Enhanced Mobile Header */}
+            <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-200">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3">
+                  K
+                </div>
+                <div>
+                  <span className="text-xl font-black text-gray-800">
+                    Khis<span className="text-[#4993f2]">ima</span>
+                  </span>
+                  <div className="text-xs text-gray-500">Language Solutions</div>
+                </div>
+              </div>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-xl hover:bg-gray-100 transition-colors duration-300"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {/* Enhanced Mobile Navigation */}
+            <nav className="flex-1 overflow-y-auto space-y-6">
+              {/* Company Section */}
+              <div>
+                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
+                  <span className="mr-2"><IconCircleDottedLetterK stroke={2} /></span>
+                  Company
+                </h3>
+                <div className="space-y-1">
+                  {companyItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={getMobileNavClasses(item.path)}
+                      onClick={handleLinkClick}
+                    >
+                      <span className="text-lg mr-3 group-hover:scale-110 transition-transform">{item.icon}</span>
+                      <div>
+                        <div className="font-medium">{item.name}</div>
+                        <div className="text-xs text-gray-500">{item.desc}</div>
+                      </div>
+                      {isActive(item.path) && (
+                        <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Services Section */}
+              <div>
+                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
+                  <span className="mr-2"><IconApps stroke={1}/></span>
+                  Services
+                  {isServiceActive() && (
+                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                  )}
+                </h3>
+                <div className="space-y-1">
+                  {solutionsItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={getMobileNavClasses(item.path, true)}
+                      onClick={handleLinkClick}
+                    >
+                      <span className="text-lg mr-3 group-hover:scale-110 transition-transform">{item.icon}</span>
+                      <div>
+                        <div className="font-medium">{item.name}</div>
+                        <div className="text-xs text-gray-500">{item.desc}</div>
+                      </div>
+                      {isActive(item.path) && (
+                        <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Links */}
+              <div className="space-y-1">
                 <Link
-                  to="/get-quote"
-                  className="block w-full bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-4 rounded-xl font-semibold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  to="/technologies"
+                  className={getMobileNavClasses("/technologies")}
                   onClick={handleLinkClick}
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <span>Get Free Quote</span>
+                  <span className="text-lg mr-3 group-hover:scale-110 transition-transform">⚙️</span>
+                  <div>
+                    <div className="font-medium">Technologies</div>
+                    <div className="text-xs text-gray-500">Our tech stack</div>
                   </div>
+                  {isActive("/technologies") && (
+                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                  )}
                 </Link>
-                
-                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                  <h4 className="text-sm font-semibold text-gray-800 flex items-center">
-                    <span className="mr-2">📞</span>
-                    Quick Contact
-                  </h4>
-                  <div className="space-y-2 text-xs text-gray-600">
-                    <div className="flex items-center hover:text-[#4993f2] transition-colors">
-                      <MapPinIcon className="h-4 w-4 mr-2 text-blue-500" />
-                      <span>123 Language St, Kigali</span>
-                    </div>
-                    <div className="flex items-center hover:text-[#4993f2] transition-colors">
-                      <PhoneIcon className="h-4 w-4 mr-2 text-green-500" />
-                      <span>+250 700 123 456</span>
-                    </div>
-                    <div className="flex items-center hover:text-[#4993f2] transition-colors">
-                      <EnvelopeIcon className="h-4 w-4 mr-2 text-purple-500" />
-                      <span>info@khisima.com</span>
-                    </div>
+
+                <Link
+                  to="/industries"
+                  className={getMobileNavClasses("/industries")}
+                  onClick={handleLinkClick}
+                >
+                  <span className="text-lg mr-3 group-hover:scale-110 transition-transform">🏭</span>
+                  <div>
+                    <div className="font-medium">Industries</div>
+                    <div className="text-xs text-gray-500">Sectors we serve</div>
+                  </div>
+                  {isActive("/industries") && (
+                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                  )}
+                </Link>
+              </div>
+
+              {/* Languages Section */}
+              <div>
+                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
+                  <span className="mr-2"><IconLanguage stroke={2}/></span>
+                  Languages
+                  {isLanguageActive() && (
+                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                  )}
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {languageItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={`flex flex-col items-center p-3 rounded-xl transition-all duration-300 group text-center relative ${
+                        isActive(item.path)
+                          ? 'text-[#4993f2] bg-blue-50 shadow-sm border border-blue-200'
+                          : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                      }`}
+                      onClick={handleLinkClick}
+                    >
+                      <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">{item.icon}</span>
+                      <span className="text-sm font-medium">{item.name}</span>
+                      {isActive(item.path) && (
+                        <div className="absolute top-2 right-2 w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </nav>
+
+            {/* Enhanced Mobile Footer */}
+            <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">
+              <Link
+                to="/get-quote"
+                className="block w-full bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-4 rounded-xl font-semibold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                onClick={handleLinkClick}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <span>Get Free Quote</span>
+                </div>
+              </Link>
+              
+              {/* Enhanced Contact info */}
+              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h4 className="text-sm font-semibold text-gray-800 flex items-center">
+                  <span className="mr-2">📞</span>
+                  Quick Contact
+                </h4>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center hover:text-[#4993f2] transition-colors">
+                    <MapPinIcon className="h-4 w-4 mr-2 text-blue-500" />
+                    <span>123 Language St, Kigali</span>
+                  </div>
+                  <div className="flex items-center hover:text-[#4993f2] transition-colors">
+                    <PhoneIcon className="h-4 w-4 mr-2 text-green-500" />
+                    <span>+250 700 123 456</span>
+                  </div>
+                  <div className="flex items-center hover:text-[#4993f2] transition-colors">
+                    <EnvelopeIcon className="h-4 w-4 mr-2 text-purple-500" />
+                    <span>info@khisima.com</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </header>
-
-      {selectedLanguage && <GoogleTranslate language={selectedLanguage} />}
-
-      {showLanguageReset && (
-        <button 
-          onClick={resetLanguage}
-          className="fixed bottom-4 right-4 bg-white shadow-lg rounded-full p-3 text-sm font-medium z-50 flex items-center border border-gray-200 hover:border-[#4993f2] transition-all"
-        >
-          <span className="mr-2"><IconLanguage /></span>
-          Reset to System Language
-          <IconX size={16} className="ml-2" />
-        </button>
-      )}
-    </>
+      </div>
+    </header>
   );
 };
 
