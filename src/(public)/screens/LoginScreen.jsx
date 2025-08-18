@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Mail, Lock, Chrome } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '@/slices/userApiSlice';
 import { setCredentials } from '@/slices/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -102,6 +102,16 @@ function LoginScreen({ className, ...props }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { userInfo } = useSelector((state) => state.auth);
+  const sp = new URLSearchParams(window.location.search);
+  const redirect = sp.get('redirect') || '/';
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate(redirect);
+    }
+  }, [navigate, redirect, userInfo]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -153,7 +163,7 @@ function LoginScreen({ className, ...props }) {
 
   dispatch(setCredentials(userData));
   toast.success('Login successful!');
-  navigate('/dashboard');
+  navigate(redirect);
 } catch (err) {
   console.error('Login failed:', err);
   setErrors({ 

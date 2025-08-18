@@ -22,10 +22,12 @@ import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen';
 
 import PrivateRoute from './(public)/components/PrivateRoute';
-import AdminDashboard from './layouts/admin-layout';
+import AdminDashboard from './layouts/admin-layout.jsx';
 import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
 
 import NotificationScreen from './(public)/screens/admin/NotificationScreen';
+import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
+import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,10 +47,14 @@ const router = createBrowserRouter(
       </Route>
 
       {/* Admin protected routes */}
-      <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-        <Route path="/dashboard" element={<AdminDashboard />}>
+      <Route path="" element={<PrivateRoute allowedRoles={['admin']} />}>
+        <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<AdminIndexPage />} />
-          <Route path="notifications" element={<NotificationScreen />} />
+           <Route path="dashboard" element={<AdminIndexPage />} />
+           <Route path="notifications" element={<NotificationScreen />} />
+           <Route path="services" element={<ServiceManagementScreen />} />
+           <Route path="services/create" element={<CreateNewServiceScreen />} />
+
         </Route>
       </Route>
 

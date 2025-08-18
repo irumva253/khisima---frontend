@@ -6,6 +6,8 @@ export const BASE_URL = process.env.NODE_ENV === 'development'
 export const USERS_URL = '/api/users';
 export const AUTH_URL = '/api/auth';
 export const NOTIFICATIONS_URL = '/api/notifications';
+export const SERVICE_CATEGORIES_URL = '/api/service-categories';
+export const SERVICES_URL = '/api/services';
 
 export const API_ENDPOINTS = {
   USERS: {
@@ -34,5 +36,23 @@ export const API_ENDPOINTS = {
     MARK_RESPONDED: (id) => `${NOTIFICATIONS_URL}/${id}/respond`,
     STATS: `${NOTIFICATIONS_URL}/dashboard`,
     EXPORT: `${NOTIFICATIONS_URL}/export`
+  },
+
+  SERVICE_CATEGORIES: {
+    BASE: SERVICE_CATEGORIES_URL,
+    GET_ALL: SERVICE_CATEGORIES_URL,
+    GET_BY_ID: (id) => `${SERVICE_CATEGORIES_URL}/${id}`,
+    CREATE: SERVICE_CATEGORIES_URL,
+    UPDATE: (id) => `${SERVICE_CATEGORIES_URL}/${id}`,
+    DELETE: (id) => `${SERVICE_CATEGORIES_URL}/${id}`
+  },
+
+  SERVICES: {
+    BASE: SERVICES_URL,
+    GET_ALL: SERVICES_URL,
+    GET_BY_ID: (id) => `${SERVICES_URL}/${id}`,
+    CREATE: SERVICES_URL,
+    UPDATE: (id) => `${SERVICES_URL}/${id}`,
+    DELETE: (id) => `${SERVICES_URL}/${id}`
   }
 };

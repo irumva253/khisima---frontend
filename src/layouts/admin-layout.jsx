@@ -12,7 +12,20 @@ import {
 const AdminDashboard = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-     <Toaster />
+      <Toaster 
+             position="top-right" 
+             richColors 
+             expand={false}
+             closeButton
+             toastOptions={{
+               style: {
+                 background: 'white',
+                 color: 'black',
+                 border: '1px solid #e2e8f0',
+                 zIndex: 100000,
+               },
+             }}
+        />
       <SidebarProvider
       style={{
         "--sidebar-width": "calc(var(--spacing) * 72)",
