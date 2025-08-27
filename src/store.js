@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { apiSlice } from './slices/apiSlice';
+import { uploadApi } from './slices/uploadApiSlice'; 
 import authReducer from './slices/authSlice';
 
 const preloadedState = {
@@ -13,6 +14,7 @@ const preloadedState = {
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    [uploadApi.reducerPath]: uploadApi.reducer, 
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -21,7 +23,7 @@ const store = configureStore({
         ignoredPaths: ['api.mutations', 'api.queries'],
         ignoredActionPaths: ['meta.baseQueryMeta.request', 'meta.baseQueryMeta.response'],
       },
-    }).concat(apiSlice.middleware),
+    }).concat(apiSlice.middleware, uploadApi.middleware), 
   preloadedState,
   devTools: true,
 });

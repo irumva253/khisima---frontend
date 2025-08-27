@@ -4,7 +4,13 @@ import { toast } from "sonner";
 import slugify from "slugify";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -12,22 +18,23 @@ import {
   SelectTrigger,
   SelectValue,
   SelectContent,
-  SelectItem
+  SelectItem,
 } from "@/components/ui/select";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { RichTextEditorWrapper } from "@/components/rich-text-editor/RichTextEditorWrapper";
-import { Uploader } from "@/components/file-uploader/Uploader";
+import Uploader from "@/components/file-uploader/Uploader";
 
 import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
 
 import { useGetServiceCategoriesQuery } from "@/slices/serviceCategoriesSlice";
 import { useCreateServiceMutation } from "@/slices/serviceApiSlice";
+import { createEmptyTiptapDoc } from "@/utils/tiptapUtils";
 
 const serviceStatus = ["draft", "published"];
 
@@ -42,13 +49,13 @@ const CreateNewServiceScreen = ({ onBack }) => {
       title: "",
       slug: "",
       smallDescription: "",
-      description: "",
+      description: createEmptyTiptapDoc(), // Initialize with empty Tiptap doc
       category: "",
       price: "",
-      status: "",
-      image: "",
+      status: "draft",
+      fileKey: "", // Changed from "image" to "fileKey"
       videoUrl: "",
-    }
+    },
   });
 
   const { handleSubmit, setValue, watch } = methods;
@@ -59,16 +66,38 @@ const CreateNewServiceScreen = ({ onBack }) => {
       return;
     }
 
+    console.log("Form values before submission:", values);
+    console.log("Description type:", typeof values.description);
+
     startTransition(async () => {
       try {
-        await createService({
+        // Ensure description is properly formatted as JSON string
+        let descriptionValue = values.description;
+        
+        // If description is already an object (from Tiptap), stringify it
+        if (typeof descriptionValue === 'object') {
+          descriptionValue = JSON.stringify(descriptionValue);
+        }
+        
+        // If description is empty or invalid, use empty structure
+        if (!descriptionValue || typeof descriptionValue !== 'string') {
+          descriptionValue = createEmptyTiptapDoc();
+        }
+
+        const serviceData = {
           ...values,
-          price: values.price ? Number(values.price) : 0
-        }).unwrap();
+          description: descriptionValue,
+          price: values.price ? Number(values.price) : 0,
+        };
+
+        console.log("Submitting service data:", serviceData);
+
+        await createService(serviceData).unwrap();
 
         toast.success("Service created successfully!");
-        Object.keys(values).forEach((key) => setValue(key, ""));
+        methods.reset();
       } catch (err) {
+        console.error("Create service error:", err);
         toast.error(err?.data?.message || "Failed to create service");
       }
     });
@@ -87,10 +116,13 @@ const CreateNewServiceScreen = ({ onBack }) => {
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Provide basic information about the service</CardDescription>
+            <CardDescription>
+              Provide basic information about the service
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {/* Title */}
               <FormField
                 control={methods.control}
                 name="title"
@@ -105,12 +137,13 @@ const CreateNewServiceScreen = ({ onBack }) => {
                 )}
               />
 
-              <div className="flex gap-4 items-end">
+              {/* Slug with Generator */}
+              <div className="flex gap-4 items-end flex-wrap">
                 <FormField
                   control={methods.control}
                   name="slug"
                   render={({ field }) => (
-                    <FormItem className="w-full">
+                    <FormItem className="flex-1">
                       <FormLabel>Slug</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Service slug" required />
@@ -130,6 +163,7 @@ const CreateNewServiceScreen = ({ onBack }) => {
                 </Button>
               </div>
 
+              {/* Small Description */}
               <FormField
                 control={methods.control}
                 name="smallDescription"
@@ -137,13 +171,18 @@ const CreateNewServiceScreen = ({ onBack }) => {
                   <FormItem>
                     <FormLabel>Small Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Enter a small description" className="min-h-[120px]" />
+                      <Textarea
+                        {...field}
+                        placeholder="Enter a small description"
+                        className="min-h-[120px]"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Rich Text Description */}
               <FormField
                 control={methods.control}
                 name="description"
@@ -151,27 +190,36 @@ const CreateNewServiceScreen = ({ onBack }) => {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <RichTextEditorWrapper field={field} />
+                      <RichTextEditorWrapper
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Thumbnail Upload */}
               <FormField
                 control={methods.control}
-                name="image"
+                name="fileKey"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Thumbnail Image (Optional)</FormLabel>
                     <FormControl>
-                      <Uploader value={field.value} onChange={field.onChange} fileTypeAccepted="image" />
+                      <Uploader 
+                        value={field.value} 
+                        onChange={field.onChange} 
+                        fileTypeAccepted="image" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* YouTube Video */}
               <FormField
                 control={methods.control}
                 name="videoUrl"
@@ -186,6 +234,7 @@ const CreateNewServiceScreen = ({ onBack }) => {
                 )}
               />
 
+              {/* Category */}
               <FormField
                 control={methods.control}
                 name="category"
@@ -193,10 +242,7 @@ const CreateNewServiceScreen = ({ onBack }) => {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
@@ -214,6 +260,7 @@ const CreateNewServiceScreen = ({ onBack }) => {
                 )}
               />
 
+              {/* Price */}
               <FormField
                 control={methods.control}
                 name="price"
@@ -221,13 +268,18 @@ const CreateNewServiceScreen = ({ onBack }) => {
                   <FormItem>
                     <FormLabel>Price (RWF)</FormLabel>
                     <FormControl>
-                      <Input {...field} type="number" placeholder="Enter service price" />
+                      <Input
+                        {...field}
+                        type="number"
+                        placeholder="Enter service price"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Status */}
               <FormField
                 control={methods.control}
                 name="status"
@@ -253,6 +305,7 @@ const CreateNewServiceScreen = ({ onBack }) => {
                 )}
               />
 
+              {/* Submit */}
               <Button
                 type="submit"
                 className={buttonVariants({ className: "w-full" })}

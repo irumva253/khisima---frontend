@@ -1,226 +1,195 @@
-/* eslint-disable no-unused-vars */
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Card, CardContent } from '../ui/card';
-import { cn } from '@/lib/utils';
-import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from './RenderState';
-import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
-import { useConstructUrl } from '@/hooks/use-construct-url';
+import React, { useState, useEffect, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useGetPresignedUrlMutation, useDeleteFileMutation } from "@/slices/uploadApiSlice";
+import { S3_BASE_URL } from "@/constants"; // Make sure this is imported correctly
 
-export function Uploader({ value, onChange, fileTypeAccepted }) {
-  const fileUrl = useConstructUrl(value || '');
-  const [fileState, setFileState] = useState({
-    error: false,
-    file: null,
-    id: null,
-    isDeleting: false,
-    progress: 0,
-    uploading: false,
-    fileType: fileTypeAccepted,
-    key: value,
-    objectUrl: value ? fileUrl : null,
-  });
+export default function Uploader({ value, onChange, fileTypeAccepted = "image" }) {
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(value ? `${S3_BASE_URL}/${value}` : null);
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  const uploadFile = useCallback(
-    async (file) => {
-      try {
-        setFileState(prev => ({
-          ...prev,
-          uploading: true,
-          progress: 0,
-          error: false,
-        }));
+  const [getPresignedUrl] = useGetPresignedUrlMutation();
+  const [deleteFile] = useDeleteFileMutation();
 
-        const presignedResponse = await fetch('/api/s3/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileName: file.name,
-            contentType: file.type,
-            fileSize: file.size,
-            isImage: fileTypeAccepted === 'image',
-          }),
-        });
+  // Generate preview
+  useEffect(() => {
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
 
-        if (!presignedResponse.ok) throw new Error('Failed to get presigned URL');
+  // Auto-upload function
+const uploadFile = useCallback(async (file) => {
+  setUploading(true);
+  try {
+    console.log("Requesting presigned URL for:", file.name, file.type);
+    
+    const { presignedUrl, key } = await getPresignedUrl({
+      fileName: file.name,
+      contentType: file.type,
+    }).unwrap();
 
-        const { presignedUrl, key } = await presignedResponse.json();
+    console.log("Received presigned URL:", presignedUrl);
+    console.log("File key:", key);
 
-        await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('PUT', presignedUrl, true);
-          xhr.setRequestHeader('Content-Type', file.type);
+    // For Tigris, we need to use the exact URL as returned by the backend
+    // The URL already includes the bucket name in the path: https://t3.storage.dev/khisima-img-store/...
+    const uploadUrl = presignedUrl;
 
-          xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable) {
-              const percentComplete = Math.round((event.loaded / event.total) * 100);
-              setFileState(prev => ({ ...prev, progress: percentComplete }));
-            }
-          };
+    console.log("Final upload URL:", uploadUrl);
 
-          xhr.onload = () => {
-            if (xhr.status === 200 || xhr.status === 204) {
-              resolve();
-              setFileState(prev => ({
-                ...prev,
-                uploading: false,
-                progress: 100,
-                key: key,
-              }));
-              onChange?.(key);
-              toast.success('File uploaded successfully');
-            } else {
-              reject(new Error(`Upload failed with status ${xhr.status}`));
-            }
-          };
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-          xhr.onerror = () => reject(new Error('Network error during upload'));
+    const res = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+        // Tigris might require additional headers
+      },
+      body: file,
+      signal: controller.signal
+    });
 
-          xhr.send(file);
-        });
-      } catch (error) {
-        toast.error(error.message || 'An unexpected error occurred during upload.');
-        setFileState(prev => ({ ...prev, uploading: false, progress: 0, error: true }));
+    clearTimeout(timeoutId);
+
+    console.log("Upload response status:", res.status, res.statusText);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Upload error details:", errorText);
+      
+      // Parse XML error response for more details
+      if (errorText.includes('<Error>')) {
+        const errorMatch = errorText.match(/<Message>(.*?)<\/Message>/);
+        const errorCodeMatch = errorText.match(/<Code>(.*?)<\/Code>/);
+        const errorMessage = errorMatch ? errorMatch[1] : 'Unknown S3 error';
+        const errorCode = errorCodeMatch ? errorCodeMatch[1] : 'Unknown';
+        
+        throw new Error(`S3 Error (${errorCode}): ${errorMessage}`);
       }
-    },
-    [fileTypeAccepted, onChange]
-  );
+      
+      throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
+    }
 
+    onChange?.(key);
+    // For public access, Tigris uses: https://khisima-img-store.t3.storage.dev/key
+    setPreviewUrl(`https://khisima-img-store.t3.storage.dev/${key}`);
+    setFile(null);
+    toast.success("File uploaded successfully!");
+  } catch (err) {
+    console.error("Upload error:", err);
+    if (err.name === 'AbortError') {
+      toast.error("Upload timed out. Please try again.");
+    } else if (err.message?.includes('Failed to fetch')) {
+      toast.error("Network error. Check CORS configuration and URL validity.");
+    } else if (err.message?.includes('SignatureDoesNotMatch')) {
+      toast.error("Signature error. This is a backend configuration issue.");
+    } else if (err.message?.includes('Access Denied')) {
+      toast.error("Access denied. Check your Tigris permissions and credentials.");
+    } else {
+      toast.error(err?.message || "File upload failed.");
+    }
+  } finally {
+    setUploading(false);
+  }
+}, [getPresignedUrl, onChange]);
+
+  // Delete file
+  const handleDelete = useCallback(async (e) => {
+    e.stopPropagation(); // Prevent triggering dropzone
+    if (!value && !previewUrl) return;
+    setDeleting(true);
+    try {
+      if (value) await deleteFile({ key: value }).unwrap();
+      setPreviewUrl(null);
+      onChange?.("");
+      toast.success("File deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error(err?.message || "Failed to delete file.");
+    } finally {
+      setDeleting(false);
+    }
+  }, [deleteFile, value, onChange, previewUrl]);
+
+  // Dropzone setup
   const onDrop = useCallback(
     (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-
-        if (fileState.objectUrl && !fileState.objectUrl.startsWith('http')) {
-          URL.revokeObjectURL(fileState.objectUrl);
-        }
-
-        setFileState({
-          file: file,
-          id: uuidv4(),
-          uploading: true,
-          progress: 0,
-          error: false,
-          isDeleting: false,
-          objectUrl: URL.createObjectURL(file),
-          fileType: fileTypeAccepted,
-        });
-
-        uploadFile(file);
-      }
+      if (acceptedFiles.length === 0) return;
+      const selectedFile = acceptedFiles[0];
+      setFile(selectedFile);
+      uploadFile(selectedFile); // auto-upload
     },
-    [fileState.objectUrl, uploadFile, fileTypeAccepted]
+    [uploadFile]
   );
-
-  async function handleRemoveFile() {
-    try {
-      setFileState(prev => ({ ...prev, isDeleting: true }));
-
-      const response = await fetch('/api/s3/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: fileState.key }),
-      });
-
-      if (!response.ok) {
-        toast.error('Failed to delete file');
-        setFileState(prev => ({ ...prev, isDeleting: true, error: true }));
-        return;
-      }
-
-      if (fileState.objectUrl && !fileState.objectUrl.startsWith('http')) {
-        URL.revokeObjectURL(fileState.objectUrl);
-      }
-
-      onChange?.('');
-      setFileState({
-        file: null,
-        id: null,
-        uploading: false,
-        progress: 0,
-        isDeleting: false,
-        error: false,
-        objectUrl: null,
-        fileType: fileTypeAccepted,
-      });
-      toast.success('File deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete file, please try again!');
-      setFileState(prev => ({ ...prev, isDeleting: false, error: true }));
-    }
-  }
-
-  function rejectedFiles(fileRejection) {
-    if (fileRejection.length) {
-      const tooManyFiles = fileRejection.find(r => r.errors[0].code === 'too-many-files');
-      const fileSizeTooBig = fileRejection.find(r => r.errors[0].code === 'file-too-large');
-
-      if (fileSizeTooBig) {
-        toast.error(`File ${fileRejection[0].file.name} is too large. Maximum size is 5MB.`);
-      } else if (fileRejection[0].errors[0].code === 'file-invalid-type') {
-        toast.error(`File ${fileRejection[0].file.name} is not a valid image type.`);
-      }
-
-      if (tooManyFiles) toast.error('You can only upload one file at a time.');
-      else toast.error(`File ${fileRejection[0].file.name} is not supported.`);
-    }
-  }
-
-  function renderContent() {
-    if (fileState.uploading && fileState.file) {
-      return <RenderUploadingState file={fileState.file} progress={fileState.progress} />;
-    }
-
-    if (fileState.error) return <RenderErrorState errorMessage={''} />;
-
-    if (fileState.objectUrl) {
-      return (
-        <RenderUploadedState
-          filePreviewUrl={fileState.objectUrl}
-          isDeleting={fileState.isDeleting}
-          handleRemoveFile={handleRemoveFile}
-          fileType={fileState.fileType}
-        />
-      );
-    }
-
-    return <RenderEmptyState isDragActive={isDragActive} />;
-  }
-
-  useEffect(() => {
-    return () => {
-      if (fileState.objectUrl && !fileState.objectUrl.startsWith('http')) {
-        URL.revokeObjectURL(fileState.objectUrl);
-      }
-    };
-  }, [fileState.objectUrl]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: fileTypeAccepted === 'video' ? { 'video/*': [] } : { 'image/*': [] },
+    accept:
+      fileTypeAccepted === "image" 
+        ? { "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"] } 
+        : { "video/*": [".mp4", ".mov", ".avi", ".webm"] },
     maxFiles: 1,
-    multiple: false,
-    maxSize: fileTypeAccepted === 'image' ? 5 * 1024 * 1024 : 5000 * 1024 * 1024,
-    onDropRejected: rejectedFiles,
-    disabled: fileState.uploading || !!fileState.objectUrl,
   });
 
   return (
     <Card
       {...getRootProps()}
-      className={cn(
-        "relative border-2 border-dashed border-gray-300 p-6 text-center hover:border-primary transition-colors cursor-pointer",
-        isDragActive
-          ? 'border-primary bg-primary/10 border-solid'
-          : 'border-border hover:border-border/80 transition-colors cursor-pointer'
-      )}
+      className={`border-2 border-dashed p-4 text-center cursor-pointer ${
+        isDragActive ? "border-primary bg-primary/10" : "border-gray-300"
+      } relative`}
     >
-      <CardContent className="flex items-center justify-center h-full w-full">
+      <CardContent className="flex flex-col items-center gap-3">
         <input {...getInputProps()} />
-        {renderContent()}
+
+        {previewUrl ? (
+          <div className="relative w-full max-w-xs">
+            {fileTypeAccepted === "image" ? (
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="max-h-48 w-full rounded-md object-contain border"
+              />
+            ) : (
+              <video
+                src={previewUrl}
+                className="max-h-48 w-full rounded-md object-contain border"
+                controls
+              />
+            )}
+            <Button
+              size="icon"
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting || uploading}
+              className="absolute top-2 right-2"
+            >
+              {deleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
+            </Button>
+            {uploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-md">
+                <Loader2 className="animate-spin w-6 h-6 text-gray-600" />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-gray-500">
+              {isDragActive ? "Drop the file here" : "Drag & drop a file here, or click to select"}
+            </p>
+            {uploading && <Loader2 className="animate-spin w-6 h-6 text-gray-600" />}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

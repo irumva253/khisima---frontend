@@ -29,6 +29,7 @@ import NotificationScreen from './(public)/screens/admin/NotificationScreen';
 import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
 import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
 import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
+import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -56,6 +57,7 @@ const router = createBrowserRouter(
            <Route path="notifications" element={<NotificationScreen />} />
            <Route path="services" element={<ServiceManagementScreen />} />
            <Route path="services/create" element={<CreateNewServiceScreen />} />
+           <Route path="solutions" element={<SolutionsManagementScreen />} />
 
 
         </Route>

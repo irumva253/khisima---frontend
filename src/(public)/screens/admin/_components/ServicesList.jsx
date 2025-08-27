@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Trash, Edit } from "lucide-react";
@@ -8,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +23,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { RichTextEditorWrapper } from "@/components/rich-text-editor/RichTextEditorWrapper";
+import Uploader from "@/components/file-uploader/Uploader";
+import { S3_BASE_URL } from "@/constants";
 
 import {
   useGetServicesQuery,
@@ -50,21 +55,59 @@ const ServicesList = () => {
     category: "",
     price: "",
     status: "",
-    image: "",
+    fileKey: "",
     videoUrl: "",
   });
 
   const handleEditClick = (service) => {
     setSelectedService(service);
+    
+    // Debug: log what we're getting from the API
+    console.log("Service description:", service.description);
+    console.log("Type of description:", typeof service.description);
+    
+    // Prepare description for the editor
+    let descriptionValue = "";
+    if (service.description) {
+      if (typeof service.description === 'object') {
+        // If it's already an object, stringify it for the editor
+        descriptionValue = JSON.stringify(service.description);
+      } else if (typeof service.description === 'string') {
+        // If it's a string, check if it's JSON
+        try {
+          JSON.parse(service.description);
+          descriptionValue = service.description;
+        } catch (e) {
+          console.error("Failed to parse service description:", e);
+          // If it's not JSON, create a simple structure
+          descriptionValue = JSON.stringify({
+            type: 'doc',
+            content: [
+              {
+                type: 'paragraph',
+                attrs: { textAlign: 'left' },
+                content: [
+                  {
+                    type: 'text',
+                    text: service.description
+                  }
+                ]
+              }
+            ]
+          });
+        }
+      }
+    }
+    
     setEditForm({
       title: service.title || "",
       slug: service.slug || "",
       smallDescription: service.smallDescription || "",
-      description: service.description || "",
+      description: descriptionValue,
       category: service.category?._id || "",
       price: service.price || "",
       status: service.status || "",
-      image: service.image || "",
+      fileKey: service.fileKey || "",
       videoUrl: service.videoUrl || "",
     });
     setEditDialogOpen(true);
@@ -100,7 +143,9 @@ const ServicesList = () => {
     setEditForm((s) => ({ ...s, [key]: e.target.value }));
 
   const getVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    if (!url) return null;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
@@ -109,145 +154,176 @@ const ServicesList = () => {
   if (isError) return <p>Failed to load services</p>;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      {services.map((srv) => (
-        <div
-          key={srv._id}
-          className="border rounded-lg p-4 shadow-sm bg-white dark:bg-zinc-900 flex flex-col justify-between"
-        >
-          {srv.image && (
-            <img
-              src={srv.image}
-              alt={srv.title}
-              className="w-full h-40 object-cover rounded mb-3"
-            />
-          )}
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-            {srv.title}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {srv.smallDescription}
-          </p>
-          {srv.price && (
-            <p className="text-gray-700 dark:text-gray-300 mt-2">
-              Price: {srv.price} RWF
-            </p>
-          )}
-          {srv.videoUrl && (
-            <a
-              href={srv.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline text-sm mt-2"
-            >
-              Watch Video
-            </a>
-          )}
-          <div className="flex gap-2 mt-3">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => handleEditClick(srv)}
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => handleDeleteClick(srv)}
-            >
-              <Trash className="w-4 h-4" />
-              Delete
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full">
+      {/* Table */}
+      <div className="overflow-x-auto border rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-100 dark:bg-gray-800">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                Image
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                Title
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                Category
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                Price
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                Status
+              </th>
+              <th className="px-4 py-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {services.map((srv) => (
+              <tr key={srv._id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+                <td className="px-4 py-2">
+                  {srv.fileKey && (
+                    <img
+                      src={`${S3_BASE_URL}/${srv.fileKey}`}
+                      alt={srv.title}
+                      className="h-12 w-12 object-cover rounded"
+                    />
+                  )}
+                </td>
+                <td className="px-4 py-2">{srv.title}</td>
+                <td className="px-4 py-2">{srv.category?.title}</td>
+                <td className="px-4 py-2">{srv.price} RWF</td>
+                <td className="px-4 py-2 capitalize">{srv.status}</td>
+                <td className="px-4 py-2 text-right flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditClick(srv)}
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteClick(srv)}
+                  >
+                    <Trash className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Edit Dialog - WIDER VERSION */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          className="w-full max-w-[95vw] lg:max-w-7xl max-h-[95vh] overflow-y-auto"
+        >
           <DialogHeader>
-            <DialogTitle>Edit Service</DialogTitle>
+            <DialogTitle className="text-2xl">Edit Service</DialogTitle>
+            <DialogDescription>
+              Update the service details below.
+            </DialogDescription>
           </DialogHeader>
+
           <form onSubmit={handleEditSubmit} className="grid gap-4 mt-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Title + Slug */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Title *</Label>
-                <Input value={editForm.title} onChange={onChange("title")} required />
+                <Label className="text-base">Title *</Label>
+                <Input 
+                  value={editForm.title} 
+                  onChange={onChange("title")} 
+                  required 
+                  className="h-12 text-lg"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Slug *</Label>
-                <Input value={editForm.slug} onChange={onChange("slug")} required />
+                <Label className="text-base">Slug *</Label>
+                <Input 
+                  value={editForm.slug} 
+                  onChange={onChange("slug")} 
+                  required 
+                  className="h-12 text-lg"
+                />
               </div>
             </div>
 
+            {/* Small Description */}
             <div className="space-y-2">
-              <Label>Small Description</Label>
+              <Label className="text-base">Small Description</Label>
               <Textarea
                 value={editForm.smallDescription}
                 onChange={onChange("smallDescription")}
                 rows={3}
+                className="text-lg min-h-[100px]"
               />
             </div>
 
+            {/* Rich Text Description */}
             <div className="space-y-2">
-              <Label>Description</Label>
-              <RichTextEditorWrapper
-                value={editForm.description}
-                onChange={(value) => setEditForm({ ...editForm, description: value })}
+              <Label className="text-base">Description</Label>
+              <div className="border rounded-md p-1">
+                <RichTextEditorWrapper
+                  value={editForm.description}
+                  onChange={(value) => setEditForm({ ...editForm, description: value })}
+                />
+              </div>
+            </div>
+
+            {/* Image Uploader */}
+            <div className="space-y-2">
+              <Label className="text-base">Thumbnail Image</Label>
+              <Uploader
+                value={editForm.fileKey}
+                onChange={(key) => setEditForm({ ...editForm, fileKey: key })}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Image URL</Label>
-                <Input value={editForm.image} onChange={onChange("image")} />
-                {editForm.image && (
-                  <div className="mt-2">
-                    <img
-                      src={editForm.image}
-                      alt="Preview"
-                      className="max-h-40 object-contain rounded border"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>YouTube Video URL</Label>
-                <Input value={editForm.videoUrl} onChange={onChange("videoUrl")} />
-                {editForm.videoUrl && getVideoId(editForm.videoUrl) && (
-                  <div className="mt-2 aspect-video">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${getVideoId(editForm.videoUrl)}`}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="rounded border"
-                    ></iframe>
-                  </div>
-                )}
-              </div>
+            {/* YouTube */}
+            <div className="space-y-2">
+              <Label className="text-base">YouTube Video URL</Label>
+              <Input 
+                value={editForm.videoUrl} 
+                onChange={onChange("videoUrl")} 
+                className="h-12 text-lg"
+              />
+              {editForm.videoUrl && getVideoId(editForm.videoUrl) && (
+                <div className="mt-2 aspect-video max-w-2xl">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${getVideoId(editForm.videoUrl)}`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded-lg border-2"
+                  />
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Category + Price + Status */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label className="text-base">Category</Label>
                 <Select
                   value={editForm.category}
                   onValueChange={(v) => setEditForm({ ...editForm, category: v })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-12 text-lg">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
-                      <SelectItem key={c._id} value={c._id}>
+                      <SelectItem key={c._id} value={c._id} className="text-lg">
                         {c.title}
                       </SelectItem>
                     ))}
@@ -256,26 +332,27 @@ const ServicesList = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Price (RWF)</Label>
-                <Input
-                  type="number"
-                  value={editForm.price}
-                  onChange={onChange("price")}
+                <Label className="text-base">Price (RWF)</Label>
+                <Input 
+                  type="number" 
+                  value={editForm.price} 
+                  onChange={onChange("price")} 
+                  className="h-12 text-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label className="text-base">Status</Label>
                 <Select
                   value={editForm.status}
                   onValueChange={(v) => setEditForm({ ...editForm, status: v })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-12 text-lg">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     {serviceStatus.map((s) => (
-                      <SelectItem key={s} value={s}>
+                      <SelectItem key={s} value={s} className="text-lg">
                         {s}
                       </SelectItem>
                     ))}
@@ -284,15 +361,21 @@ const ServicesList = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-4 pt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setEditDialogOpen(false)} 
                 type="button"
+                className="h-12 px-6 text-lg"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={updating}>
+              <Button 
+                type="submit" 
+                disabled={updating}
+                className="h-12 px-8 text-lg"
+              >
                 {updating ? "Updating..." : "Update Service"}
               </Button>
             </div>
@@ -300,17 +383,21 @@ const ServicesList = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Delete Service</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <strong>{selectedService?.title}</strong>?
+            </DialogDescription>
           </DialogHeader>
-          <p className="mt-2 text-gray-700 dark:text-gray-300">
-            Are you sure you want to delete the service{" "}
-            <strong>{selectedService?.title}</strong>?
-          </p>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
