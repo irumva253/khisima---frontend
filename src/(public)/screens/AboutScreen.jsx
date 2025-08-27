@@ -468,7 +468,7 @@ const AboutScreen = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, #3a7acc 0%, #2563eb 100%)' }}>
+      {/* <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, #3a7acc 0%, #2563eb 50%)' }}>
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Bridge Languages with Us?
@@ -492,7 +492,7 @@ const AboutScreen = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

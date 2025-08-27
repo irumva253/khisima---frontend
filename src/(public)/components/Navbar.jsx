@@ -151,12 +151,6 @@ const Navbar = () => {
     { name: "Contact", path: "/contact", icon: <IconPhone stroke={2} />, desc: "Get in touch" },
   ];
 
-  const languageItems = [
-    { name: "English", path: "/languages/english", icon: "🇬🇧", desc: "Global business language" },
-    { name: "French", path: "/languages/french", icon: "🇫🇷", desc: "International communication" },
-    { name: "Kinyarwanda", path: "/languages/kinyarwanda", icon: "🇷🇼", desc: "Local expertise" },
-    { name: "Swahili", path: "/languages/swahili", icon: "🌍", desc: "East African hub" },
-  ];
 
   const handleLinkClick = () => {
     setMobileMenuOpen(false);
@@ -242,7 +236,46 @@ const Navbar = () => {
                   </Link>
                 ))}
                 
-                {/* Enhanced Services Dropdown */}
+                {/* Enhanced  Solutions & Services Dropdown */}
+                <div className="group relative">
+                  <button className={getDropdownClasses(isServiceActive)}>
+                    Solutions
+                    <ChevronDownIcon />
+                    {isServiceActive() && (
+                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
+                    )}
+                  </button>
+                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                        <span className="text-lg mr-2"><IconApps stroke={1} /></span>
+                        Our Solutions
+                      </h3>
+                    </div>
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat._id}
+                        to={`/services/${cat._id}`}
+                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                          isActive(`/services/${cat._id}`) 
+                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
+                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                        }`}
+                      >
+                        {cat.iconSvg ? (
+                          <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
+                        )}
+                        <div>
+                          <div className="font-medium">{cat.title}</div>
+                          <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="group relative">
                   <button className={getDropdownClasses(isServiceActive)}>
                     Services
@@ -283,60 +316,28 @@ const Navbar = () => {
                 </div>
 
                 <Link
-                  to="/technologies"
-                  className={getNavLinkClasses("/technologies")}
+                  to="/resources"
+                  className={getNavLinkClasses("/resources")}
                 >
-                  Technologies
+                  Resources
                   <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                    isActive("/technologies") ? 'w-full' : 'w-0 group-hover:w-full'
+                    isActive("/resources") ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}></div>
                 </Link>
+
+
 
                 <Link
-                  to="/industries"
-                  className={getNavLinkClasses("/industries")}
+                  to="/career"
+                  className={getNavLinkClasses("/career")}
                 >
-                  Industries
+                  Career
                   <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                    isActive("/industries") ? 'w-full' : 'w-0 group-hover:w-full'
+                    isActive("/career") ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}></div>
                 </Link>
 
-                {/* Enhanced Languages Dropdown */}
-                <div className="group relative">
-                  <button className={getDropdownClasses(isLanguageActive)}>
-                    Languages
-                    <ChevronDownIcon />
-                    {isLanguageActive() && (
-                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
-                    )}
-                  </button>
-                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
-                        <span className="text-lg mr-2"><IconLanguage stroke={2} /></span>
-                        Supported Languages
-                      </h3>
-                    </div>
-                    {languageItems.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                          isActive(item.path) 
-                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
-                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                        }`}
-                      >
-                        <span className="text-xl mr-3 group-hover/item:scale-110 transition-transform">{item.icon}</span>
-                        <div>
-                          <div className="font-medium">{item.name}</div>
-                          <div className="text-xs text-gray-500">{item.desc}</div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                
               </nav>
             </div>
 
@@ -476,66 +477,37 @@ const Navbar = () => {
               {/* Other Links */}
               <div className="space-y-1">
                 <Link
-                  to="/technologies"
-                  className={getMobileNavClasses("/technologies")}
+                  to="/resources"
+                  className={getMobileNavClasses("/resources")}
                   onClick={handleLinkClick}
                 >
                   <span className="text-lg mr-3 group-hover:scale-110 transition-transform">⚙️</span>
                   <div>
-                    <div className="font-medium">Technologies</div>
-                    <div className="text-xs text-gray-500">Our tech stack</div>
+                    <div className="font-medium">Resources</div>
+                    <div className="text-xs text-gray-500">Our resources</div>
                   </div>
-                  {isActive("/technologies") && (
+                  {isActive("/resources") && (
                     <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
                   )}
                 </Link>
 
                 <Link
-                  to="/industries"
-                  className={getMobileNavClasses("/industries")}
+                  to="/career"
+                  className={getMobileNavClasses("/career")}
                   onClick={handleLinkClick}
                 >
-                  <span className="text-lg mr-3 group-hover:scale-110 transition-transform">🏭</span>
+                  <span className="text-lg mr-3 group-hover:scale-110 transition-transform">👔</span>
                   <div>
-                    <div className="font-medium">Industries</div>
-                    <div className="text-xs text-gray-500">Sectors we serve</div>
+                    <div className="font-medium">Career</div>
+                    <div className="text-xs text-gray-500">Join our team</div>
                   </div>
-                  {isActive("/industries") && (
+                  {isActive("/career") && (
                     <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
                   )}
                 </Link>
               </div>
 
-              {/* Languages Section */}
-              <div>
-                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                  <span className="mr-2"><IconLanguage stroke={2}/></span>
-                  Languages
-                  {isLanguageActive() && (
-                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
-                  )}
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {languageItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.path}
-                      className={`flex flex-col items-center p-3 rounded-xl transition-all duration-300 group text-center relative ${
-                        isActive(item.path)
-                          ? 'text-[#4993f2] bg-blue-50 shadow-sm border border-blue-200'
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                      }`}
-                      onClick={handleLinkClick}
-                    >
-                      <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">{item.icon}</span>
-                      <span className="text-sm font-medium">{item.name}</span>
-                      {isActive(item.path) && (
-                        <div className="absolute top-2 right-2 w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              
             </nav>
 
             {/* Enhanced Mobile Footer */}

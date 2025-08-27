@@ -44,6 +44,11 @@ const data = {
       icon: IconDashboard,
     },
     {
+      title: "Solutions",
+      url: "solutions",
+      icon: IconListDetails,
+    },
+    {
       title: "Services",
       url: "services",
       icon: IconListDetails,
