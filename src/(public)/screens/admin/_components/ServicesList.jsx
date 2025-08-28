@@ -53,7 +53,6 @@ const ServicesList = () => {
     smallDescription: "",
     description: "",
     category: "",
-    price: "",
     status: "",
     fileKey: "",
     videoUrl: "",
@@ -61,11 +60,7 @@ const ServicesList = () => {
 
   const handleEditClick = (service) => {
     setSelectedService(service);
-    
-    // Debug: log what we're getting from the API
-    console.log("Service description:", service.description);
-    console.log("Type of description:", typeof service.description);
-    
+
     // Prepare description for the editor
     let descriptionValue = "";
     if (service.description) {
@@ -105,7 +100,6 @@ const ServicesList = () => {
       smallDescription: service.smallDescription || "",
       description: descriptionValue,
       category: service.category?._id || "",
-      price: service.price || "",
       status: service.status || "",
       fileKey: service.fileKey || "",
       videoUrl: service.videoUrl || "",
@@ -116,7 +110,13 @@ const ServicesList = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateService({ id: selectedService._id, ...editForm }).unwrap();
+      await updateService({ 
+        id: selectedService._id,
+        ...editForm,
+        description: typeof editForm.description === "object"
+          ? JSON.stringify(editForm.description)
+          : editForm.description,
+      }).unwrap();
       toast.success("Service updated successfully");
       setEditDialogOpen(false);
     } catch (err) {
@@ -170,9 +170,6 @@ const ServicesList = () => {
                 Category
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                Price
-              </th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
                 Status
               </th>
               <th className="px-4 py-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -194,7 +191,6 @@ const ServicesList = () => {
                 </td>
                 <td className="px-4 py-2">{srv.title}</td>
                 <td className="px-4 py-2">{srv.category?.title}</td>
-                <td className="px-4 py-2">{srv.price} RWF</td>
                 <td className="px-4 py-2 capitalize">{srv.status}</td>
                 <td className="px-4 py-2 text-right flex justify-end gap-2">
                   <Button
@@ -310,7 +306,7 @@ const ServicesList = () => {
               )}
             </div>
 
-            {/* Category + Price + Status */}
+            {/* Category + Status */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label className="text-base">Category</Label>
@@ -329,16 +325,6 @@ const ServicesList = () => {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-base">Price (RWF)</Label>
-                <Input 
-                  type="number" 
-                  value={editForm.price} 
-                  onChange={onChange("price")} 
-                  className="h-12 text-lg"
-                />
               </div>
 
               <div className="space-y-2">

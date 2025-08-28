@@ -15,6 +15,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconUsersGroup,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -67,6 +68,11 @@ const data = {
       title: "Team",
       url: "#",
       icon: IconUsers,
+    },
+    {
+      title: "Partners",
+      url: "#",
+      icon: IconUsersGroup,
     },
   ],
   navClouds: [

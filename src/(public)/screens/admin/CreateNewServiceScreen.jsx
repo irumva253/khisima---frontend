@@ -51,7 +51,6 @@ const CreateNewServiceScreen = ({ onBack }) => {
       smallDescription: "",
       description: createEmptyTiptapDoc(), // Initialize with empty Tiptap doc
       category: "",
-      price: "",
       status: "draft",
       fileKey: "", // Changed from "image" to "fileKey"
       videoUrl: "",
@@ -65,9 +64,6 @@ const CreateNewServiceScreen = ({ onBack }) => {
       toast.error("Title, slug, and category are required!");
       return;
     }
-
-    console.log("Form values before submission:", values);
-    console.log("Description type:", typeof values.description);
 
     startTransition(async () => {
       try {
@@ -87,10 +83,8 @@ const CreateNewServiceScreen = ({ onBack }) => {
         const serviceData = {
           ...values,
           description: descriptionValue,
-          price: values.price ? Number(values.price) : 0,
         };
 
-        console.log("Submitting service data:", serviceData);
 
         await createService(serviceData).unwrap();
 
@@ -254,25 +248,6 @@ const CreateNewServiceScreen = ({ onBack }) => {
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Price */}
-              <FormField
-                control={methods.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price (RWF)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        placeholder="Enter service price"
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

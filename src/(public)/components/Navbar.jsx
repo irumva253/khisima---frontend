@@ -16,7 +16,8 @@ import {
   IconSparkles,
   IconMapPin,
   IconMail,
-  IconGlobe
+  IconGlobe,
+  IconChevronRight
 } from '@tabler/icons-react';
 
 import {Link, useLocation} from 'react-router-dom';
@@ -71,11 +72,15 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(languages[0]);
   const location = useLocation();
 
   const { data: categoriesData, isLoading, isError } = useGetServiceCategoriesQuery();
   const categories = categoriesData?.data || [];
+  
+  // Limit categories to 3 for display
+  const displayedCategories = categories.slice(0, 3);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -112,6 +117,7 @@ const Navbar = () => {
     setMobileMenuOpen(false);
     setLangDropdownOpen(false);
     setMobileLangOpen(false);
+    setMobileServicesOpen(false);
   }, [location]);
 
   // Helper function to check if a path is active
@@ -181,6 +187,7 @@ const Navbar = () => {
     setMobileMenuOpen(false);
     setLangDropdownOpen(false);
     setMobileLangOpen(false);
+    setMobileServicesOpen(false);
   };
 
   const handleLanguageChange = (lang) => {
@@ -322,7 +329,7 @@ const Navbar = () => {
                         Our Services
                       </h3>
                     </div>
-                    {categories.map((cat) => (
+                    {displayedCategories.map((cat) => (
                       <Link
                         key={cat._id}
                         to={`/services/${cat._id}`}
@@ -343,6 +350,23 @@ const Navbar = () => {
                         </div>
                       </Link>
                     ))}
+                    
+                    {/* View All link - ALWAYS VISIBLE regardless of category count */}
+                    <Link
+                      to="/services"
+                      className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
+                    >
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
+                        <IconApps size={14} />
+                      </div>
+                      <div>
+                        <div className="font-semibold">View All Services</div>
+                        <div className="text-xs text-gray-500">
+                          {categories.length > 0 ? `See all ${categories.length} services` : 'Browse all services'}
+                        </div>
+                      </div>
+                      <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
+                    </Link>
                   </div>
                 </div>
 
@@ -370,37 +394,6 @@ const Navbar = () => {
 
             {/* Right side - Language (mobile), Contact + CTA */}
             <div className="flex items-center space-x-4">
-              {/* Mobile Language Switcher */}
-              {/* <div className="lg:hidden relative">
-                <button
-                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                  className="flex items-center space-x-1 p-2 rounded-lg text-gray-700 hover:text-[#4993f2] hover:bg-blue-50 transition-all duration-300"
-                >
-                  <span className="text-sm">{currentLang.flag}</span>
-                  <IconChevronDown size={16} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {langDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-2xl rounded-xl py-2 border border-gray-100">
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => handleLanguageChange(lang)}
-                        className={`w-full flex items-center px-4 py-3 hover:bg-blue-50 transition-colors duration-200 ${
-                          currentLang.code === lang.code ? 'bg-blue-50 text-[#4993f2]' : 'text-gray-700'
-                        }`}
-                      >
-                        <span className="text-lg mr-3">{lang.flag}</span>
-                        <span className="font-medium">{lang.name}</span>
-                        {currentLang.code === lang.code && (
-                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div> */}
-
               <Link
                 to="/contact"
                 className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
@@ -498,38 +491,69 @@ const Navbar = () => {
                 </div>
               </div>
 
-              {/* Services Section */}
+              {/* Services Section - Collapsible */}
               <div>
-                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                  <IconApps size={16} className="mr-2"/>
-                  Services
-                  {isServiceActive() && (
-                    <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
-                  )}
-                </h3>
-                <div className="space-y-1">
-                  {categories.map((cat) => (
+                <button
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                  className="w-full flex items-center justify-between py-3 px-4 rounded-xl transition-all duration-300 group text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]"
+                >
+                  <div className="flex items-center">
+                    <IconApps size={16} className="mr-2" />
+                    <span className="text-sm font-semibold">Services</span>
+                    {isServiceActive() && (
+                      <div className="ml-2 w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                    )}
+                  </div>
+                  <IconChevronRight 
+                    size={16} 
+                    className={`transition-transform duration-300 ${mobileServicesOpen ? 'rotate-90' : ''}`} 
+                  />
+                </button>
+
+                {/* Services dropdown content - hidden by default */}
+                {mobileServicesOpen && (
+                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-4">
+                    {/* Display categories (max 3) */}
+                    {displayedCategories.map((cat) => (
+                      <Link
+                        key={cat._id}
+                        to={`/services/${cat._id}`}
+                        className={getMobileNavClasses(`/services/${cat._id}`, true)}
+                        onClick={handleLinkClick}
+                      >
+                        {cat.iconSvg ? (
+                          <div className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover:scale-110 transition-transform" />
+                        )}
+                        <div>
+                          <div className="font-medium">{cat.title}</div>
+                          <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
+                        </div>
+                        {isActive(`/services/${cat._id}`) && (
+                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                        )}
+                      </Link>
+                    ))}
+                    
+                    {/* View All link - ALWAYS VISIBLE */}
                     <Link
-                      key={cat._id}
-                      to={`/services/${cat._id}`}
-                      className={getMobileNavClasses(`/services/${cat._id}`, true)}
+                      to="/services"
+                      className="flex items-center py-2 px-3 rounded-lg transition-all duration-300 text-[#4993f2] hover:bg-blue-50 border border-blue-200"
                       onClick={handleLinkClick}
                     >
-                      {cat.iconSvg ? (
-                        <div className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
-                      ) : (
-                        <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover:scale-110 transition-transform" />
-                      )}
-                      <div>
-                        <div className="font-medium">{cat.title}</div>
-                        <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white">
+                        <IconApps size={14} />
                       </div>
-                      {isActive(`/services/${cat._id}`) && (
-                        <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                      )}
+                      <div>
+                        <div className="font-semibold">View All Services</div>
+                        <div className="text-xs text-blue-400">
+                          {categories.length > 0 ? `See all ${categories.length} services` : 'Browse all services'}
+                        </div>
+                      </div>
                     </Link>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Other Links */}
