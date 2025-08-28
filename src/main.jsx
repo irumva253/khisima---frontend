@@ -21,6 +21,10 @@ import SignupScreen from './(public)/screens/SignupScreen';
 import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen';
 
+import ServiceScreen from './(public)/screens/ServiceScreen';
+import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
+import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen';
+
 import PrivateRoute from './(public)/components/PrivateRoute';
 import AdminDashboard from './layouts/admin-layout.jsx';
 import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
@@ -28,9 +32,8 @@ import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
 import NotificationScreen from './(public)/screens/admin/NotificationScreen';
 import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
 import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
-import ServiceScreen from './(public)/screens/ServiceScreen';
-import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
-import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen';
+import PartnersManagementScreen from './(public)/screens/admin/PartnersManagementScreen';
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -60,6 +63,7 @@ const router = createBrowserRouter(
            <Route path="services" element={<ServiceManagementScreen />} />
            <Route path="services/create" element={<CreateNewServiceScreen />} />
            <Route path="solutions" element={<SolutionsManagementScreen />} />
+           <Route path="partners" element={<PartnersManagementScreen />} />
 
 
         </Route>

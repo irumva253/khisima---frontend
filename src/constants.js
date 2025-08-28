@@ -15,6 +15,7 @@ export const AUTH_URL = "/api/auth";
 export const NOTIFICATIONS_URL = "/api/notifications";
 export const SERVICE_CATEGORIES_URL = "/api/service-categories";
 export const SERVICES_URL = "/api/services";
+export const PARTNERS_URL = "/api/partners";
 export const S3_URL = "/api/s3"; // Add this line
 
 export const API_ENDPOINTS = {
@@ -23,4 +24,5 @@ export const API_ENDPOINTS = {
   SERVICE_CATEGORIES: { BASE: SERVICE_CATEGORIES_URL, GET_ALL: SERVICE_CATEGORIES_URL, GET_BY_ID: (id) => `${SERVICE_CATEGORIES_URL}/${id}`, CREATE: SERVICE_CATEGORIES_URL, UPDATE: (id) => `${SERVICE_CATEGORIES_URL}/${id}`, DELETE: (id) => `${SERVICE_CATEGORIES_URL}/${id}` },
   SERVICES: { BASE: SERVICES_URL, GET_ALL: SERVICES_URL, GET_BY_ID: (id) => `${SERVICES_URL}/${id}`, CREATE: SERVICES_URL, UPDATE: (id) => `${SERVICES_URL}/${id}`, DELETE: (id) => `${SERVICES_URL}/${id}`, GET_BY_CATEGORY: (categoryId) => `${SERVICES_URL}/category/${categoryId}`, GET_CATEGORIES: `${SERVICES_URL}/categories` },
   S3: { UPLOAD: `${S3_URL}/upload`, DELETE: `${S3_URL}/delete` }, // Fix this line
+  PARTNERS: { BASE: PARTNERS_URL, GET_ALL: PARTNERS_URL, GET_BY_ID: (id) => `${PARTNERS_URL}/${id}`, CREATE: PARTNERS_URL, UPDATE: (id) => `${PARTNERS_URL}/${id}`, DELETE: (id) => `${PARTNERS_URL}/${id}` }
 };

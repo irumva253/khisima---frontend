@@ -71,7 +71,7 @@ const data = {
     },
     {
       title: "Partners",
-      url: "#",
+      url: "partners",
       icon: IconUsersGroup,
     },
   ],

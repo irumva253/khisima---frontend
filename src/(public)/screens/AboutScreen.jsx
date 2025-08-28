@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -8,22 +7,18 @@ import {
   Users, 
   Database,
   CheckCircle,
-  ArrowRight,
   Award,
   Target,
   Heart,
   Lightbulb,
-  Shield,
   Zap,
   BookOpen,
-  Mic,
-  FileText,
-  TrendingUp,
   MapPin,
-  Calendar,
   Quote
 } from 'lucide-react';
 import SocialButton from '@/components/kokonutui/social-button';
+import CTA from '../components/CTA';
+import Partners from '../components/Partners';
 
 const AboutScreen = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -261,7 +256,7 @@ const AboutScreen = () => {
                     <p className="text-gray-700 italic mb-4">
                       "We realized that preserving languages isn't just about culture—it's about ensuring equal access to the digital future for everyone."
                     </p>
-                    <p className="text-sm text-gray-600">— Dr. Amina Uwimana, Founder & CEO</p>
+                    <p className="text-sm text-gray-600">— Mr. Olivier NIYOMUGISHA, Founder & CEO</p>
                   </div>
                 </div>
                 <div className="relative">
@@ -466,33 +461,10 @@ const AboutScreen = () => {
           )}
         </div>
       </section>
+      <hr className='my-8 border-gray-200' />
+      {/*  Partners */}
+       <Partners />
 
-      {/* CTA Section */}
-      {/* <section className="py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, #3a7acc 0%, #2563eb 50%)' }}>
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Bridge Languages with Us?
-          </h2>
-          <p className="text-xl mb-8 opacity-90 leading-relaxed">
-            Join us in our mission to make African languages a driving force in the digital world.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-50 hover:scale-105 transition-all duration-300 px-8 py-3 shadow-lg"
-            >
-              Start a Project
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 px-8 py-3 shadow-lg"
-            >
-              Join Our Team <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </section> */}
     </div>
   );
 };

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Languages, FileText, Database, Users, CheckCircle, ArrowRight, Play, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
+import CTA from '../components/CTA';
+import Partners from '../components/Partners';
 
 const HomeScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -454,32 +456,10 @@ const HomeScreen = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section id="cta" className="py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, #3a7acc 0%, #2563eb 100%)' }}>
-        <div className={`max-w-4xl mx-auto text-center text-white ${isVisible.cta ? 'animate-fade-in-up' : 'opacity-0'}`}>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Let your words travel. Let your data speak.
-          </h2>
-          <p className="text-xl mb-8 opacity-90 leading-relaxed">
-            Ready to bring African languages into your digital strategy? Let's work together to make language equity real.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-50 hover:scale-105 transition-all duration-300 px-8 py-3 shadow-lg"
-            >
-              Start Your Project
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 px-8 py-3 shadow-lg"
-            >
-              Contact Us
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* CTA Section & Partners */}
+
+      <CTA isVisible={isVisible} />
+      <Partners />
     </div>
   );
 };
