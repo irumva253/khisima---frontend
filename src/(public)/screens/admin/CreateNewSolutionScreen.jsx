@@ -1,8 +1,9 @@
 import React, { useTransition } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "sonner";
 import slugify from "slugify";
-import {useNavigate} from "react-router-dom";
+
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -32,28 +33,28 @@ import Uploader from "@/components/file-uploader/Uploader";
 
 import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
 
-import { useGetServiceCategoriesQuery } from "@/slices/serviceCategoriesSlice";
-import { useCreateServiceMutation } from "@/slices/serviceApiSlice";
+import { useGetSolutionCategoriesQuery } from "@/slices/solutionCategoriesSlice";
+import { useCreateSolutionMutation } from "@/slices/solutionApiSlice";
 import { createEmptyTiptapDoc } from "@/utils/tiptapUtils";
 
-const serviceStatus = ["draft", "published"];
+const solutionStatus = ["draft", "published"];
 
-const CreateNewServiceScreen = () => {
-  const navigate = useNavigate();
+const CreateNewSolutionScreen = () => {
+  const navigate = useNavigate()
   const [isPending, startTransition] = useTransition();
-  const [createService] = useCreateServiceMutation();
-  const { data: categoriesData } = useGetServiceCategoriesQuery();
-  const serviceCategories = categoriesData?.data || [];
+  const [createSolution] = useCreateSolutionMutation();
+  const { data: categoriesData } = useGetSolutionCategoriesQuery();
+  const solutionCategories = categoriesData?.data || [];
 
   const methods = useForm({
     defaultValues: {
       title: "",
       slug: "",
       smallDescription: "",
-      description: createEmptyTiptapDoc(), // Initialize with empty Tiptap doc
+      description: createEmptyTiptapDoc(), 
       category: "",
       status: "draft",
-      fileKey: "", // Changed from "image" to "fileKey"
+      fileKey: "", 
       videoUrl: "",
     },
   });
@@ -81,19 +82,19 @@ const CreateNewServiceScreen = () => {
           descriptionValue = createEmptyTiptapDoc();
         }
 
-        const serviceData = {
+        const solutionData = {
           ...values,
           description: descriptionValue,
         };
 
 
-        await createService(serviceData).unwrap();
+        await createSolution(solutionData).unwrap();
 
-        toast.success("Service created successfully!");
+        toast.success("Solution created successfully!");
         methods.reset();
       } catch (err) {
-        console.error("Create service error:", err);
-        toast.error(err?.data?.message || "Failed to create service");
+        console.error("Create solution error:", err);
+        toast.error(err?.data?.message || "Failed to create solution");
       }
     });
   };
@@ -104,7 +105,7 @@ const CreateNewServiceScreen = () => {
         <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="size-4" />
         </Button>
-        <h1 className="text-2xl font-bold">Create Service</h1>
+        <h1 className="text-2xl font-bold">Create Solution</h1>
       </div>
 
       <FormProvider {...methods}>
@@ -112,7 +113,7 @@ const CreateNewServiceScreen = () => {
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
             <CardDescription>
-              Provide basic information about the service
+              Provide basic information about the solution
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -123,9 +124,9 @@ const CreateNewServiceScreen = () => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Service Title</FormLabel>
+                    <FormLabel>Solution Title</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter service title" required />
+                      <Input {...field} placeholder="Enter solution title" required />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,7 +142,7 @@ const CreateNewServiceScreen = () => {
                     <FormItem className="flex-1">
                       <FormLabel>Slug</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Service slug" required />
+                        <Input {...field} placeholder="Solution slug" required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -242,7 +243,7 @@ const CreateNewServiceScreen = () => {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          {serviceCategories.map((c) => (
+                          {solutionCategories.map((c) => (
                             <SelectItem key={c._id} value={c._id}>
                               {c.title}
                             </SelectItem>
@@ -268,7 +269,7 @@ const CreateNewServiceScreen = () => {
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
-                          {serviceStatus.map((s) => (
+                          {solutionStatus.map((s) => (
                             <SelectItem key={s} value={s}>
                               {s}
                             </SelectItem>
@@ -296,7 +297,7 @@ const CreateNewServiceScreen = () => {
                   </>
                 ) : (
                   <>
-                    Create Service <PlusIcon className="ml-1 size-4" />
+                    Create Solution <PlusIcon className="ml-1 size-4" />
                   </>
                 )}
               </Button>
@@ -308,4 +309,4 @@ const CreateNewServiceScreen = () => {
   );
 };
 
-export default CreateNewServiceScreen;
+export default CreateNewSolutionScreen;

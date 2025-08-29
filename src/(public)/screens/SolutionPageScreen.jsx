@@ -1,24 +1,24 @@
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import {
-  useGetServiceCategoryQuery,
-  useGetServicesByCategoryQuery,
-  useGetServicesQuery
-} from "@/slices/serviceApiSlice";
+  useGetSolutionCategoryQuery,
+  useGetSolutionsByCategoryQuery,
+  useGetSolutionsQuery
+} from "@/slices/solutionApiSlice";
 import {
-  useGetServiceCategoriesQuery,
-} from "@/slices/serviceCategoriesSlice";
+  useGetSolutionCategoriesQuery,
+} from "@/slices/solutionCategoriesSlice";
 import Spinner from "@/components/ui/Spinner";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { S3_BASE_URL } from "@/constants";
 import { useState, useMemo, useEffect } from "react";
 
-const ServicePageScreen = () => {
+const SolutionPageScreen = () => {
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [isPageChanging, setIsPageChanging] = useState(false);
-  const servicesPerPage = 1; // Show 1 service per page
+  const solutionsPerPage = 1; // Show 1 solution per page
 
   // Handle URL page parameter
   useEffect(() => {
@@ -31,15 +31,6 @@ const ServicePageScreen = () => {
     }
   }, [searchParams]);
 
-  // Helper functions defined first
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const formatRelativeDate = (dateString) => {
     const date = new Date(dateString);
@@ -76,105 +67,104 @@ const ServicePageScreen = () => {
     isLoading: isCategoryLoading,
     isError: isCategoryError,
     error: categoryError,
-  } = useGetServiceCategoryQuery(id);
+  } = useGetSolutionCategoryQuery(id);
 
-  // Fetch services for current category
+  // Fetch solutions for current category
   const {
-    data: servicesData,
-    isLoading: isServicesLoading,
-    isError: isServicesError,
-    error: servicesError,
-  } = useGetServicesByCategoryQuery(id);
+    data: solutionsData,
+    isLoading: isSolutionsLoading,
+    isError: isSolutionsError,
+    error: solutionsError,
+  } = useGetSolutionsByCategoryQuery(id);
 
-  // Fetch ALL services for recent updates
+  // Fetch ALL solutions for recent updates
   const {
-    data: allServicesData,
-  } = useGetServicesQuery();
+    data: allSolutionsData,
+  } = useGetSolutionsQuery();
 
   // Fetch all categories for recent updates mapping
   const {
     data: allCategoriesData,
-  } = useGetServiceCategoriesQuery();
+  } = useGetSolutionCategoriesQuery();
 
-  // Filter and sort services by creation date (newest first) and paginate - SHOW ONLY PUBLISHED
-  const sortedAndPaginatedServices = useMemo(() => {
-    if (!servicesData?.data) return [];
-    
-    // Filter services to show only published ones
-    const publishedServices = servicesData.data.filter(service => 
-      service.status === 'published'
+  // Filter and sort solutions by creation date (newest first) and paginate - SHOW ONLY PUBLISHED
+  const sortedAndPaginatedSolutions = useMemo(() => {
+    if (!solutionsData?.data) return [];
+
+    // Filter solutions to show only published ones
+    const publishedSolutions = solutionsData.data.filter(solution => 
+      solution.status === 'published'
     );
-    
-    // Sort published services by createdAt date (newest first)
-    const sortedServices = [...publishedServices].sort((a, b) => 
+
+    // Sort published solutions by createdAt date (newest first)
+    const sortedSolutions = [...publishedSolutions].sort((a, b) => 
       new Date(b.createdAt) - new Date(a.createdAt)
     );
 
     // Calculate pagination
-    const startIndex = (currentPage - 1) * servicesPerPage;
-    const endIndex = startIndex + servicesPerPage;
-    
-    return sortedServices.slice(startIndex, endIndex);
-  }, [servicesData?.data, currentPage]);
+    const startIndex = (currentPage - 1) * solutionsPerPage;
+    const endIndex = startIndex + solutionsPerPage;
 
-  // Get all published services for statistics
-  const publishedServices = useMemo(() => {
-    if (!servicesData?.data) return [];
-    return servicesData.data.filter(service => service.status === 'published');
-  }, [servicesData?.data]);
+    return sortedSolutions.slice(startIndex, endIndex);
+  }, [solutionsData?.data, currentPage]);
 
-  // Generate recent updates from ALL published services across ALL categories
+  // Get all published solutions for statistics
+  const publishedSolutions = useMemo(() => {
+    if (!solutionsData?.data) return [];
+    return solutionsData.data.filter(solution => solution.status === 'published');
+  }, [solutionsData?.data]);
+
+  // Generate recent updates from ALL published solutions across ALL categories
 
   const recentUpdates = useMemo(() => {
-    if (!allServicesData?.data || !allCategoriesData?.data) return [];
-    
-    const allPublishedServices = allServicesData.data
-      .filter(service => service.status === 'published')
+    if (!allSolutionsData?.data || !allCategoriesData?.data) return [];
+
+    const allPublishedSolutions = allSolutionsData.data
+      .filter(solution => solution.status === 'published')
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
       .slice(0, 4);
 
-    return allPublishedServices.map(service => {
-      const categoryId = typeof service.category === 'object' 
-        ? service.category._id 
-        : service.category;
-      
-      const category = allCategoriesData.data.find(cat => 
+    return allPublishedSolutions.map(solution => {
+      const categoryId = typeof solution.category === 'object'
+        ? solution.category._id
+        : solution.category;
+
+      const category = allCategoriesData.data.find(cat =>
         cat._id.toString() === categoryId.toString()
       );
-      
-      const isNewlyAdded = new Date(service.createdAt).getTime() === new Date(service.updatedAt).getTime();
-      
-      // Calculate which page this service would be on in its category
-     // Calculate which page this service would be on in its category
-let pageNumber = 1;
-if (allServicesData?.data) {
-  // Get all published services for this specific category, sorted by date
-  const categoryServices = allServicesData.data
-    .filter(s => {
-      const sCategoryId = typeof s.category === 'object' ? s.category._id : s.category;
-      return s.status === 'published' && sCategoryId.toString() === categoryId.toString();
-    })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-  const serviceIndex = categoryServices.findIndex(s => s._id === service._id);
-  if (serviceIndex !== -1) {
-    pageNumber = Math.floor(serviceIndex / servicesPerPage) + 1;
-  }
-}
+
+      const isNewlyAdded = new Date(solution.createdAt).getTime() === new Date(solution.updatedAt).getTime();
+
+      // Calculate which page this solution would be on in its category
+      let pageNumber = 1;
+      if (allSolutionsData?.data) {
+        // Get all published solutions for this specific category, sorted by date
+        const categorySolutions = allSolutionsData.data
+          .filter(s => {
+            const sCategoryId = typeof s.category === 'object' ? s.category._id : s.category;
+            return s.status === 'published' && sCategoryId.toString() === categoryId.toString();
+          })
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const solutionIndex = categorySolutions.findIndex(s => s._id === solution._id);
+        if (solutionIndex !== -1) {
+          pageNumber = Math.floor(solutionIndex / solutionsPerPage) + 1;
+        }
+      }
       
       return {
-        title: isNewlyAdded ? `New service: ${service.title}` : `Updated: ${service.title}`,
-        date: formatRelativeDate(service.updatedAt),
+        title: isNewlyAdded ? `New solution: ${solution.title}` : `Updated: ${solution.title}`,
+        date: formatRelativeDate(solution.updatedAt),
         category: category?.title || 'Unknown Category',
-        serviceId: service._id,
+        solutionId: solution._id,
         categoryId: categoryId,
         page: pageNumber // Add page number to the update object
       };
     });
-  }, [allServicesData?.data, allCategoriesData?.data, servicesData?.data]);
+  }, [allSolutionsData?.data, allCategoriesData?.data, solutionsData?.data]);
 
-  const totalPublishedServices = publishedServices.length;
-  const totalPages = Math.ceil(totalPublishedServices / servicesPerPage);
+  const totalPublishedSolutions = publishedSolutions.length;
+  const totalPages = Math.ceil(totalPublishedSolutions / solutionsPerPage);
 
   // Handle page changes with URL updates and loading state
   const handlePageChange = (newPage) => {
@@ -200,13 +190,13 @@ if (allServicesData?.data) {
   };
 
   // Loading state
-  if (isCategoryLoading || isServicesLoading) {
+  if (isCategoryLoading || isSolutionsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center animate-pulse">
           <div className="w-16 h-16 bg-blue-200 rounded-full mx-auto mb-4 animate-spin"></div>
           <Spinner size="xl" />
-          <p className="mt-4 text-gray-600 font-medium">Loading services...</p>
+          <p className="mt-4 text-gray-600 font-medium">Loading solutions...</p>
         </div>
       </div>
     );
@@ -223,7 +213,7 @@ if (allServicesData?.data) {
               categoryError?.data?.message || "Failed to load category details"
             }
             actionText="Try Again"
-            actionLink={`/services/${id}`}
+            actionLink={`/solutions/${id}`}
           />
         </div>
       </div>
@@ -237,9 +227,9 @@ if (allServicesData?.data) {
         <div className="max-w-md w-full">
           <ErrorMessage
             title="Category Not Found"
-            message="The service category you're looking for doesn't exist or may have been removed."
-            actionText="Browse All Services"
-            actionLink="/services"
+            message="The solution category you're looking for doesn't exist or may have been removed."
+            actionText="Browse All Solutions"
+            actionLink="/solutions"
           />
         </div>
       </div>
@@ -247,7 +237,7 @@ if (allServicesData?.data) {
   }
 
   const category = categoryData.data;
-  const allServices = servicesData?.data || [];
+  const allSolutions = solutionsData?.data || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -265,7 +255,7 @@ if (allServicesData?.data) {
               </li>
               <li className="flex items-center">
                 <span className="mx-2">/</span>
-                <Link to="/services" className="hover:text-white transition-colors duration-200">Services</Link>
+                <Link to="/solutions" className="hover:text-white transition-colors duration-200">Solutions</Link>
               </li>
               <li className="flex items-center">
                 <span className="mx-2">/</span>
@@ -313,17 +303,17 @@ if (allServicesData?.data) {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content - 70% on large screens */}
             <div className="lg:w-[70%]">
-              {/* Services List */}
-              {isServicesError ? (
+              {/* Solutions List */}
+              {isSolutionsError ? (
                 <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100 animate-fade-in">
                   <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-6 animate-bounce">
                     <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Unable to load services</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Unable to load solutions</h3>
                   <p className="text-gray-500 mb-6">
-                    {servicesError?.data?.message || "Failed to load services for this category"}
+                    {solutionsError?.data?.message || "Failed to load solutions for this category"}
                   </p>
                   <button
                     onClick={() => window.location.reload()}
@@ -332,20 +322,20 @@ if (allServicesData?.data) {
                     Try Again
                   </button>
                 </div>
-              ) : totalPublishedServices === 0 ? (
+              ) : totalPublishedSolutions === 0 ? (
                 <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100 animate-fade-in">
                   <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-[#498cef] mb-6 animate-pulse">
                     <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">No published services available</h3>
-                  <p className="text-gray-500 mb-6">There are no published services available in this category yet.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">No published solutions available</h3>
+                  <p className="text-gray-500 mb-6">There are no published solutions available in this category yet.</p>
                   <Link
-                    to="/services"
+                    to="/solutions"
                     className="inline-block px-6 py-3 bg-[#498cef] text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    Browse All Services
+                    Browse All Solutions
                   </Link>
                 </div>
               ) : (
@@ -366,7 +356,7 @@ if (allServicesData?.data) {
                     <div className="relative">
                       <h2 className="text-3xl font-bold text-gray-900 animate-slide-right relative overflow-hidden">
                         <span className="relative z-10 bg-gradient-to-r from-gray-900 via-[#498cef] to-gray-900 bg-clip-text text-transparent animate-gradient-x">
-                          Our Services
+                          Our Solutions
                         </span>
                         <div className="absolute -bottom-1 left-0 w-0 h-1 bg-gradient-to-r from-[#498cef] to-indigo-500 rounded-full animate-expand-line"></div>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/30 to-transparent rounded-lg animate-shimmer"></div>
@@ -374,7 +364,7 @@ if (allServicesData?.data) {
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="text-sm font-semibold text-[#498cef] bg-blue-100 px-4 py-2 rounded-full border border-blue-200 animate-fade-in">
-                        {totalPublishedServices} {totalPublishedServices === 1 ? 'published service' : 'published services'} available
+                        {totalPublishedSolutions} {totalPublishedSolutions === 1 ? 'published solution' : 'published solutions'} available
                       </span>
                       {totalPages > 1 && (
                         <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
@@ -385,19 +375,19 @@ if (allServicesData?.data) {
                   </div>
                   
                   <div className="grid gap-8">
-                    {sortedAndPaginatedServices.map((service, index) => (
+                    {sortedAndPaginatedSolutions.map((solution, index) => (
                       <div
-                        key={service._id}
+                        key={solution._id}
                         className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 group transform hover:-translate-y-1 animate-fade-in-up"
                         style={{ animationDelay: `${index * 150}ms` }}
                       >
-                        {/* Service Header with Image */}
+                        {/* Solution Header with Image */}
                         <div className="relative">
-                          {service.fileKey && (
+                          {solution.fileKey && (
                             <div className="h-64 md:h-80 overflow-hidden bg-gradient-to-r from-blue-100 to-indigo-100">
                               <img
-                                src={`${S3_BASE_URL}/${service.fileKey}`}
-                                alt={service.title}
+                                src={`${S3_BASE_URL}/${solution.fileKey}`}
+                                alt={solution.title}
                                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                                 onError={(e) => {
                                   e.target.style.display = 'none';
@@ -410,7 +400,7 @@ if (allServicesData?.data) {
                                   <svg className="w-16 h-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                   </svg>
-                                  <p className="font-medium">Service Image</p>
+                                  <p className="font-medium">Solution Image</p>
                                 </div>
                               </div>
                             </div>
@@ -418,41 +408,41 @@ if (allServicesData?.data) {
                           
                           {/* Status overlay */}
                           <div className="absolute top-4 right-4">
-                            <span className={`px-3 py-1 text-sm font-semibold rounded-full border backdrop-blur-sm ${getStatusBadge(service.status)} shadow-lg`}>
-                              {service.status?.charAt(0).toUpperCase() + service.status?.slice(1) || 'Draft'}
+                            <span className={`px-3 py-1 text-sm font-semibold rounded-full border backdrop-blur-sm ${getStatusBadge(solution.status)} shadow-lg`}>
+                              {solution.status?.charAt(0).toUpperCase() + solution.status?.slice(1) || 'Draft'}
                             </span>
                           </div>
                         </div>
 
                         <div className="p-8">
-                          {/* Service Title and Small Description */}
+                          {/* Solution Title and Small Description */}
                           <div className="mb-6">
                             <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#498cef] transition-colors duration-300">
-                              {service.title}
+                              {solution.title}
                             </h3>
-                            
-                            {service.smallDescription && (
+
+                            {solution.smallDescription && (
                               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border-l-4 border-blue-500 transform hover:scale-[1.01] transition-transform duration-200">
                                 <p className="text-gray-700 font-medium leading-relaxed">
-                                  {service.smallDescription}
+                                  {solution.smallDescription}
                                 </p>
                               </div>
                             )}
                           </div>
 
                           {/* Main Content Grid */}
-                          <div className="grid lg:grid-cols-3 gap-6 mb-8">
+                          <div className="grid lg:grid-cols-1 gap-6 mb-8">
                             {/* Description Column */}
                             <div className="lg:col-span-2">
                               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <svg className="w-5 h-5 mr-2 text-[#498cef]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Service Details
+                                {/* Solution Details */}
                               </h4>
-                              {service.description ? (
+                              {solution.description ? (
                                 <div className="prose prose-gray max-w-none bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
-                                  <RenderDescription json={service.description} />
+                                  <RenderDescription json={solution.description} />
                                 </div>
                               ) : (
                                 <div className="bg-gray-50 rounded-xl p-6 text-center">
@@ -460,74 +450,35 @@ if (allServicesData?.data) {
                                 </div>
                               )}
                             </div>
-
-                            {/* Quick Info Column */}
-                            <div className="space-y-4">
-                              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 hover:shadow-md transition-shadow duration-300">
-                                <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                                  <svg className="w-5 h-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                  Service Info
-                                </h5>
-                                <div className="space-y-2 text-sm">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Added:</span>
-                                    <span className="font-medium">{formatDate(service.createdAt)}</span>
-                                  </div>
-                                  {service.updatedAt !== service.createdAt && (
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-600">Updated:</span>
-                                      <span className="font-medium">{formatDate(service.updatedAt)}</span>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Status:</span>
-                                    <span className="font-medium capitalize">{service.status}</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Delivery Promise */}
-                              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                                <div className="flex items-center text-blue-700 mb-2">
-                                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                  <span className="font-semibold">Fast Delivery</span>
-                                </div>
-                                <p className="text-sm text-gray-600">Professional service delivery within 24-48 hours</p>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Video Section */}
-                          {service.videoUrl && (
+                          {solution.videoUrl && (
                             <div className="mb-8 animate-fade-in-up">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                              {/* <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <svg className="w-5 h-5 mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
-                                Service Overview 
-                              </h4>
+                                 Solution Overview 
+                              </h4> */}
                               <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
                                 <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
-                                  {getYouTubeId(service.videoUrl) ? (
+                                  {getYouTubeId(solution.videoUrl) ? (
                                     <iframe
-                                      src={`https://www.youtube.com/embed/${getYouTubeId(service.videoUrl)}`}
+                                      src={`https://www.youtube.com/embed/${getYouTubeId(solution.videoUrl)}`}
                                       className="w-full h-full"
                                       frameBorder="0"
                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                       allowFullScreen
-                                      title={`${service.title} Overview Video`}
+                                      title={`${solution.title} Overview Video`}
                                     />
                                   ) : (
                                     <video 
                                       controls 
                                       className="w-full h-full object-cover"
-                                      title={`${service.title} Overview Video`}
+                                      title={`${solution.title} Overview Video`}
                                     >
-                                      <source src={service.videoUrl} type="video/mp4" />
+                                      <source src={solution.videoUrl} type="video/mp4" />
                                       Your browser does not support the video tag.
                                     </video>
                                   )}
@@ -541,11 +492,11 @@ if (allServicesData?.data) {
                             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                               <div>
                                 <h4 className="text-2xl font-bold mb-2">Ready to get started?</h4>
-                                <p className="text-blue-100">Get professional service delivery with guaranteed quality</p>
+                                <p className="text-blue-100">Get professional solution delivery with guaranteed quality</p>
                               </div>
                               <div className="flex flex-col sm:flex-row gap-3">
                                 <button className="bg-white text-[#498cef] px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                                  Request Service
+                                  Request Solution
                                 </button>
                                 <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-[#498cef] transition-all duration-200">
                                   Get Quote
@@ -554,21 +505,21 @@ if (allServicesData?.data) {
                             </div>
                           </div>
 
-                          {/* Service Metadata */}
+                          {/* Solution Metadata */}
                           <div className="mt-6 p-4 bg-gray-50 rounded-xl">
                             <div className="flex flex-wrap gap-4 text-xs text-gray-500">
                               <div className="flex items-center">
                                 <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z" />
                                 </svg>
-                                <span>/{service.slug}</span>
+                                <span>/{solution.slug}</span>
                               </div>
                               <div className="flex items-center">
                                 <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span>ID: {service._id?.slice(-6).toUpperCase()}</span>
+                                <span>ID: {solution._id?.slice(-6).toUpperCase()}</span>
                               </div>
                             </div>
                           </div>
@@ -666,8 +617,8 @@ if (allServicesData?.data) {
                           className="group cursor-pointer animate-fade-in-stagger"
                           style={{ animationDelay: `${index * 100}ms` }}
                         >
-                          <Link 
-                            to={`/services/${update.categoryId}?page=${update.page}`}
+                          <Link
+                            to={`/solutions/${update.categoryId}?page=${update.page}`}
                             className="block p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border border-blue-100 group-hover:border-blue-200 group-hover:shadow-md transform group-hover:-translate-y-0.5"
                           >
                             <p className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-[#498cef] transition-colors duration-200">
@@ -710,7 +661,7 @@ if (allServicesData?.data) {
                       <h3 className="text-lg font-bold">Need Help?</h3>
                     </div>
                     <p className="text-blue-100 text-sm mb-6 leading-relaxed">
-                      Our experts can help you select the right service for your needs and provide personalized guidance.
+                      Our experts can help you select the right solution for your needs and provide personalized guidance.
                     </p>
                     <button className="w-full bg-white text-[#498cef] hover:bg-blue-50 font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                       <Link to="/contact">
@@ -720,7 +671,7 @@ if (allServicesData?.data) {
                   </div>
                 </div>
 
-                {/* Service Statistics */}
+                {/* Solution Statistics */}
                 <div className="bg-white rounded-2xl shadow-xl p-6 mt-6 border border-gray-100 animate-fade-in-delay">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
@@ -732,17 +683,17 @@ if (allServicesData?.data) {
                   </h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <span className="text-sm font-medium text-gray-600">Total Services</span>
-                      <span className="text-xl font-bold text-[#498cef]">{allServices.length}</span>
+                      <span className="text-sm font-medium text-gray-600">Total Solutions</span>
+                      <span className="text-xl font-bold text-[#498cef]">{allSolutions.length}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                       <span className="text-sm font-medium text-gray-600">Published</span>
-                      <span className="text-xl font-bold text-green-600">{totalPublishedServices}</span>
+                      <span className="text-xl font-bold text-green-600">{totalPublishedSolutions}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                       <span className="text-sm font-medium text-gray-600">In Draft</span>
                       <span className="text-xl font-bold text-yellow-600">
-                        {allServices.filter(s => s.status === 'draft').length}
+                        {allSolutions.filter(s => s.status === 'draft').length}
                       </span>
                     </div>
                   </div>
@@ -875,4 +826,4 @@ if (allServicesData?.data) {
   );
 };
 
-export default ServicePageScreen;
+export default SolutionPageScreen;

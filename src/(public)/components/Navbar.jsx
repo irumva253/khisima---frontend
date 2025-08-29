@@ -25,7 +25,10 @@ import {
   useGetServiceCategoriesQuery,
 } from "@/slices/serviceCategoriesSlice"
 
-// Enhanced SVG Icons with better styling
+import {
+  useGetSolutionCategoriesQuery,
+} from "@/slices/solutionCategoriesSlice"
+
 const MapPinIcon = (props) => (
   <IconMapPin className="w-4 h-4" {...props} />
 );
@@ -58,7 +61,6 @@ const GlobeIcon = () => (
   <IconGlobe className="w-5 h-5" />
 );
 
-// Language options
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
@@ -73,35 +75,32 @@ const Navbar = () => {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(languages[0]);
   const location = useLocation();
 
-  const { data: categoriesData, isLoading, isError } = useGetServiceCategoriesQuery();
+  const { data: categoriesData } = useGetServiceCategoriesQuery();
   const categories = categoriesData?.data || [];
-  
-  // Limit categories to 3 for display
   const displayedCategories = categories.slice(0, 3);
+
+  const { data: solutionCategoriesData } = useGetSolutionCategoriesQuery();
+  const solutionCategories = solutionCategoriesData?.data || [];
+  const displayedSolutionCategories = solutionCategories.slice(0, 3);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
     
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // Set scrolled state for styling
       setScrolled(currentScrollY > 10);
       
-      // Hide/show top nav based on scroll direction and position
       if (currentScrollY > 100) {
         if (currentScrollY > lastScrollY) {
-          // Scrolling down - hide top nav
           setTopNavHidden(true);
         } else {
-          // Scrolling up - show top nav
           setTopNavHidden(false);
         }
       } else {
-        // At top - always show top nav
         setTopNavHidden(false);
       }
       
@@ -112,15 +111,14 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
     setLangDropdownOpen(false);
     setMobileLangOpen(false);
     setMobileServicesOpen(false);
+    setMobileSolutionsOpen(false);
   }, [location]);
 
-  // Helper function to check if a path is active
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -128,14 +126,18 @@ const Navbar = () => {
     return location.pathname.startsWith(path);
   };
 
-  // Helper function to check if any service is active
   const isServiceActive = () => {
     return categories.some(cat => 
       location.pathname.startsWith(`/services/${cat._id}`)
     );
   };
 
-  // Get active link classes
+  const isSolutionActive = () => {
+    return solutionCategories.some(cat => 
+      location.pathname.startsWith(`/solutions/${cat._id}`)
+    );
+  };
+
   const getNavLinkClasses = (path, isDropdown = false) => {
     const baseClasses = "px-4 py-2 rounded-lg font-medium transition-all duration-300 relative group";
     const dropdownClasses = "flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300";
@@ -147,7 +149,6 @@ const Navbar = () => {
     return `${isDropdown ? dropdownClasses : baseClasses} text-gray-700 hover:text-[#4993f2] hover:bg-blue-50`;
   };
 
-  // Get dropdown trigger classes
   const getDropdownClasses = (checkFunction) => {
     const baseClasses = "flex items-center px-4 py-2 text-gray-700 hover:text-[#4993f2] hover:bg-blue-50 rounded-lg font-medium transition-all duration-300";
     
@@ -158,7 +159,6 @@ const Navbar = () => {
     return baseClasses;
   };
 
-  // Get mobile nav item classes
   const getMobileNavClasses = (path, isService = false) => {
     const baseClasses = "flex items-center py-3 px-4 rounded-xl transition-all duration-300 group";
     
@@ -176,7 +176,6 @@ const Navbar = () => {
     return `${baseClasses} text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]`;
   };
 
-  // Organized menu items with proper icons and descriptions
   const companyItems = [
     { name: "Home", path: "/", icon: <IconHome size={20} />, desc: "Back to homepage" },
     { name: "About Us", path: "/about-us", icon: <IconInfoSquareRounded size={20} />, desc: "Our story & mission" },
@@ -188,23 +187,20 @@ const Navbar = () => {
     setLangDropdownOpen(false);
     setMobileLangOpen(false);
     setMobileServicesOpen(false);
+    setMobileSolutionsOpen(false);
   };
 
   const handleLanguageChange = (lang) => {
     setCurrentLang(lang);
     setLangDropdownOpen(false);
     setMobileLangOpen(false);
-    // Here you would typically integrate with your i18n system
-    console.log('Language changed to:', lang.code);
   };
 
   return (
     <div className="relative">
-      {/* Enhanced Top Navigation Bar - Separate fixed positioning */}
       <div className={`fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-slate-800 via-gray-800 to-slate-800 text-white py-3 px-4 text-sm hidden lg:block overflow-hidden transition-all duration-500 ${
         topNavHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
       }`}>
-        {/* Animated background elements */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#4993f2]/10 via-transparent to-[#4993f2]/10 animate-pulse"></div>
         <div className="container mx-auto flex justify-between items-center relative z-10">
           <div className="flex items-center space-x-6">
@@ -233,7 +229,6 @@ const Navbar = () => {
               <span className="text-yellow-300 font-semibold">24/7 Support Available</span>
             </div>
             
-            {/* Language Switcher */}
             <div className="relative group">
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
@@ -269,15 +264,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Enhanced Main Navigation Bar - Fixed positioning */}
       <div className={`fixed w-full z-40 bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 ${
         topNavHidden ? 'top-0 shadow-2xl' : 'top-0 lg:top-[52px]'
       } ${scrolled ? "py-3 shadow-lg" : "py-5"}`}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            {/* Left side - Mobile menu + Logo + Navigation */}
             <div className="flex items-center space-x-8">
-              {/* Enhanced Mobile menu button */}
               <button
                 className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-[#4993f2]/10 hover:text-[#4993f2] transition-all duration-300 group"
                 onClick={() => setMobileMenuOpen(true)}
@@ -285,7 +277,6 @@ const Navbar = () => {
                 <MenuIcon />
               </button>
 
-              {/* Enhanced Logo */}
               <Link to="/" className="flex items-center group">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                   <span className="text-lg">K</span>
@@ -298,7 +289,6 @@ const Navbar = () => {
                 </div>
               </Link>
 
-              {/* Enhanced Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-1">
                 {companyItems.filter(item => item.name !== "Contact").map((item) => (
                   <Link
@@ -313,7 +303,61 @@ const Navbar = () => {
                   </Link>
                 ))}
                 
-                {/* Enhanced Services Dropdown */}
+                <div className="group relative">
+                  <button className={getDropdownClasses(isSolutionActive)}>
+                    Solutions
+                    <ChevronDownIcon />
+                    {isSolutionActive() && (
+                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
+                    )}
+                  </button>
+                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                        <IconApps size={18} className="mr-2" />
+                        Our Solutions
+                      </h3>
+                    </div>
+                    {displayedSolutionCategories.map((cat) => (
+                      <Link
+                        key={cat._id}
+                        to={`/solutions/${cat._id}`}
+                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                          isActive(`/solutions/${cat._id}`)
+                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]'
+                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                        }`}
+                      >
+                        {cat.iconSvg ? (
+                          <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
+                        )}
+                        <div>
+                          <div className="font-medium">{cat.title}</div>
+                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional solution'}</div>
+                        </div>
+                      </Link>
+                    ))}
+                    
+                    <Link
+                      to="/solutions"
+                      className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
+                    >
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
+                        <IconApps size={14} />
+                      </div>
+                      <div>
+                        <div className="font-semibold">View All Solutions</div>
+                        <div className="text-xs text-gray-500">
+                          {solutionCategories.length > 0 ? `See all ${solutionCategories.length} solutions` : 'Browse all solutions'}
+                        </div>
+                      </div>
+                      <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
+                    </Link>
+                  </div>
+                </div>
+
                 <div className="group relative">
                   <button className={getDropdownClasses(isServiceActive)}>
                     Services
@@ -346,12 +390,11 @@ const Navbar = () => {
                         )}
                         <div>
                           <div className="font-medium">{cat.title}</div>
-                          <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
+                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional service'}</div>
                         </div>
                       </Link>
                     ))}
                     
-                    {/* View All link - ALWAYS VISIBLE regardless of category count */}
                     <Link
                       to="/services"
                       className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
@@ -392,7 +435,6 @@ const Navbar = () => {
               </nav>
             </div>
 
-            {/* Right side - Language (mobile), Contact + CTA */}
             <div className="flex items-center space-x-4">
               <Link
                 to="/contact"
@@ -427,7 +469,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Enhanced Mobile Drawer */}
       <div
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all duration-300 ${
           mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -441,7 +482,6 @@ const Navbar = () => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6 h-full flex flex-col">
-            {/* Enhanced Mobile Header */}
             <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-200">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3">
@@ -462,9 +502,7 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Enhanced Mobile Navigation */}
             <nav className="flex-1 overflow-y-auto space-y-6">
-              {/* Company Section */}
               <div>
                 <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
                   <IconCircleDottedLetterK size={16} className="mr-2" />
@@ -491,7 +529,67 @@ const Navbar = () => {
                 </div>
               </div>
 
-              {/* Services Section - Collapsible */}
+              <div>
+                <button
+                  onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
+                  className="w-full flex items-center justify-between py-3 px-4 rounded-xl transition-all duration-300 group text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]"
+                >
+                  <div className="flex items-center">
+                    <IconApps size={16} className="mr-2" />
+                    <span className="text-sm font-semibold">Solutions</span>
+                    {isSolutionActive() && (
+                      <div className="ml-2 w-2 h-2 bg-[#4993f2] rounded-full animate-pulse"></div>
+                    )}
+                  </div>
+                  <IconChevronRight 
+                    size={16} 
+                    className={`transition-transform duration-300 ${mobileSolutionsOpen ? 'rotate-90' : ''}`} 
+                  />
+                </button>
+
+                {mobileSolutionsOpen && (
+                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-4">
+                    {displayedSolutionCategories.map((cat) => (
+                      <Link
+                        key={cat._id}
+                        to={`/solutions/${cat._id}`}
+                        className={getMobileNavClasses(`/solutions/${cat._id}`, true)}
+                        onClick={handleLinkClick}
+                      >
+                        {cat.iconSvg ? (
+                          <div className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover:scale-110 transition-transform" />
+                        )}
+                        <div>
+                          <div className="font-medium">{cat.title}</div>
+                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional solution'}</div>
+                        </div>
+                        {isActive(`/solutions/${cat._id}`) && (
+                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                        )}
+                      </Link>
+                    ))}
+                    
+                    <Link
+                      to="/solutions"
+                      className="flex items-center py-2 px-3 rounded-lg transition-all duration-300 text-[#4993f2] hover:bg-blue-50 border border-blue-200"
+                      onClick={handleLinkClick}
+                    >
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white">
+                        <IconApps size={14} />
+                      </div>
+                      <div>
+                        <div className="font-semibold">View All Solutions</div>
+                        <div className="text-xs text-blue-400">
+                          {solutionCategories.length > 0 ? `See all ${solutionCategories.length} solutions` : 'Browse all solutions'}
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <button
                   onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
@@ -510,10 +608,8 @@ const Navbar = () => {
                   />
                 </button>
 
-                {/* Services dropdown content - hidden by default */}
                 {mobileServicesOpen && (
                   <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-4">
-                    {/* Display categories (max 3) */}
                     {displayedCategories.map((cat) => (
                       <Link
                         key={cat._id}
@@ -528,7 +624,7 @@ const Navbar = () => {
                         )}
                         <div>
                           <div className="font-medium">{cat.title}</div>
-                          <div className="text-xs text-gray-500">{cat.caption || 'Professional service'}</div>
+                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional service'}</div>
                         </div>
                         {isActive(`/services/${cat._id}`) && (
                           <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
@@ -536,7 +632,6 @@ const Navbar = () => {
                       </Link>
                     ))}
                     
-                    {/* View All link - ALWAYS VISIBLE */}
                     <Link
                       to="/services"
                       className="flex items-center py-2 px-3 rounded-lg transition-all duration-300 text-[#4993f2] hover:bg-blue-50 border border-blue-200"
@@ -556,7 +651,6 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Other Links */}
               <div className="space-y-1">
                 <Link
                   to="/resources"
@@ -589,7 +683,6 @@ const Navbar = () => {
                 </Link>
               </div>
 
-              {/* Mobile Language Section */}
               <div>
                 <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
                   <IconLanguage size={16} className="mr-2" />
@@ -636,7 +729,6 @@ const Navbar = () => {
               </div>
             </nav>
 
-            {/* Enhanced Mobile Footer */}
             <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">
               <Link
                 to="/quote"
@@ -648,7 +740,6 @@ const Navbar = () => {
                 </div>
               </Link>
               
-              {/* Enhanced Contact info */}
               <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                 <h4 className="text-sm font-semibold text-gray-800 flex items-center">
                   <IconPhone size={16} className="mr-2" />

@@ -25,8 +25,13 @@ import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen';
 
 import ServiceScreen from './(public)/screens/ServiceScreen';
+import SolutionScreen from './(public)/screens/SolutionScreen';
+
 import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
+import SolutionPageScreen from './(public)/screens/SolutionPageScreen';
+
 import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen';
+import CreateNewSolutionScreen from './(public)/screens/admin/CreateNewSolutionScreen';
 
 import PrivateRoute from './(public)/components/PrivateRoute';
 import AdminDashboard from './layouts/admin-layout.jsx';
@@ -58,7 +63,9 @@ const router = createBrowserRouter(
         <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
         <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
         <Route path="/services" element={<ServiceScreen />} />
+        <Route path="/solutions" element={<SolutionScreen />} />
         <Route path="/services/:id" element={<ServicePageScreen />} />
+        <Route path="/solutions/:id" element={<SolutionPageScreen />} />
 
 
       </Route>
@@ -72,6 +79,7 @@ const router = createBrowserRouter(
            <Route path="services" element={<ServiceManagementScreen />} />
            <Route path="services/create" element={<CreateNewServiceScreen />} />
            <Route path="solutions" element={<SolutionsManagementScreen />} />
+           <Route path="solutions/create" element={<CreateNewSolutionScreen />} />
            <Route path="partners" element={<PartnersManagementScreen />} />
            <Route path="quotes" element={<AdminCheckQuoteScreen />} />
 
