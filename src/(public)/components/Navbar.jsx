@@ -381,12 +381,12 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/career"
-                  className={getNavLinkClasses("/career")}
+                  to="/careers"
+                  className={getNavLinkClasses("/careers")}
                 >
                   Career
                   <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                    isActive("/career") ? 'w-full' : 'w-0 group-hover:w-full'
+                    isActive("/careers") ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}></div>
                 </Link>
               </nav>
@@ -574,8 +574,8 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/career"
-                  className={getMobileNavClasses("/career")}
+                  to="/careers"
+                  className={getMobileNavClasses("/careers")}
                   onClick={handleLinkClick}
                 >
                   <IconBriefcase size={20} className="mr-3 group-hover:scale-110 transition-transform" />
@@ -583,7 +583,7 @@ const Navbar = () => {
                     <div className="font-medium">Career</div>
                     <div className="text-xs text-gray-500">Join our team</div>
                   </div>
-                  {isActive("/career") && (
+                  {isActive("/careers") && (
                     <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
                   )}
                 </Link>

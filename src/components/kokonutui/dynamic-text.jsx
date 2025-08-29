@@ -56,7 +56,7 @@ const DynamicText = () => {
   };
 
   return (
-    <span className="inline-block font-semibold text-blue-700">
+    <span className="inline-block font-semibold text-green-400">
       <AnimatePresence mode="wait">
         <motion.span
           key={currentIndex}

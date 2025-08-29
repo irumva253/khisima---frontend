@@ -622,135 +622,135 @@ const CareerScreen = () => {
 
           {/* Application Form Section with Stepper */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 animate-fade-in-up">
-  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 md:p-8 text-white">
-    <h2 className="text-2xl md:text-3xl font-bold mb-2 md:mb-4">Apply Now</h2>
-    <p className="text-blue-100 leading-relaxed text-sm md:text-base">
-      Ready to join our team? Fill out the application below and we'll get back to you within 48 hours.
-    </p>
-  </div>
-
-  {/* Stepper Header - Responsive Version */}
-  <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50 border-b border-gray-200">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-      {steps.map((step, index) => (
-        <div key={step.id} className="flex items-center">
-          <div
-            onClick={() => handleStepClick(step.id)}
-            className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 cursor-pointer transition-all duration-200 ${
-              completedSteps.includes(step.id)
-                ? 'bg-green-500 border-green-500 text-white'
-                : step.id === currentStep
-                ? 'bg-blue-600 border-blue-600 text-white'
-                : step.id < currentStep || completedSteps.includes(step.id - 1)
-                ? 'border-gray-300 text-gray-500 hover:border-blue-400'
-                : 'border-gray-200 text-gray-300 cursor-not-allowed'
-            }`}
-          >
-            {completedSteps.includes(step.id) ? (
-              <Check size={18} className="md:w-5 md:h-5" />
-            ) : (
-              <span className="font-semibold text-sm md:text-base">{step.id}</span>
-            )}
-          </div>
-          
-          <div className="ml-3 md:ml-4 flex-1">
-            <div className={`text-xs md:text-sm font-semibold ${
-              step.id === currentStep ? 'text-blue-600' :
-              completedSteps.includes(step.id) ? 'text-green-600' :
-              'text-gray-500'
-            }`}>
-              {step.title}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 md:p-8 text-white">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2 md:mb-4">Apply Now</h2>
+                <p className="text-blue-100 leading-relaxed text-sm md:text-base">
+                Ready to join our team? Fill out the application below and we'll get back to you within 48 hours.
+                </p>
             </div>
-            <div className="text-xs text-gray-500 hidden md:block">
-              {step.description}
+
+            {/* Stepper Header - Responsive Version */}
+            <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50 border-b border-gray-200">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                {steps.map((step, index) => (
+                    <div key={step.id} className="flex items-center">
+                    <div
+                        onClick={() => handleStepClick(step.id)}
+                        className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 cursor-pointer transition-all duration-200 ${
+                        completedSteps.includes(step.id)
+                            ? 'bg-green-500 border-green-500 text-white'
+                            : step.id === currentStep
+                            ? 'bg-blue-600 border-blue-600 text-white'
+                            : step.id < currentStep || completedSteps.includes(step.id - 1)
+                            ? 'border-gray-300 text-gray-500 hover:border-blue-400'
+                            : 'border-gray-200 text-gray-300 cursor-not-allowed'
+                        }`}
+                    >
+                        {completedSteps.includes(step.id) ? (
+                        <Check size={18} className="md:w-5 md:h-5" />
+                        ) : (
+                        <span className="font-semibold text-sm md:text-base">{step.id}</span>
+                        )}
+                    </div>
+                    
+                    <div className="ml-3 md:ml-4 flex-1">
+                        <div className={`text-xs md:text-sm font-semibold ${
+                        step.id === currentStep ? 'text-blue-600' :
+                        completedSteps.includes(step.id) ? 'text-green-600' :
+                        'text-gray-500'
+                        }`}>
+                        {step.title}
+                        </div>
+                        <div className="text-xs text-gray-500 hidden md:block">
+                        {step.description}
+                        </div>
+                    </div>
+                    
+                    {index < steps.length - 1 && (
+                        <div className={`hidden md:block w-16 h-0.5 ml-4 ${
+                        completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-300'
+                        }`} />
+                    )}
+                    </div>
+                ))}
+                </div>
             </div>
-          </div>
-          
-          {index < steps.length - 1 && (
-            <div className={`hidden md:block w-16 h-0.5 ml-4 ${
-              completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-300'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
-  </div>
 
-  {/* Form Content */}
-  <form onSubmit={handleSubmit} className="p-4 md:p-8">
-    <div className="mb-6 md:mb-8">
-      <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
-        {steps.find(s => s.id === currentStep)?.title}
-      </h3>
-      <p className="text-gray-600 text-sm md:text-base">
-        {steps.find(s => s.id === currentStep)?.description}
-      </p>
-    </div>
+            {/* Form Content */}
+            <form onSubmit={handleSubmit} className="p-4 md:p-8">
+                <div className="mb-6 md:mb-8">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                    {steps.find(s => s.id === currentStep)?.title}
+                </h3>
+                <p className="text-gray-600 text-sm md:text-base">
+                    {steps.find(s => s.id === currentStep)?.description}
+                </p>
+                </div>
 
-    {renderStepContent()}
+                {renderStepContent()}
 
-    {/* Navigation Buttons - Responsive Version */}
-    <div className="flex flex-col-reverse md:flex-row justify-between items-center pt-6 md:pt-8 mt-6 md:mt-8 border-t border-gray-200 space-y-reverse space-y-4 md:space-y-0">
-      <button
-        type="button"
-        onClick={handlePrevious}
-        disabled={currentStep === 1}
-        className={`flex items-center px-4 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-200 w-full md:w-auto justify-center ${
-          currentStep === 1
-            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-        }`}
-      >
-        <ChevronLeft size={18} className="mr-2" />
-        Previous
-      </button>
+                {/* Navigation Buttons - Responsive Version */}
+                <div className="flex flex-col-reverse md:flex-row justify-between items-center pt-6 md:pt-8 mt-6 md:mt-8 border-t border-gray-200 space-y-reverse space-y-4 md:space-y-0">
+                <button
+                    type="button"
+                    onClick={handlePrevious}
+                    disabled={currentStep === 1}
+                    className={`flex items-center px-4 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-200 w-full md:w-auto justify-center ${
+                    currentStep === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                    <ChevronLeft size={18} className="mr-2" />
+                    Previous
+                </button>
 
-      <div className="flex items-center space-x-2 mb-4 md:mb-0">
-        {steps.map((step) => (
-          <div
-            key={step.id}
-            className={`w-2 h-2 rounded-full transition-all duration-200 ${
-              step.id === currentStep
-                ? 'bg-blue-600 w-4 md:w-8'
-                : completedSteps.includes(step.id)
-                ? 'bg-green-500'
-                : 'bg-gray-300'
-            }`}
-          />
-        ))}
-      </div>
+                <div className="flex items-center space-x-2 mb-4 md:mb-0">
+                    {steps.map((step) => (
+                    <div
+                        key={step.id}
+                        className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        step.id === currentStep
+                            ? 'bg-blue-600 w-4 md:w-8'
+                            : completedSteps.includes(step.id)
+                            ? 'bg-green-500'
+                            : 'bg-gray-300'
+                        }`}
+                    />
+                    ))}
+                </div>
 
-      {currentStep < steps.length ? (
-        <button
-          type="button"
-          onClick={handleNext}
-          className="flex items-center px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white font-semibold rounded-lg md:rounded-xl hover:bg-blue-700 transition-all duration-200 w-full md:w-auto justify-center mb-4 md:mb-0"
-        >
-          Next
-          <ChevronRight size={18} className="ml-2" />
-        </button>
-      ) : (
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex items-center px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg md:rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl w-full md:w-auto justify-center mb-4 md:mb-0"
-        >
-          {isLoading ? (
-            <>
-              <Spinner size="sm" className="mr-3" />
-              <span className="text-sm md:text-base">Submitting...</span>
-            </>
-          ) : (
-            <>
-              <span className="text-sm md:text-base">Submit Application</span>
-              <Check size={18} className="ml-2" />
-            </>
-          )}
-        </button>
-      )}
-    </div>
-  </form>
-</div>
+                {currentStep < steps.length ? (
+                    <button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex items-center px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white font-semibold rounded-lg md:rounded-xl hover:bg-blue-700 transition-all duration-200 w-full md:w-auto justify-center mb-4 md:mb-0"
+                    >
+                    Next
+                    <ChevronRight size={18} className="ml-2" />
+                    </button>
+                ) : (
+                    <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex items-center px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg md:rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl w-full md:w-auto justify-center mb-4 md:mb-0"
+                    >
+                    {isLoading ? (
+                        <>
+                        <Spinner size="sm" className="mr-3" />
+                        <span className="text-sm md:text-base">Submitting...</span>
+                        </>
+                    ) : (
+                        <>
+                        <span className="text-sm md:text-base">Submit Application</span>
+                        <Check size={18} className="ml-2" />
+                        </>
+                    )}
+                    </button>
+                )}
+                </div>
+            </form>
+            </div>
 
           {/* Why Join Us Section */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-2xl shadow-2xl p-12 mb-16 text-white relative overflow-hidden animate-fade-in">
@@ -880,7 +880,7 @@ const CareerScreen = () => {
           </div>
         </div>
       </div>
-
+      <div><br /></div>
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes fade-in {
