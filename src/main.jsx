@@ -15,6 +15,7 @@ import store from './store';
 import HomeScreen from './(public)/screens/HomeScreen';
 import AboutScreen from './(public)/screens/AboutScreen';
 import ContactScreen from './(public)/screens/ContactScreen';
+import CareerScreen from './(public)/screens/CareerScreen';
 
 import LoginScreen from './(public)/screens/LoginScreen';
 import SignupScreen from './(public)/screens/SignupScreen';
@@ -44,6 +45,8 @@ const router = createBrowserRouter(
         <Route index element={<HomeScreen />} />
         <Route path="about-us" element={<AboutScreen />} />
         <Route path="contact" element={<ContactScreen />} />
+        <Route path="career" element={<CareerScreen />} />
+
 
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<SignupScreen />} />
