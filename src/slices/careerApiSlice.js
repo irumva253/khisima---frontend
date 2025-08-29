@@ -1,17 +1,19 @@
+/* eslint-disable no-unused-vars */
 import { apiSlice } from './apiSlice';
-
-const CAREERS_URL = '/api/careers';
+import { API_ENDPOINTS } from '../constants';
 
 export const careerApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Submit career application (Public)
     submitCareerApplication: builder.mutation({
       query: (formData) => ({
-        url: `${CAREERS_URL}/apply`,
+        url: `${API_ENDPOINTS.CAREERS.BASE}/apply`,
         method: 'POST',
         body: formData,
-        // Don't set Content-Type header, let browser handle it for FormData
+        // Important: Don't set Content-Type header for FormData
+        // The browser will set it automatically with the correct boundary
       }),
+      // Remove the serializeQueryArgs override - it's not needed and can cause issues
       invalidatesTags: ['CareerApplication'],
     }),
 
@@ -28,7 +30,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
         if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
 
         return {
-          url: `${CAREERS_URL}/applications?${queryParams.toString()}`,
+          url: `${API_ENDPOINTS.CAREERS.BASE}/applications?${queryParams.toString()}`,
           method: 'GET',
         };
       },
@@ -38,7 +40,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
     // Get application by ID (Admin)
     getCareerApplicationById: builder.query({
       query: (id) => ({
-        url: `${CAREERS_URL}/applications/${id}`,
+        url: `${API_ENDPOINTS.CAREERS.BASE}/applications/${id}`,
         method: 'GET',
       }),
       providesTags: (result, error, id) => [{ type: 'CareerApplication', id }],
@@ -47,7 +49,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
     // Update application status (Admin)
     updateCareerApplicationStatus: builder.mutation({
       query: ({ id, ...statusData }) => ({
-        url: `${CAREERS_URL}/applications/${id}/status`,
+        url: `${API_ENDPOINTS.CAREERS.BASE}/applications/${id}/status`,
         method: 'PUT',
         body: statusData,
       }),
@@ -61,7 +63,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
     // Delete application (Admin)
     deleteCareerApplication: builder.mutation({
       query: (id) => ({
-        url: `${CAREERS_URL}/applications/${id}`,
+        url: `${API_ENDPOINTS.CAREERS.BASE}/applications/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['CareerApplication', 'CareerStats'],
@@ -70,7 +72,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
     // Get application statistics (Admin)
     getCareerStats: builder.query({
       query: () => ({
-        url: `${CAREERS_URL}/stats`,
+        url: `${API_ENDPOINTS.CAREERS.BASE}/stats`,
         method: 'GET',
       }),
       providesTags: ['CareerStats'],

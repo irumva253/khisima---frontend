@@ -174,50 +174,56 @@ const CareerScreen = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+// Alternative approach: Modify the handleSubmit function in CareerScreen.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!validateStep(4)) {
+    toast.error('Please fill in all required fields before submitting.');
+    return;
+  }
+
+  try {
+    // Create FormData object
+    const formDataToSend = new FormData();
     
-    if (!validateStep(4)) {
-      toast.error('Please fill in all required fields before submitting.');
-      return;
-    }
+    // Append all form fields to FormData
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== '') {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
 
-    try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== '') {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
+    // Submit using the mutation directly with FormData
+    const result = await submitApplication(formDataToSend).unwrap();
+    console.log('Application submitted:', result);
 
-      const result = await submitApplication(formDataToSend).unwrap();
-      console.log('Application submitted:', result);
-
-      toast.success('Application submitted successfully! We will review your application and get back to you soon.');
-      
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        position: '',
-        experience: '',
-        languages: '',
-        coverLetter: '',
-        resumeFile: null,
-        portfolioUrl: '',
-        availability: 'immediate',
-        workType: 'remote',
-        expectedSalary: '',
-        referralSource: ''
-      });
-      setCurrentStep(1);
-      setCompletedSteps([]);
-    } catch (error) {
-      toast.error(error?.data?.message || 'Failed to submit application. Please try again.');
-    }
-  };
+    toast.success('Application submitted successfully! We will review your application and get back to you soon.');
+    
+    // Reset form
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      position: '',
+      experience: '',
+      languages: '',
+      coverLetter: '',
+      resumeFile: null,
+      portfolioUrl: '',
+      availability: 'immediate',
+      workType: 'remote',
+      expectedSalary: '',
+      referralSource: ''
+    });
+    setCurrentStep(1);
+    setCompletedSteps([]);
+  } catch (error) {
+    console.error('Submission error:', error);
+    toast.error(error?.data?.message || 'Failed to submit application. Please try again.');
+  }
+};
 
   const toggleAccordion = (id) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -286,7 +292,7 @@ const CareerScreen = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+250 7xx xxx xxx"
                 />
               </div>
             </div>
@@ -460,7 +466,7 @@ const CareerScreen = () => {
                 required
                 rows={6}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                placeholder="Tell us about yourself, your experience, and why you want to join ILS. What drives your passion for languages?"
+                placeholder="Tell us about yourself, your experience, and why you want to join Khisima. What drives your passion for languages?"
               />
             </div>
 
@@ -536,7 +542,7 @@ const CareerScreen = () => {
           {/* Hero Content */}
           <div className="text-center animate-slide-up">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Join the ILS Team
+              Join the Khisima Team
             </h1>
             <p className="text-xl text-blue-100 leading-relaxed max-w-3xl mx-auto mb-8">
               Be part of a mission-driven team that's empowering languages worldwide. 
@@ -760,7 +766,7 @@ const CareerScreen = () => {
             
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
-                Why Join ILS?
+                Why Join Khisima?
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -862,13 +868,13 @@ const CareerScreen = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:careers@ils.com"
+                href="mailto:careers@khisima.com"
                 className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                careers@ils.com
+                careers@khisima.com
               </a>
               <Link
                 to="/contact"
