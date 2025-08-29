@@ -417,7 +417,7 @@ const Navbar = () => {
                 Login
               </Link>
               <Link
-                to="/get-quote"
+                to="/quote"
                 className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
               >
                 <span>Get Quote</span>
@@ -639,7 +639,7 @@ const Navbar = () => {
             {/* Enhanced Mobile Footer */}
             <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">
               <Link
-                to="/get-quote"
+                to="/quote"
                 className="block w-full bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-4 rounded-xl font-semibold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                 onClick={handleLinkClick}
               >

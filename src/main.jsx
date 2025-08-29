@@ -17,6 +17,7 @@ import AboutScreen from './(public)/screens/AboutScreen';
 import ContactScreen from './(public)/screens/ContactScreen';
 import CareerScreen from './(public)/screens/CareerScreen';
 import ResourcesScreen from './(public)/screens/ResourcesScreen';
+import QuoteScreen from './(public)/screens/QuoteScreen';
 
 import LoginScreen from './(public)/screens/LoginScreen';
 import SignupScreen from './(public)/screens/SignupScreen';
@@ -35,6 +36,7 @@ import NotificationScreen from './(public)/screens/admin/NotificationScreen';
 import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
 import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
 import PartnersManagementScreen from './(public)/screens/admin/PartnersManagementScreen';
+import AdminCheckQuoteScreen from './(public)/screens/admin/AdminCheckQuoteScreen';
 
 
 const router = createBrowserRouter(
@@ -48,6 +50,7 @@ const router = createBrowserRouter(
         <Route path="contact" element={<ContactScreen />} />
         <Route path="careers" element={<CareerScreen />} />
         <Route path="resources" element={<ResourcesScreen />} />
+        <Route path="quote" element={<QuoteScreen />} />
 
 
         <Route path="/login" element={<LoginScreen />} />
@@ -56,6 +59,7 @@ const router = createBrowserRouter(
         <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
         <Route path="/services" element={<ServiceScreen />} />
         <Route path="/services/:id" element={<ServicePageScreen />} />
+
 
       </Route>
 
@@ -69,7 +73,7 @@ const router = createBrowserRouter(
            <Route path="services/create" element={<CreateNewServiceScreen />} />
            <Route path="solutions" element={<SolutionsManagementScreen />} />
            <Route path="partners" element={<PartnersManagementScreen />} />
-
+           <Route path="quotes" element={<AdminCheckQuoteScreen />} />
 
         </Route>
       </Route>

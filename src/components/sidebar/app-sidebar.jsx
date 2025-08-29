@@ -31,6 +31,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
+import { IconBell } from "@tabler/icons-react"
 
 const data = {
   user: {
@@ -125,9 +126,9 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
+      title: "Quotes",
+      url: "/admin/quotes",
+      icon: IconBell,
     },
     {
       title: "Get Help",

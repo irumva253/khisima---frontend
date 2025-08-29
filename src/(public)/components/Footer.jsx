@@ -38,12 +38,12 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { name: "About Us", href: "#about" },
-    { name: "Our Services", href: "#services" },
+    { name: "About Us", href: "about-us" },
+    { name: "Our Services", href: "services" },
     { name: "Our Mission", href: "#mission" },
     { name: "Portfolio", href: "#portfolio" },
-    { name: "Contact", href: "#contact" },
-    { name: "Get Quote", href: "#quote" }
+    { name: "Contact", href: "contact" },
+    { name: "Get Quote", href: "quote" }
   ];
 
   const socialLinks = [
@@ -218,9 +218,9 @@ const Footer = () => {
             <div className="flex items-center space-x-1">
               <span className="text-sm text-gray-400 mr-4">Follow us:</span>
               {socialLinks.map((social, index) => (
-                <a
+                <Link
                   key={index}
-                  href={social.href}
+                  to={social.href}
                   className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-200 hover:scale-110 group"
                   aria-label={social.name}
                 >
@@ -228,7 +228,7 @@ const Footer = () => {
                     className: "w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-200",
                     style: { color: '#3a7acc' }
                   })}
-                </a>
+                </Link>
               ))}
             </div>
 
