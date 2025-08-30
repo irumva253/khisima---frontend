@@ -31,6 +31,20 @@ export const API_ENDPOINTS = {
   SOLUTIONS: { BASE: SOLUTIONS_URL, GET_ALL: SOLUTIONS_URL, GET_BY_ID: (id) => `${SOLUTIONS_URL}/${id}`, CREATE: SOLUTIONS_URL, UPDATE: (id) => `${SOLUTIONS_URL}/${id}`, DELETE: (id) => `${SOLUTIONS_URL}/${id}`, GET_BY_CATEGORY: (categoryId) => `${SOLUTIONS_URL}/category/${categoryId}`, GET_CATEGORIES: `${SOLUTIONS_URL}/categories` },
   S3: { UPLOAD: `${S3_URL}/upload`, DELETE: `${S3_URL}/delete` },
   PARTNERS: { BASE: PARTNERS_URL, GET_ALL: PARTNERS_URL, GET_BY_ID: (id) => `${PARTNERS_URL}/${id}`, CREATE: PARTNERS_URL, UPDATE: (id) => `${PARTNERS_URL}/${id}`, DELETE: (id) => `${PARTNERS_URL}/${id}` },
-  CAREERS: { BASE: CAREERS_URL, GET_ALL: CAREERS_URL, GET_BY_ID: (id) => `${CAREERS_URL}/${id}`, CREATE: CAREERS_URL, UPDATE: (id) => `${CAREERS_URL}/${id}`, DELETE: (id) => `${CAREERS_URL}/${id}` },
+  CAREERS: {
+    BASE: CAREERS_URL,
+    APPLY: `${CAREERS_URL}/apply`,
+    APPLICATIONS: {
+      BASE: `${CAREERS_URL}/applications`,
+      GET_ALL: `${CAREERS_URL}/applications`,
+      GET_BY_ID: (id) => `${CAREERS_URL}/applications/${id}`,
+      UPDATE: (id) => `${CAREERS_URL}/applications/${id}`,
+      DELETE: (id) => `${CAREERS_URL}/applications/${id}`,
+      STATUS: (id) => `${CAREERS_URL}/applications/${id}/status`,
+      DOWNLOAD: (id) => `${CAREERS_URL}/applications/${id}/download`,
+      DOWNLOAD_PROXY: (id) => `${CAREERS_URL}/applications/${id}/download-proxy`,
+    },
+    STATS: `${CAREERS_URL}/stats`,
+},
   QUOTES: { BASE: QUOTES_URL, GET_ALL: QUOTES_URL, GET_BY_ID: (id) => `${QUOTES_URL}/${id}`, CREATE: QUOTES_URL, UPDATE: (id) => `${QUOTES_URL}/${id}`, DELETE: (id) => `${QUOTES_URL}/${id}` }
 };

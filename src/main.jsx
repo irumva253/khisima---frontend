@@ -42,6 +42,7 @@ import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementS
 import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
 import PartnersManagementScreen from './(public)/screens/admin/PartnersManagementScreen';
 import AdminCheckQuoteScreen from './(public)/screens/admin/AdminCheckQuoteScreen';
+import AdminCarrersManagementScreen from './(public)/screens/admin/AdminCarrersManagementScreen';
 
 
 const router = createBrowserRouter(
@@ -82,6 +83,7 @@ const router = createBrowserRouter(
            <Route path="solutions/create" element={<CreateNewSolutionScreen />} />
            <Route path="partners" element={<PartnersManagementScreen />} />
            <Route path="quotes" element={<AdminCheckQuoteScreen />} />
+           <Route path="careers" element={<AdminCarrersManagementScreen />} />
 
         </Route>
       </Route>

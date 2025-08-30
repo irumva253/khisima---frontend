@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
 import { IconBell } from "@tabler/icons-react"
+import { IconBriefcase } from "@tabler/icons-react"
 
 const data = {
   user: {
@@ -56,9 +57,9 @@ const data = {
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Careers",
+      url: "careers",
+      icon: IconBriefcase,
     },
     {
       title: "Projects",

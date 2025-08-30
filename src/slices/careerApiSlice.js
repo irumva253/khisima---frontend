@@ -10,10 +10,7 @@ export const careerApiSlice = apiSlice.injectEndpoints({
         url: `${API_ENDPOINTS.CAREERS.BASE}/apply`,
         method: 'POST',
         body: formData,
-        // Important: Don't set Content-Type header for FormData
-        // The browser will set it automatically with the correct boundary
       }),
-      // Remove the serializeQueryArgs override - it's not needed and can cause issues
       invalidatesTags: ['CareerApplication'],
     }),
 
@@ -77,6 +74,14 @@ export const careerApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ['CareerStats'],
     }),
+
+    // Get signed download URL for resume (Admin) - FIXED PATH
+    getResumeDownloadUrl: builder.mutation({
+      query: (id) => ({
+        url: `${API_ENDPOINTS.CAREERS.BASE}/applications/${id}/download`, // ADDED /applications/
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -87,4 +92,5 @@ export const {
   useUpdateCareerApplicationStatusMutation,
   useDeleteCareerApplicationMutation,
   useGetCareerStatsQuery,
+  useGetResumeDownloadUrlMutation,
 } = careerApiSlice;

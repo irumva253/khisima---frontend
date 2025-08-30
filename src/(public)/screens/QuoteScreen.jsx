@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calculator, 
   FileText, 
@@ -13,12 +13,22 @@ import {
   X,
   AlertCircle,
   Phone,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  FolderOpen,
+  Settings,
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 import DynamicText from "@/components/kokonutui/dynamic-text";
+import { useSubmitQuoteRequestMutation } from '@/slices/quoteApiSlice';
 
 const QuoteScreen = () => {
+  const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
+  const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -36,6 +46,9 @@ const QuoteScreen = () => {
     budget: '',
     description: ''
   });
+
+  // Use the mutation hook from the slice
+  const [submitQuoteRequest] = useSubmitQuoteRequestMutation();
 
   const projectTypes = [
     'Document Translation',
@@ -66,6 +79,62 @@ const QuoteScreen = () => {
     'Not sure - please advise'
   ];
 
+  const steps = [
+    { id: 'contact', title: 'Contact Info', icon: User },
+    { id: 'project', title: 'Project Details', icon: FolderOpen },
+    { id: 'files', title: 'Upload Files', icon: Upload },
+    { id: 'additional', title: 'Additional Info', icon: Settings },
+    { id: 'review', title: 'Review & Submit', icon: Check }
+  ];
+
+  // Validation rules for each step
+  const stepValidations = [
+    // Step 0: Contact Information
+    (data) => {
+      const errors = {};
+      if (!data.firstName.trim()) errors.firstName = 'First name is required';
+      if (!data.lastName.trim()) errors.lastName = 'Last name is required';
+      if (!data.email.trim()) {
+        errors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+        errors.email = 'Email is invalid';
+      }
+      return errors;
+    },
+    // Step 1: Project Details
+    (data) => {
+      const errors = {};
+      if (!data.projectType) errors.projectType = 'Project type is required';
+      if (!data.sourceLanguage) errors.sourceLanguage = 'Source language is required';
+      if (data.sourceLanguage === 'Other' && !data.otherSourceLanguage.trim()) {
+        errors.otherSourceLanguage = 'Please specify the source language';
+      }
+      if (data.targetLanguages.length === 0) {
+        errors.targetLanguages = 'At least one target language is required';
+      }
+      if (data.targetLanguages.includes('Other') && !data.otherTargetLanguage.trim()) {
+        errors.otherTargetLanguage = 'Please specify the target language(s)';
+      }
+      return errors;
+    },
+    // Step 2: File Upload (no validation required as it's optional)
+    () => ({}),
+    // Step 3: Additional Information
+    (data) => {
+      const errors = {};
+      if (!data.description.trim()) errors.description = 'Project description is required';
+      return errors;
+    },
+    // Step 4: Review (no validation needed)
+    () => ({})
+  ];
+
+  useEffect(() => {
+    // Validate current step when form data changes
+    const errors = stepValidations[activeStep](formData);
+    setFormErrors(errors);
+  }, [formData, activeStep]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -85,7 +154,9 @@ const QuoteScreen = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        sourceLanguage: language
+        sourceLanguage: language,
+        // Clear other source language if not "Other"
+        otherSourceLanguage: language === 'Other' ? prev.otherSourceLanguage : ''
       }));
     }
   };
@@ -99,8 +170,28 @@ const QuoteScreen = () => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const isStepValid = () => {
+    const errors = stepValidations[activeStep](formData);
+    return Object.keys(errors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (isStepValid() && activeStep < steps.length - 1) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (activeStep > 0) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!isStepValid()) return;
+    
     setIsLoading(true);
 
     // Create FormData for file upload
@@ -121,8 +212,8 @@ const QuoteScreen = () => {
     });
 
     try {
-      // Simulate API call - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Use the mutation from the slice to submit the quote request
+      await submitQuoteRequest(submitData).unwrap();
       
       // Reset form
       setFormData({
@@ -151,6 +242,531 @@ const QuoteScreen = () => {
       alert('Error submitting quote request. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Render the current step content
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0: // Contact Information
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+              Contact Information
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                    formErrors.firstName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
+                  placeholder="Your first name"
+                />
+                {formErrors.firstName && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-1" />
+                    {formErrors.firstName}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                    formErrors.lastName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
+                  placeholder="Your last name"
+                />
+                {formErrors.lastName && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-1" />
+                    {formErrors.lastName}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                    formErrors.email ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
+                  placeholder="your.email@example.com"
+                />
+                {formErrors.email && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-1" />
+                    {formErrors.email}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="+250 xxx xxx xxx"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Company/Organization
+              </label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="Your company or organization"
+              />
+            </div>
+          </div>
+        );
+      
+      case 1: // Project Details
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+              Project Details
+            </h3>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Project Type *
+              </label>
+              <select
+                name="projectType"
+                value={formData.projectType}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  formErrors.projectType ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                }`}
+              >
+                <option value="">Select project type</option>
+                {projectTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              {formErrors.projectType && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  {formErrors.projectType}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Source Language *
+              </label>
+              <select
+                name="sourceLanguage"
+                value={formData.sourceLanguage}
+                onChange={(e) => {
+                  handleChange(e);
+                  // If "Other" is selected, focus on the input field
+                  if (e.target.value === 'Other') {
+                    setTimeout(() => {
+                      document.querySelector('input[name="otherSourceLanguage"]')?.focus();
+                    }, 100);
+                  }
+                }}
+                required
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  formErrors.sourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                }`}
+              >
+                <option value="">Select source language</option>
+                {languages.map(lang => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
+
+              {formData.sourceLanguage === 'Other' && (
+                <div className="mt-3">
+                  <input
+                    type="text"
+                    name="otherSourceLanguage"
+                    value={formData.otherSourceLanguage}
+                    onChange={handleChange}
+                    placeholder="Specify source language"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                      formErrors.otherSourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                    }`}
+                    required
+                  />
+                  {formErrors.otherSourceLanguage && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertTriangle className="w-4 h-4 mr-1" />
+                      {formErrors.otherSourceLanguage}
+                    </p>
+                  )}
+                </div>
+              )}
+              {formErrors.sourceLanguage && formData.sourceLanguage !== 'Other' && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  {formErrors.sourceLanguage}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Target Languages * (Select multiple)
+              </label>
+              <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border rounded-xl max-h-48 overflow-y-auto ${
+                formErrors.targetLanguages ? 'border-red-500' : 'border-gray-300'
+              }`}>
+                {languages.map(lang => (
+                  <label key={lang} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                    <input
+                      type="checkbox"
+                      checked={formData.targetLanguages.includes(lang)}
+                      onChange={() => {
+                        handleLanguageChange(lang, true);
+                        // If "Other" is selected, focus on the input field
+                        if (lang === 'Other' && !formData.targetLanguages.includes('Other')) {
+                          setTimeout(() => {
+                            document.querySelector('input[name="otherTargetLanguage"]')?.focus();
+                          }, 100);
+                        }
+                      }}
+                      className="text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm">{lang}</span>
+                  </label>
+                ))}
+              </div>
+              
+              {formErrors.targetLanguages && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  {formErrors.targetLanguages}
+                </p>
+              )}
+              
+              {formData.targetLanguages.includes('Other') && (
+                <div className="mt-3">
+                  <input
+                    type="text"
+                    name="otherTargetLanguage"
+                    value={formData.otherTargetLanguage}
+                    onChange={handleChange}
+                    placeholder="Specify target language(s)"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                      formErrors.otherTargetLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                    }`}
+                    required
+                  />
+                  {formErrors.otherTargetLanguage && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertTriangle className="w-4 h-4 mr-1" />
+                      {formErrors.otherTargetLanguage}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Estimated Word Count
+                </label>
+                <input
+                  type="number"
+                  name="wordCount"
+                  value={formData.wordCount}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="e.g., 5000"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Deadline
+                </label>
+                <input
+                  type="date"
+                  name="deadline"
+                  value={formData.deadline}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Budget Range
+              </label>
+              <select
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              >
+                <option value="">Select budget range</option>
+                {budgetRanges.map(range => (
+                  <option key={range} value={range}>{range}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        );
+      
+      case 2: // File Upload
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+              Project Files (Optional)
+            </h3>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Upload Documents
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors duration-200">
+                <Upload className="w-8 h-8 mx-auto mb-3 text-gray-400" />
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="file-upload"
+                  accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
+                />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <span className="text-blue-600 font-semibold">Click to upload</span>
+                  <span className="text-gray-500"> or drag and drop</span>
+                </label>
+                <p className="text-sm text-gray-500 mt-2">
+                  PDF, DOC, DOCX, TXT, XLSX, PPTX (Max 10MB each)
+                </p>
+              </div>
+              
+              {files.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {files.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-700">{file.name}</span>
+                        <span className="text-xs text-gray-500">
+                          ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(index)}
+                        className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      
+      case 3: // Additional Information
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+              Additional Information
+            </h3>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Special Requirements
+              </label>
+              <textarea
+                name="specialRequirements"
+                value={formData.specialRequirements}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                placeholder="Any specific formatting, style guides, or technical requirements..."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Project Description *
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={6}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none ${
+                  formErrors.description ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                }`}
+                placeholder="Describe your project in detail. What do you need translated? What is the purpose? Who is your target audience?"
+              />
+              {formErrors.description && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  {formErrors.description}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      
+      case 4: // Review & Submit
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+              Review Your Information
+            </h3>
+            
+            <div className="bg-gray-50 p-6 rounded-xl">
+              <h4 className="font-semibold text-lg mb-4">Contact Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <p className="text-sm text-gray-600">First Name</p>
+                  <p className="font-medium">{formData.firstName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Last Name</p>
+                  <p className="font-medium">{formData.lastName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-medium">{formData.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Phone</p>
+                  <p className="font-medium">{formData.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Company</p>
+                  <p className="font-medium">{formData.company || 'Not provided'}</p>
+                </div>
+              </div>
+              
+              <h4 className="font-semibold text-lg mb-4">Project Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <p className="text-sm text-gray-600">Project Type</p>
+                  <p className="font-medium">{formData.projectType}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Source Language</p>
+                  <p className="font-medium">
+                    {formData.sourceLanguage === 'Other' 
+                      ? formData.otherSourceLanguage 
+                      : formData.sourceLanguage}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Target Languages</p>
+                  <p className="font-medium">
+                    {formData.targetLanguages
+                      .map(lang => lang === 'Other' ? formData.otherTargetLanguage : lang)
+                      .join(', ')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Word Count</p>
+                  <p className="font-medium">{formData.wordCount || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Deadline</p>
+                  <p className="font-medium">
+                    {formData.deadline 
+                      ? new Date(formData.deadline).toLocaleDateString() 
+                      : 'Not specified'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Budget Range</p>
+                  <p className="font-medium">{formData.budget || 'Not specified'}</p>
+                </div>
+              </div>
+              
+              <h4 className="font-semibold text-lg mb-4">Files</h4>
+              <div className="mb-6">
+                <p className="text-sm text-gray-600">Uploaded Files</p>
+                {files.length > 0 ? (
+                  <ul className="list-disc list-inside mt-2">
+                    {files.map((file, index) => (
+                      <li key={index} className="text-sm font-medium">
+                        {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="font-medium">No files uploaded</p>
+                )}
+              </div>
+              
+              <h4 className="font-semibold text-lg mb-4">Additional Information</h4>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">Special Requirements</p>
+                <p className="font-medium">
+                  {formData.specialRequirements || 'None specified'}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Project Description</p>
+                <p className="font-medium">{formData.description}</p>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+              <p className="text-sm text-blue-700">
+                <strong>Note:</strong> Please review all information before submitting. 
+                You can go back to previous steps to make changes if needed.
+              </p>
+            </div>
+          </div>
+        );
+      
+      default:
+        return <div>Unknown step</div>;
     }
   };
 
@@ -258,330 +874,93 @@ const QuoteScreen = () => {
                   </p>
                 </div>
                 
-                <form onSubmit={handleSubmit} className="p-8 space-y-8">
-                  {/* Personal Information */}
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
-                      Contact Information
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          First Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          placeholder="Your first name"
-                        />
-                      </div>
+                {/* Stepper */}
+                <div className="px-8 pt-8">
+                  <div className="flex justify-between items-center mb-8">
+                    {steps.map((step, index) => {
+                      const IconComponent = step.icon;
+                      const isActive = index === activeStep;
+                      const isCompleted = index < activeStep;
                       
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          placeholder="Your last name"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          placeholder="your.email@example.com"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          placeholder="+250 xxx xxx xxx"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Company/Organization
-                      </label>
-                      <input
-                        type="text"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                        placeholder="Your company or organization"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Project Details */}
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
-                      Project Details
-                    </h3>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Project Type *
-                      </label>
-                      <select
-                        name="projectType"
-                        value={formData.projectType}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      >
-                        <option value="">Select project type</option>
-                        {projectTypes.map(type => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Source Language *
-                      </label>
-                      <select
-                        name="sourceLanguage"
-                        value={formData.sourceLanguage}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      >
-                        <option value="">Select source language</option>
-                        {languages.map(lang => (
-                          <option key={lang} value={lang}>{lang}</option>
-                        ))}
-                      </select>
-
-                      {formData.sourceLanguage === 'Other' && (
-                        <input
-                          type="text"
-                          name="otherSourceLanguage"
-                          value={formData.otherSourceLanguage}
-                          onChange={handleChange}
-                          placeholder="Specify source language"
-                          className="w-full mt-3 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          required
-                        />
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Target Languages * (Select multiple)
-                      </label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-gray-300 rounded-xl max-h-48 overflow-y-auto">
-                        {languages.map(lang => (
-                          <label key={lang} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                            <input
-                              type="checkbox"
-                              checked={formData.targetLanguages.includes(lang)}
-                              onChange={() => handleLanguageChange(lang, true)}
-                              className="text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm">{lang}</span>
-                          </label>
-                        ))}
-                      </div>
-                      
-                      {formData.targetLanguages.includes('Other') && (
-                        <input
-                          type="text"
-                          name="otherTargetLanguage"
-                          value={formData.otherTargetLanguage}
-                          onChange={handleChange}
-                          placeholder="Specify target language(s)"
-                          className="w-full mt-3 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          required
-                        />
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Estimated Word Count
-                        </label>
-                        <input
-                          type="number"
-                          name="wordCount"
-                          value={formData.wordCount}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                          placeholder="e.g., 5000"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Deadline
-                        </label>
-                        <input
-                          type="date"
-                          name="deadline"
-                          value={formData.deadline}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Budget Range
-                      </label>
-                      <select
-                        name="budget"
-                        value={formData.budget}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      >
-                        <option value="">Select budget range</option>
-                        {budgetRanges.map(range => (
-                          <option key={range} value={range}>{range}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* File Upload */}
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
-                      Project Files (Optional)
-                    </h3>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Upload Documents
-                      </label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors duration-200">
-                        <Upload className="w-8 h-8 mx-auto mb-3 text-gray-400" />
-                        <input
-                          type="file"
-                          multiple
-                          onChange={handleFileChange}
-                          className="hidden"
-                          id="file-upload"
-                          accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
-                        />
-                        <label htmlFor="file-upload" className="cursor-pointer">
-                          <span className="text-blue-600 font-semibold">Click to upload</span>
-                          <span className="text-gray-500"> or drag and drop</span>
-                        </label>
-                        <p className="text-sm text-gray-500 mt-2">
-                          PDF, DOC, DOCX, TXT, XLSX, PPTX (Max 10MB each)
-                        </p>
-                      </div>
-                      
-                      {files.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                          {files.map((file, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                              <div className="flex items-center space-x-3">
-                                <FileText className="w-5 h-5 text-blue-600" />
-                                <span className="text-sm font-medium text-gray-700">{file.name}</span>
-                                <span className="text-xs text-gray-500">
-                                  ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                                </span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => removeFile(index)}
-                                className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ))}
+                      return (
+                        <div key={step.id} className="flex flex-col items-center relative flex-1">
+                          {/* Connection line */}
+                          {index > 0 && (
+                            <div className={`absolute h-1 w-full top-4 -left-1/2 z-0 ${isCompleted ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+                          )}
+                          
+                          {/* Step circle */}
+                          <div className={`relative z-10 flex items-center justify-center w-10 h-10 rounded-full border-2 ${isActive ? 'border-blue-600 bg-blue-600 text-white' : isCompleted ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-gray-400'}`}>
+                            {isCompleted ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <IconComponent className="w-5 h-5" />
+                            )}
+                          </div>
+                          
+                          {/* Step label */}
+                          <div className={`mt-2 text-xs font-medium text-center ${isActive ? 'text-blue-600' : isCompleted ? 'text-blue-600' : 'text-gray-500'}`}>
+                            {step.title}
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
-
-                  {/* Additional Information */}
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
-                      Additional Information
-                    </h3>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Special Requirements
-                      </label>
-                      <textarea
-                        name="specialRequirements"
-                        value={formData.specialRequirements}
-                        onChange={handleChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                        placeholder="Any specific formatting, style guides, or technical requirements..."
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Project Description *
-                      </label>
-                      <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                        rows={6}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                        placeholder="Describe your project in detail. What do you need translated? What is the purpose? Who is your target audience?"
-                      />
-                    </div>
-                  </div>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="p-8 space-y-8">
+                  {renderStepContent()}
                   
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        Processing Request...
-                      </>
+                  {/* Navigation buttons */}
+                  <div className="flex justify-between pt-6">
+                    <button
+                      type="button"
+                      onClick={prevStep}
+                      disabled={activeStep === 0}
+                      className={`flex items-center px-6 py-3 rounded-xl font-medium ${activeStep === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-50'}`}
+                    >
+                      <ChevronLeft className="w-5 h-5 mr-2" />
+                      Previous
+                    </button>
+                    
+                    {activeStep < steps.length - 1 ? (
+                      <button
+                        type="button"
+                        onClick={nextStep}
+                        disabled={!isStepValid()}
+                        className={`flex items-center px-6 py-3 rounded-xl font-medium transition-colors duration-200 ${
+                          isStepValid() 
+                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        }`}
+                      >
+                        Next
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </button>
                     ) : (
-                      <>
-                        <Send className="w-5 h-5 mr-2" />
-                        Request Quote
-                      </>
+                      <button
+                        type="submit"
+                        disabled={isLoading || !isStepValid()}
+                        className={`flex items-center px-8 py-3 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg ${
+                          isLoading || !isStepValid()
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl'
+                        }`}
+                      >
+                        {isLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                            Processing Request...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-5 h-5 mr-2" />
+                            Submit Quote Request
+                          </>
+                        )}
+                      </button>
                     )}
-                  </button>
+                  </div>
                 </form>
               </div>
             </div>
