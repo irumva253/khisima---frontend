@@ -3,6 +3,7 @@ import { CardCarousel } from "@/components/ui/card-carousel";
 import { S3_BASE_URL } from "@/constants";
 import { useGetPartnersQuery } from "@/slices/partnerApiSlice";
 import Spinner from "@/components/ui/Spinner";
+import {Link} from 'react-router-dom';
 
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
@@ -33,6 +34,9 @@ const Partners = () => {
     return (
       <div className="text-center py-24 text-gray-500">
         <p className="text-lg font-medium">No active partners available.</p>
+        <Link to="/contact" className="text-blue-600 hover:underline">
+          Become a partner
+        </Link>
       </div>
     );
   }

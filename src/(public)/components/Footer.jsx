@@ -41,7 +41,7 @@ const Footer = () => {
     { name: "About Us", href: "about-us" },
     { name: "Our Services", href: "services" },
     { name: "Our Mission", href: "#mission" },
-    { name: "Portfolio", href: "#portfolio" },
+    { name: "Countries of Operation", href: "#operation-countries" },
     { name: "Contact", href: "contact" },
     { name: "Get Quote", href: "quote" }
   ];
@@ -125,7 +125,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5" style={{ color: '#3a7acc' }} />
-                <span className="text-gray-400">+250 786 208 015</span>
+                <span className="text-gray-400">+250 789 619 370</span>
               </div>
             </div>
             <div className="flex items-center space-x-2">

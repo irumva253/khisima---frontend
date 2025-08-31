@@ -53,10 +53,6 @@ const CloseIcon = () => (
   <IconX className="w-6 h-6" />
 );
 
-const SparkleIcon = () => (
-  <IconSparkles className="w-5 h-5" />
-);
-
 const GlobeIcon = () => (
   <IconGlobe className="w-5 h-5" />
 );
@@ -70,7 +66,6 @@ const languages = [
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [topNavHidden, setTopNavHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
@@ -88,23 +83,9 @@ const Navbar = () => {
   const displayedSolutionCategories = solutionCategories.slice(0, 3);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 10);
-      
-      if (currentScrollY > 100) {
-        if (currentScrollY > lastScrollY) {
-          setTopNavHidden(true);
-        } else {
-          setTopNavHidden(false);
-        }
-      } else {
-        setTopNavHidden(false);
-      }
-      
-      lastScrollY = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -198,75 +179,7 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      <div className={`fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-slate-800 via-gray-800 to-slate-800 text-white py-3 px-4 text-sm hidden lg:block overflow-hidden transition-all duration-500 ${
-        topNavHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-      }`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#4993f2]/10 via-transparent to-[#4993f2]/10 animate-pulse"></div>
-        <div className="container mx-auto flex justify-between items-center relative z-10">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center hover:text-blue-300 transition-colors duration-300 group">
-              <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-blue-500/30 transition-colors">
-                <MapPinIcon className="h-4 w-4 text-blue-300" />
-              </div>
-              <span className="font-medium">Rwanda, Kigali, Rwanda</span>
-            </div>
-            <div className="flex items-center hover:text-green-300 transition-colors duration-300 group">
-              <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-green-500/30 transition-colors">
-                <PhoneIcon className="h-4 w-4 text-green-300" />
-              </div>
-              <span className="font-medium">+250 786 208 015</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center hover:text-purple-300 transition-colors duration-300 group">
-              <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-purple-500/30 transition-colors">
-                <EnvelopeIcon className="h-4 w-4 text-purple-300" />
-              </div>
-              <span className="font-medium">info@khisima.com</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <SparkleIcon />
-              <span className="text-yellow-300 font-semibold">24/7 Support Available</span>
-            </div>
-            
-            <div className="relative group">
-              <button
-                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 group"
-              >
-                <GlobeIcon />
-                <span className="font-medium">{currentLang.flag}</span>
-                <span className="font-medium">{currentLang.code.toUpperCase()}</span>
-                <IconChevronDown size={16} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {langDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white text-gray-800 shadow-2xl rounded-xl py-2 border border-gray-100">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang)}
-                      className={`w-full flex items-center px-4 py-3 hover:bg-blue-50 transition-colors duration-200 ${
-                        currentLang.code === lang.code ? 'bg-blue-50 text-[#4993f2]' : ''
-                      }`}
-                    >
-                      <span className="text-lg mr-3">{lang.flag}</span>
-                      <span className="font-medium">{lang.name}</span>
-                      {currentLang.code === lang.code && (
-                        <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={`fixed w-full z-40 bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 ${
-        topNavHidden ? 'top-0 shadow-2xl' : 'top-0 lg:top-[52px]'
-      } ${scrolled ? "py-3 shadow-lg" : "py-5"}`}>
+      <div className={`fixed w-full z-40 bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 top-0 ${scrolled ? "py-3 shadow-lg" : "py-5"}`}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
@@ -285,7 +198,7 @@ const Navbar = () => {
                   <span className="text-2xl font-black text-gray-800 group-hover:text-[#4993f2] transition-colors duration-300">
                     Khis<span className="text-[#4993f2]">ima</span>
                   </span>
-                  <div className="text-xs text-gray-500 font-medium -mt-1">Language Solutions</div>
+                  <div className="text-xs text-gray-500 font-medium -mt-1">Connecting Voices</div>
                 </div>
               </Link>
 
@@ -436,6 +349,38 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center space-x-4">
+              <div className="relative group hidden lg:block">
+                <button
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
+                >
+                  <GlobeIcon />
+                  <span className="font-medium">{currentLang.flag}</span>
+                  <span className="font-medium">{currentLang.code.toUpperCase()}</span>
+                  <IconChevronDown size={16} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {langDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white text-gray-800 shadow-2xl rounded-xl py-2 border border-gray-100">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang)}
+                        className={`w-full flex items-center px-4 py-3 hover:bg-blue-50 transition-colors duration-200 ${
+                          currentLang.code === lang.code ? 'bg-blue-50 text-[#4993f2]' : ''
+                        }`}
+                      >
+                        <span className="text-lg mr-3">{lang.flag}</span>
+                        <span className="font-medium">{lang.name}</span>
+                        {currentLang.code === lang.code && (
+                          <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <Link
                 to="/contact"
                 className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
@@ -752,7 +697,7 @@ const Navbar = () => {
                   </div>
                   <div className="flex items-center hover:text-[#4993f2] transition-colors">
                     <PhoneIcon className="h-4 w-4 mr-2 text-green-500" />
-                    <span>+250 786 208 015</span>
+                    <span>+250 789 619 370</span>
                   </div>
                   <div className="flex items-center hover:text-[#4993f2] transition-colors">
                     <EnvelopeIcon className="h-4 w-4 mr-2 text-purple-500" />

@@ -303,7 +303,7 @@ const ContactScreen = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900">Our Location</h4>
                       <p className="text-gray-600">Kigali, Rwanda</p>
-                      <p className="text-sm text-gray-500">East Africa's Silicon Valley</p>
+                      <p className="text-sm text-gray-500">East Africa</p>
                     </div>
                   </div>
 
@@ -313,7 +313,7 @@ const ContactScreen = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900">Email Us</h4>
-                      <p className="text-gray-600">hello@khisima.com</p>
+                      <p className="text-gray-600">info@khisima.com</p>
                       <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                     </div>
                   </div>
@@ -324,7 +324,7 @@ const ContactScreen = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900">Call Us</h4>
-                      <p className="text-gray-600">+250 788 123 456</p>
+                      <p className="text-gray-600">+250 789 619 370</p>
                       <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM (CAT)</p>
                     </div>
                   </div>

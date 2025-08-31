@@ -1,411 +1,883 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { 
+  useGetQuotesQuery, 
+  useUpdateQuoteMutation, 
+  useDeleteQuoteMutation,
+  useGetQuoteStatsQuery,
+  useExportQuotesMutation,
+  useAddCommunicationMutation,
+  useGetQuoteByIdQuery,
+  useLazyGetQuoteByIdQuery,
+  useDownloadQuoteFileMutation,
+  useUpdateQuoteStatusMutation,
+  getQuoteStatusColor,
+  getQuotePriorityColor
+} from '@/slices/quoteApiSlice';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+
 import {
   Search,
   Filter,
   Download,
+  Mail,
+  Phone,
+  MessageSquare,
+  FileText,
+  Calendar,
+  Clock,
+  User,
+  Building,
+  Globe,
+  DollarSign,
+  ChevronDown,
+  ChevronUp,
   Eye,
   Edit,
   Trash2,
-  Plus,
-  Mail,
-  Phone,
-  Calendar,
-  DollarSign,
-  Clock,
-  FileText,
-  Languages,
-  Building2,
-  User,
-  MessageSquare,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-  AlertCircle,
   CheckCircle,
   XCircle,
-  MoreHorizontal
+  AlertCircle,
+  MoreVertical,
+  Plus,
+  BarChart3,
+  RefreshCw,
+  Printer,
+  Share2,
+  Archive,
+  Tag,
+  Star,
+  Clock4,
+  CalendarDays,
+  Users,
+  FileDown,
+  Send,
+  Loader2,
+  X,
+  FileIcon
 } from 'lucide-react';
 
 const AdminCheckQuoteScreen = () => {
-  // State management
-  const [quotes, setQuotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedQuotes, setSelectedQuotes] = useState([]);
+  const [selectedQuote, setSelectedQuote] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showCommunicationModal, setShowCommunicationModal] = useState(false);
   const [filters, setFilters] = useState({
-    search: '',
     status: '',
     projectType: '',
-    priority: '',
+    search: '',
     dateFrom: '',
     dateTo: '',
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
+    priority: ''
   });
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    limit: 10,
-    totalPages: 1,
-    totalQuotes: 0
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [communicationData, setCommunicationData] = useState({
+    type: 'email',
+    subject: '',
+    message: '',
+    direction: 'outbound'
   });
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState(null);
-  const [showQuoteModal, setShowQuoteModal] = useState(false);
-  const [bulkAction, setBulkAction] = useState('');
+  const [statusUpdateData, setStatusUpdateData] = useState({
+    status: '',
+    notes: ''
+  });
 
-  // Mock data - replace with actual API calls
-  const mockQuotes = [
-    {
-      _id: '1',
-      firstName: 'Jean',
-      lastName: 'Mugabo',
-      email: 'jean.mugabo@example.com',
-      phone: '+250 788 123 456',
-      company: 'Kigali Tech Hub',
-      projectType: 'Website Localization',
-      sourceLanguage: 'English',
-      targetLanguages: ['Kinyarwanda', 'French'],
-      wordCount: 2500,
-      estimatedCost: 750,
-      status: 'pending',
-      priority: 'high',
-      deadline: '2025-01-15',
-      createdAt: '2025-01-10T09:30:00Z',
-      description: 'Need to localize our e-commerce website for the Rwandan market',
-      ageInDays: 2
-    },
-    {
-      _id: '2',
-      firstName: 'Grace',
-      lastName: 'Nyirahabimana',
-      email: 'grace@example.com',
-      phone: '+250 788 987 654',
-      company: 'Rwanda Development Board',
-      projectType: 'Document Translation',
-      sourceLanguage: 'Kinyarwanda',
-      targetLanguages: ['English', 'French'],
-      wordCount: 5000,
-      estimatedCost: 1200,
-      status: 'quoted',
-      priority: 'normal',
-      deadline: '2025-01-20',
-      createdAt: '2025-01-08T14:15:00Z',
-      quotedAt: '2025-01-09T10:00:00Z',
-      description: 'Official documents for international partnership',
-      ageInDays: 4
-    },
-    {
-      _id: '3',
-      firstName: 'Emmanuel',
-      lastName: 'Bizimana',
-      email: 'emmanuel.biz@example.com',
-      phone: '+250 788 555 666',
-      company: 'East African Bank',
-      projectType: 'Legal Documents',
-      sourceLanguage: 'English',
-      targetLanguages: ['Kinyarwanda', 'Swahili'],
-      wordCount: 8000,
-      estimatedCost: 2400,
-      status: 'reviewing',
-      priority: 'urgent',
-      deadline: '2025-01-12',
-      createdAt: '2025-01-07T16:45:00Z',
-      description: 'Banking regulations and compliance documents',
-      ageInDays: 5
-    }
-  ];
+  // RTK Query hooks
+  const { 
+    data: quotesData, 
+    isLoading, 
+    isError, 
+    error,
+    refetch 
+  } = useGetQuotesQuery({ 
+    ...filters, 
+    page, 
+    limit, 
+    sortBy, 
+    sortOrder 
+  });
+
+  const { data: statsData } = useGetQuoteStatsQuery();
+  const [updateQuote] = useUpdateQuoteMutation();
+  const [deleteQuote] = useDeleteQuoteMutation();
+  const [exportQuotes] = useExportQuotesMutation();
+  const [addCommunication] = useAddCommunicationMutation();
+  const [downloadQuoteFile] = useDownloadQuoteFileMutation();
+  const [updateQuoteStatus] = useUpdateQuoteStatusMutation();
+  const [getQuoteById, { data: detailedQuote, isLoading: loadingDetail }] = useLazyGetQuoteByIdQuery();
+
+  const quotes = quotesData?.data || [];
+  const pagination = quotesData?.pagination || {};
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setQuotes(mockQuotes);
-      setPagination(prev => ({ ...prev, totalQuotes: mockQuotes.length }));
-      setLoading(false);
-    }, 1000);
-  }, [filters, pagination.currentPage]);
+    if (selectedQuote && showDetailModal) {
+      getQuoteById(selectedQuote._id);
+    }
+  }, [selectedQuote, showDetailModal, getQuoteById]);
 
-  const getStatusColor = (status) => {
-    const colors = {
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      reviewing: 'bg-blue-100 text-blue-800 border-blue-200',
-      quoted: 'bg-green-100 text-green-800 border-green-200',
-      accepted: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      rejected: 'bg-red-100 text-red-800 border-red-200',
-      completed: 'bg-gray-100 text-gray-800 border-gray-200'
-    };
-    return colors[status] || colors.pending;
-  };
-
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'bg-gray-100 text-gray-700',
-      normal: 'bg-blue-100 text-blue-700',
-      high: 'bg-orange-100 text-orange-700',
-      urgent: 'bg-red-100 text-red-700'
-    };
-    return colors[priority] || colors.normal;
-  };
-
-  const handleSelectQuote = (quoteId) => {
-    setSelectedQuotes(prev => 
-      prev.includes(quoteId) 
-        ? prev.filter(id => id !== quoteId)
-        : [...prev, quoteId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedQuotes(
-      selectedQuotes.length === quotes.length ? [] : quotes.map(q => q._id)
-    );
-  };
+  useEffect(() => {
+    if (selectedQuote) {
+      setStatusUpdateData({
+        status: selectedQuote.status,
+        notes: selectedQuote.adminNotes || ''
+      });
+    }
+  }, [selectedQuote]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setPage(1);
   };
 
-  const handleSort = (column) => {
-    const newOrder = filters.sortBy === column && filters.sortOrder === 'asc' ? 'desc' : 'asc';
-    setFilters(prev => ({ ...prev, sortBy: column, sortOrder: newOrder }));
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('desc');
+    }
   };
 
-  const handleBulkAction = () => {
-    if (!bulkAction || selectedQuotes.length === 0) return;
+  const handleStatusUpdate = async () => {
+    if (!selectedQuote) return;
+
+    try {
+      await updateQuoteStatus({
+        id: selectedQuote._id,
+        status: statusUpdateData.status,
+        notes: statusUpdateData.notes
+      }).unwrap();
+      
+      toast.success(`Quote status updated to ${statusUpdateData.status}`);
+      setShowStatusModal(false);
+      refetch();
+      
+      // Refresh the detailed quote if modal is open
+      if (showDetailModal) {
+        getQuoteById(selectedQuote._id);
+      }
+    } catch (error) {
+      console.error('Status update error:', error);
+      toast.error(error?.data?.message || 'Failed to update status');
+    }
+  };
+
+  const handleDeleteQuote = async (quoteId) => {
+    if (window.confirm('Are you sure you want to delete this quote? This action cannot be undone.')) {
+      try {
+        await deleteQuote(quoteId).unwrap();
+        toast.success('Quote deleted successfully');
+        refetch();
+        if (selectedQuote?._id === quoteId) {
+          setSelectedQuote(null);
+          setShowDetailModal(false);
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        toast.error(error?.data?.message || 'Failed to delete quote');
+      }
+    }
+  };
+
+  const handleExport = async (format = 'csv') => {
+    try {
+      await exportQuotes({ ...filters, format });
+      toast.success('Export started successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(error?.data?.message || 'Failed to export quotes');
+    }
+  };
+
+  const handleAddCommunication = async (e) => {
+    e.preventDefault();
+    if (!selectedQuote) return;
+
+    try {
+      await addCommunication({
+        quoteId: selectedQuote._id,
+        communicationData
+      }).unwrap();
+      
+      toast.success('Communication added successfully');
+      setShowCommunicationModal(false);
+      setCommunicationData({
+        type: 'email',
+        subject: '',
+        message: '',
+        direction: 'outbound'
+      });
+      refetch();
+      
+      // Refresh the detailed quote
+      getQuoteById(selectedQuote._id);
+    } catch (error) {
+      console.error('Communication error:', error);
+      toast.error(error?.data?.message || 'Failed to add communication');
+    }
+  };
+
+  const handleDownloadFile = async (file) => {
+  if (!selectedQuote) return;
+
+  try {
+    const result = await downloadQuoteFile({ 
+      quoteId: selectedQuote._id, 
+      fileId: file._id 
+    }).unwrap();
     
-    // Handle bulk actions here
-    console.log(`Bulk action: ${bulkAction} on quotes:`, selectedQuotes);
-    setBulkAction('');
-    setSelectedQuotes([]);
-  };
+    if (result.success && result.data.downloadUrl) {
+      // Use the signed URL from the backend response
+      const link = document.createElement('a');
+      link.href = result.data.downloadUrl;
+      link.setAttribute('download', file.originalName);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success(`Downloading ${file.originalName}`);
+    }
+  } catch (error) {
+    console.error('Download failed:', error);
+    toast.error(error?.data?.message || 'Failed to download file');
+  }
+};
 
-  const handleQuoteAction = (action, quoteId) => {
-    console.log(`${action} quote:`, quoteId);
-    // Handle individual quote actions
-  };
-
-  const QuoteDetailsModal = () => {
-    if (!selectedQuote) return null;
-
+  const StatusBadge = ({ status }) => {
+    const statusClass = getQuoteStatusColor(status);
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-t-2xl">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl font-bold">Quote Details</h2>
-                <p className="text-blue-100">ID: #{selectedQuote._id.slice(-8).toUpperCase()}</p>
-              </div>
-              <button
-                onClick={() => setShowQuoteModal(false)}
-                className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-          
-          <div className="p-6 space-y-6">
-            {/* Client Information */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-blue-600" />
-                  Client Information
-                </h3>
-                <div className="space-y-3">
-                  <p><span className="font-medium">Name:</span> {selectedQuote.firstName} {selectedQuote.lastName}</p>
-                  <p><span className="font-medium">Email:</span> {selectedQuote.email}</p>
-                  <p><span className="font-medium">Phone:</span> {selectedQuote.phone}</p>
-                  <p><span className="font-medium">Company:</span> {selectedQuote.company}</p>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  <FileText className="w-5 h-5 mr-2 text-blue-600" />
-                  Project Details
-                </h3>
-                <div className="space-y-3">
-                  <p><span className="font-medium">Type:</span> {selectedQuote.projectType}</p>
-                  <p><span className="font-medium">Languages:</span> {selectedQuote.sourceLanguage} → {selectedQuote.targetLanguages.join(', ')}</p>
-                  <p><span className="font-medium">Word Count:</span> {selectedQuote.wordCount?.toLocaleString()}</p>
-                  <p><span className="font-medium">Deadline:</span> {new Date(selectedQuote.deadline).toLocaleDateString()}</p>
-                </div>
-              </div>
-            </div>
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
 
-            {/* Status and Pricing */}
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedQuote.status)}`}>
-                  {selectedQuote.status.charAt(0).toUpperCase() + selectedQuote.status.slice(1)}
-                </div>
-                <p className="text-sm text-gray-600 mt-2">Status</p>
-              </div>
-              <div className="text-center">
-                <div className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${getPriorityColor(selectedQuote.priority)}`}>
-                  {selectedQuote.priority.charAt(0).toUpperCase() + selectedQuote.priority.slice(1)}
-                </div>
-                <p className="text-sm text-gray-600 mt-2">Priority</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  ${selectedQuote.estimatedCost?.toLocaleString()}
-                </div>
-                <p className="text-sm text-gray-600 mt-2">Estimated Cost</p>
-              </div>
-            </div>
+  const PriorityBadge = ({ priority }) => {
+    const priorityClass = getQuotePriorityColor(priority);
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityClass}`}>
+        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+      </span>
+    );
+  };
 
-            {/* Description */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-3">Project Description</h3>
-              <p className="text-gray-700 leading-relaxed">{selectedQuote.description}</p>
-            </div>
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3 pt-4 border-t">
-              <button
-                onClick={() => handleQuoteAction('quote', selectedQuote._id)}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <DollarSign className="w-4 h-4 mr-2" />
-                Send Quote
-              </button>
-              <button
-                onClick={() => handleQuoteAction('email', selectedQuote._id)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Email Client
-              </button>
-              <button
-                onClick={() => handleQuoteAction('edit', selectedQuote._id)}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Quote
-              </button>
-            </div>
-          </div>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Loading quotes...</span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Quotes</h2>
+          <p className="text-gray-600 mb-4">{error?.data?.message || 'Failed to load quotes'}</p>
+          <button
+            onClick={refetch}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center mx-auto"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </button>
         </div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Quote Management</h1>
-              <p className="text-gray-600 mt-1">Manage and review client quote requests</p>
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Quote Management</h1>
+            <p className="text-gray-600">Manage and review all quote requests</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => refetch()}
+              className="flex items-center px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </button>
+            <button
+              onClick={() => handleExport('csv')}
+              className="flex items-center px-3 py-2 text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Overview */}
+      <div className="px-6 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Quotes</p>
+                <p className="text-2xl font-bold text-gray-900">{statsData?.data?.totalQuotes || 0}</p>
+              </div>
+              <div className="p-2 bg-blue-100 rounded-full">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </button>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </button>
-              <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </button>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Pending Review</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {statsData?.data?.statusBreakdown?.find(s => s._id === 'pending')?.count || 0}
+                </p>
+              </div>
+              <div className="p-2 bg-orange-100 rounded-full">
+                <Clock4 className="w-5 h-5 text-orange-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Quoted</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {statsData?.data?.statusBreakdown?.find(s => s._id === 'quoted')?.count || 0}
+                </p>
+              </div>
+              <div className="p-2 bg-green-100 rounded-full">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Avg Response Time</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {statsData?.data?.avgResponseTimeHours ? `${Math.round(statsData.data.avgResponseTimeHours)}h` : 'N/A'}
+                </p>
+              </div>
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Clock className="w-5 h-5 text-purple-600" />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Quotes</p>
-                <p className="text-2xl font-bold text-gray-900">127</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
+      {/* Filters and Search */}
+      <div className="px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search quotes..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
-            <p className="text-sm text-green-600 mt-2">+12% from last month</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">23</p>
-              </div>
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Clock className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-            <p className="text-sm text-red-600 mt-2">Needs attention</p>
-          </div>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={filters.status}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="reviewing">Reviewing</option>
+              <option value="quoted">Quoted</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+              <option value="completed">Completed</option>
+            </select>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-green-600">$45,200</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <DollarSign className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-            <p className="text-sm text-green-600 mt-2">+8% revenue growth</p>
-          </div>
+            <select
+              value={filters.projectType}
+              onChange={(e) => handleFilterChange('projectType', e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Types</option>
+              <option value="Document Translation">Document Translation</option>
+              <option value="Website Localization">Website Localization</option>
+              <option value="Software Localization">Software Localization</option>
+              <option value="Marketing Materials">Marketing Materials</option>
+              <option value="Legal Documents">Legal Documents</option>
+              <option value="Medical Translation">Medical Translation</option>
+            </select>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Response</p>
-                <p className="text-2xl font-bold text-blue-600">4.2h</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <MessageSquare className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-            <p className="text-sm text-green-600 mt-2">-30min improvement</p>
+            <select
+              value={filters.priority}
+              onChange={(e) => handleFilterChange('priority', e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Priority</option>
+              <option value="low">Low</option>
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
           </div>
         </div>
 
-        {/* Filters Panel */}
-        {showFilters && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search quotes..."
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+        {/* Date Filters */}
+        <div className="flex flex-wrap gap-4 mt-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+            <input
+              type="date"
+              value={filters.dateFrom}
+              onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+            <input
+              type="date"
+              value={filters.dateTo}
+              onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Quotes Table */}
+      <div className="px-6 py-4">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('createdAt')}
+                  >
+                    <div className="flex items-center">
+                      Date
+                      {sortBy === 'createdAt' && (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Client
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Project
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Languages
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Priority
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('estimatedCost')}
+                  >
+                    <div className="flex items-center">
+                      Amount
+                      {sortBy === 'estimatedCost' && (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {quotes.map((quote) => (
+                  <tr key={quote._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {new Date(quote.createdAt).toLocaleDateString()}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {new Date(quote.createdAt).toLocaleTimeString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {quote.firstName} {quote.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">{quote.email}</div>
+                          {quote.company && (
+                            <div className="text-sm text-gray-500 flex items-center">
+                              <Building className="w-3 h-3 mr-1" />
+                              {quote.company}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">{quote.projectType}</div>
+                      <div className="text-sm text-gray-500">
+                        {quote.wordCount ? `${quote.wordCount.toLocaleString()} words` : 'Word count not specified'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900 flex items-center">
+                        <Globe className="w-4 h-4 mr-1 text-gray-400" />
+                        {quote.sourceLanguage} → {quote.targetLanguages.join(', ')}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge status={quote.status} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <PriorityBadge priority={quote.priority} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 flex items-center">
+                        <DollarSign className="w-4 h-4 mr-1 text-green-600" />
+                        {quote.estimatedCost ? `$${quote.estimatedCost.toLocaleString()}` : 'Not quoted'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => {
+                            setSelectedQuote(quote);
+                            setShowDetailModal(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-900 p-1"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedQuote(quote);
+                            setShowStatusModal(true);
+                          }}
+                          className="text-green-600 hover:text-green-900 p-1"
+                          title="Update Status"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteQuote(quote._id)}
+                          className="text-red-600 hover:text-red-900 p-1"
+                          title="Delete Quote"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Empty State */}
+          {quotes.length === 0 && (
+            <div className="text-center py-12">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900">No quotes found</h3>
+              <p className="text-gray-500 mt-2">
+                {Object.values(filters).some(filter => filter !== '') 
+                  ? 'Try adjusting your filters' 
+                  : 'No quotes have been submitted yet'
+                }
+              </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(page - 1) * limit + 1}</span> to{' '}
+                  <span className="font-medium">{Math.min(page * limit, pagination.totalQuotes)}</span> of{' '}
+                  <span className="font-medium">{pagination.totalQuotes}</span> quotes
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                    disabled={page === pagination.totalPages}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+      </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select
-                  value={filters.status}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      {/* Quote Detail Modal */}
+      {showDetailModal && selectedQuote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Quote Details</h3>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {loadingDetail ? (
+              <div className="p-12 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            ) : (
+              <div className="p-6 space-y-6">
+                {/* Client Information */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">Client Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-600">Name</label>
+                      <p className="text-sm font-medium">{selectedQuote.firstName} {selectedQuote.lastName}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Email</label>
+                      <p className="text-sm font-medium">{selectedQuote.email}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Phone</label>
+                      <p className="text-sm font-medium">{selectedQuote.phone || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Company</label>
+                      <p className="text-sm font-medium">{selectedQuote.company || 'Not provided'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Project Details */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">Project Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-600">Project Type</label>
+                      <p className="text-sm font-medium">{selectedQuote.projectType}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Languages</label>
+                      <p className="text-sm font-medium">
+                        {selectedQuote.sourceLanguage} → {selectedQuote.targetLanguages.join(', ')}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Word Count</label>
+                      <p className="text-sm font-medium">
+                        {selectedQuote.wordCount ? `${selectedQuote.wordCount.toLocaleString()} words` : 'Not specified'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Deadline</label>
+                      <p className="text-sm font-medium">
+                        {selectedQuote.deadline ? new Date(selectedQuote.deadline).toLocaleDateString() : 'Flexible'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Budget</label>
+                      <p className="text-sm font-medium">{selectedQuote.budget || 'Not specified'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">Project Description</h4>
+                  <p className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                    {selectedQuote.description}
+                  </p>
+                </div>
+
+                {/* Special Requirements */}
+                {selectedQuote.specialRequirements && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Special Requirements</h4>
+                    <p className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                      {selectedQuote.specialRequirements}
+                    </p>
+                  </div>
+                )}
+
+                {/* Files */}
+                {selectedQuote.files && selectedQuote.files.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Attached Files</h4>
+                    <div className="space-y-2">
+                      {selectedQuote.files.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <FileIcon className="w-4 h-4 text-gray-400 mr-2" />
+                            <div>
+                              <span className="text-sm text-gray-700 block">{file.originalName}</span>
+                              <span className="text-xs text-gray-500">
+                                {formatFileSize(file.size)} • 
+                                {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'Unknown date'}
+                              </span>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => handleDownloadFile(file)}
+                            className="text-blue-600 text-sm hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-md flex items-center"
+                          >
+                            <Download className="w-3 h-3 mr-1" />
+                            Download
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Quote Information */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">Quote Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-600">Status</label>
+                      <StatusBadge status={selectedQuote.status} />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Priority</label>
+                      <PriorityBadge priority={selectedQuote.priority} />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Estimated Cost</label>
+                      <p className="text-sm font-medium">
+                        {selectedQuote.estimatedCost ? `$${selectedQuote.estimatedCost.toLocaleString()}` : 'Not quoted yet'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600">Estimated Duration</label>
+                      <p className="text-sm font-medium">{selectedQuote.estimatedDuration || 'Not specified'}</p>
+                    </div>
+                    {selectedQuote.quotedAt && (
+                      <div>
+                        <label className="block text-sm text-gray-600">Quoted At</label>
+                        <p className="text-sm font-medium">{new Date(selectedQuote.quotedAt).toLocaleDateString()}</p>
+                      </div>
+                    )}
+                    {selectedQuote.quoteValidUntil && (
+                      <div>
+                        <label className="block text-sm text-gray-600">Quote Valid Until</label>
+                        <p className="text-sm font-medium">{new Date(selectedQuote.quoteValidUntil).toLocaleDateString()}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin Notes */}
+                {selectedQuote.adminNotes && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Admin Notes</h4>
+                    <p className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                      {selectedQuote.adminNotes}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setShowCommunicationModal(true);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
                 >
-                  <option value="">All Statuses</option>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Add Communication
+                </button>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Update Modal */}
+      {showStatusModal && selectedQuote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Update Quote Status</h3>
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">New Status</label>
+                <select
+                  value={statusUpdateData.status}
+                  onChange={(e) => setStatusUpdateData(prev => ({...prev, status: e.target.value}))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="pending">Pending</option>
                   <option value="reviewing">Reviewing</option>
                   <option value="quoted">Quoted</option>
@@ -416,383 +888,123 @@ const AdminCheckQuoteScreen = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
-                <select
-                  value={filters.projectType}
-                  onChange={(e) => handleFilterChange('projectType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">All Types</option>
-                  <option value="Document Translation">Document Translation</option>
-                  <option value="Website Localization">Website Localization</option>
-                  <option value="Legal Documents">Legal Documents</option>
-                  <option value="Marketing Materials">Marketing Materials</option>
-                  <option value="Technical Documentation">Technical Documentation</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-                <select
-                  value={filters.priority}
-                  onChange={(e) => handleFilterChange('priority', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">All Priorities</option>
-                  <option value="low">Low</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date From</label>
-                <input
-                  type="date"
-                  value={filters.dateFrom}
-                  onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date To</label>
-                <input
-                  type="date"
-                  value={filters.dateTo}
-                  onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                <textarea
+                  rows={3}
+                  value={statusUpdateData.notes}
+                  onChange={(e) => setStatusUpdateData(prev => ({...prev, notes: e.target.value}))}
+                  placeholder="Add any notes about this status change..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Bulk Actions */}
-        {selectedQuotes.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-blue-900">
-                  {selectedQuotes.length} quote{selectedQuotes.length > 1 ? 's' : ''} selected
-                </span>
-                <select
-                  value={bulkAction}
-                  onChange={(e) => setBulkAction(e.target.value)}
-                  className="px-3 py-1 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Choose action</option>
-                  <option value="update-status">Update Status</option>
-                  <option value="update-priority">Update Priority</option>
-                  <option value="export-selected">Export Selected</option>
-                  <option value="delete">Delete</option>
-                </select>
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex justify-end space-x-3">
                 <button
-                  onClick={handleBulkAction}
-                  disabled={!bulkAction}
-                  className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  onClick={() => setShowStatusModal(false)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
-                  Apply
+                  Cancel
+                </button>
+                <button
+                  onClick={handleStatusUpdate}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Update Status
                 </button>
               </div>
-              <button
-                onClick={() => setSelectedQuotes([])}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Clear Selection
-              </button>
             </div>
           </div>
-        )}
-
-        {/* Quotes Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Loading quotes...</span>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left">
-                        <input
-                          type="checkbox"
-                          checked={selectedQuotes.length === quotes.length && quotes.length > 0}
-                          onChange={handleSelectAll}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSort('createdAt')}
-                      >
-                        <div className="flex items-center">
-                          Date
-                          <ArrowUpDown className="ml-1 w-3 h-3" />
-                        </div>
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSort('firstName')}
-                      >
-                        <div className="flex items-center">
-                          Client
-                          <ArrowUpDown className="ml-1 w-3 h-3" />
-                        </div>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Project
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Languages
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSort('estimatedCost')}
-                      >
-                        <div className="flex items-center">
-                          Value
-                          <ArrowUpDown className="ml-1 w-3 h-3" />
-                        </div>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Priority
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSort('deadline')}
-                      >
-                        <div className="flex items-center">
-                          Deadline
-                          <ArrowUpDown className="ml-1 w-3 h-3" />
-                        </div>
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {quotes.map((quote) => (
-                      <tr key={quote._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="checkbox"
-                            checked={selectedQuotes.includes(quote._id)}
-                            onChange={() => handleSelectQuote(quote._id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {new Date(quote.createdAt).toLocaleDateString()}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {quote.ageInDays} days ago
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
-                                <span className="text-sm font-medium text-white">
-                                  {quote.firstName.charAt(0)}{quote.lastName.charAt(0)}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {quote.firstName} {quote.lastName}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {quote.email}
-                              </div>
-                              {quote.company && (
-                                <div className="text-xs text-gray-400 flex items-center mt-1">
-                                  <Building2 className="w-3 h-3 mr-1" />
-                                  {quote.company}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {quote.projectType}
-                          </div>
-                          {quote.wordCount && (
-                            <div className="text-sm text-gray-500">
-                              {quote.wordCount.toLocaleString()} words
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 flex items-center">
-                            <Languages className="w-4 h-4 mr-2 text-gray-400" />
-                            {quote.sourceLanguage}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            → {quote.targetLanguages.join(', ')}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            ${quote.estimatedCost?.toLocaleString() || 'TBD'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(quote.status)}`}>
-                            {quote.status === 'pending' && <Clock className="w-3 h-3 mr-1" />}
-                            {quote.status === 'quoted' && <CheckCircle className="w-3 h-3 mr-1" />}
-                            {quote.status === 'rejected' && <XCircle className="w-3 h-3 mr-1" />}
-                            {quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(quote.priority)}`}>
-                            {quote.priority === 'urgent' && <AlertCircle className="w-3 h-3 mr-1" />}
-                            {quote.priority.charAt(0).toUpperCase() + quote.priority.slice(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {new Date(quote.deadline).toLocaleDateString()}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {Math.ceil((new Date(quote.deadline) - new Date()) / (1000 * 60 * 60 * 24))} days left
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex items-center justify-end space-x-2">
-                            <button
-                              onClick={() => {
-                                setSelectedQuote(quote);
-                                setShowQuoteModal(true);
-                              }}
-                              className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded transition-colors"
-                              title="View Details"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleQuoteAction('edit', quote._id)}
-                              className="text-gray-600 hover:text-gray-900 p-1 hover:bg-gray-50 rounded transition-colors"
-                              title="Edit Quote"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleQuoteAction('email', quote._id)}
-                              className="text-green-600 hover:text-green-900 p-1 hover:bg-green-50 rounded transition-colors"
-                              title="Email Client"
-                            >
-                              <Mail className="w-4 h-4" />
-                            </button>
-                            <div className="relative group">
-                              <button className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-50 rounded transition-colors">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </button>
-                              <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <button
-                                  onClick={() => handleQuoteAction('duplicate', quote._id)}
-                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                >
-                                  Duplicate
-                                </button>
-                                <button
-                                  onClick={() => handleQuoteAction('archive', quote._id)}
-                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                >
-                                  Archive
-                                </button>
-                                <hr className="my-1" />
-                                <button
-                                  onClick={() => handleQuoteAction('delete', quote._id)}
-                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex justify-between sm:hidden">
-                    <button
-                      disabled={pagination.currentPage === 1}
-                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      disabled={pagination.currentPage === pagination.totalPages}
-                      className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Next
-                    </button>
-                  </div>
-                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        Showing <span className="font-medium">1</span> to{' '}
-                        <span className="font-medium">{quotes.length}</span> of{' '}
-                        <span className="font-medium">{pagination.totalQuotes}</span> results
-                      </p>
-                    </div>
-                    <div>
-                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                        <button
-                          disabled={pagination.currentPage === 1}
-                          className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ChevronLeft className="h-5 w-5" />
-                        </button>
-                        {[1, 2, 3].map((page) => (
-                          <button
-                            key={page}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                              page === pagination.currentPage
-                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        ))}
-                        <button
-                          disabled={pagination.currentPage === pagination.totalPages}
-                          className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ChevronRight className="h-5 w-5" />
-                        </button>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
         </div>
-      </div>
+      )}
 
-      {/* Quote Details Modal */}
-      {showQuoteModal && <QuoteDetailsModal />}
+      {/* Communication Modal */}
+      {showCommunicationModal && selectedQuote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Add Communication</h3>
+              <button
+                onClick={() => setShowCommunicationModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCommunication} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <select
+                  value={communicationData.type}
+                  onChange={(e) => setCommunicationData(prev => ({...prev, type: e.target.value}))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                  <option value="meeting">Meeting</option>
+                  <option value="internal_note">Internal Note</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                <input
+                  type="text"
+                  value={communicationData.subject}
+                  onChange={(e) => setCommunicationData(prev => ({...prev, subject: e.target.value}))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter subject..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                <textarea
+                  rows={4}
+                  value={communicationData.message}
+                  onChange={(e) => setCommunicationData(prev => ({...prev, message: e.target.value}))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your message..."
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Direction</label>
+                <select
+                  value={communicationData.direction}
+                  onChange={(e) => setCommunicationData(prev => ({...prev, direction: e.target.value}))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="outbound">Outbound (We contacted client)</option>
+                  <option value="inbound">Inbound (Client contacted us)</option>
+                  <option value="internal">Internal (Team communication)</option>
+                </select>
+              </div>
+            </form>
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowCommunicationModal(false)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddCommunication}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Communication
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

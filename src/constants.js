@@ -46,5 +46,17 @@ export const API_ENDPOINTS = {
     },
     STATS: `${CAREERS_URL}/stats`,
 },
-  QUOTES: { BASE: QUOTES_URL, GET_ALL: QUOTES_URL, GET_BY_ID: (id) => `${QUOTES_URL}/${id}`, CREATE: QUOTES_URL, UPDATE: (id) => `${QUOTES_URL}/${id}`, DELETE: (id) => `${QUOTES_URL}/${id}` }
+//  QUOTES: { BASE: QUOTES_URL, GET_ALL: QUOTES_URL, GET_BY_ID: (id) => `${QUOTES_URL}/${id}`, CREATE: QUOTES_URL, UPDATE: (id) => `${QUOTES_URL}/${id}`, DELETE: (id) => `${QUOTES_URL}/${id}` }
+
+  QUOTES: { 
+    BASE: QUOTES_URL,
+    GET_ALL: QUOTES_URL,
+    GET_BY_ID: (id) => `${QUOTES_URL}/${id}`,
+    CREATE: QUOTES_URL,  // This is the submit endpoint
+    UPDATE: (id) => `${QUOTES_URL}/${id}`,
+    DELETE: (id) => `${QUOTES_URL}/${id}`,
+    SUBMIT: QUOTES_URL,  // Add this alias for CREATE
+    STATS: `${QUOTES_URL}/stats`,
+    // Add other endpoints as needed...
+  }
 };

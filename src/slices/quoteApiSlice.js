@@ -7,16 +7,14 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
     // Submit Quote Request (Public)
     submitQuoteRequest: builder.mutation({
       query: (formData) => ({
-        url: API_ENDPOINTS.QUOTES_URL.SUBMIT, // Fixed: Changed from QUOTES_URL to QUOTES_URL
+        url: API_ENDPOINTS.QUOTES.CREATE,
         method: 'POST',
         body: formData,
-        // Remove the formData: true line - it's not needed and causes the error
-        // The browser will automatically set the correct Content-Type for FormData
       }),
       invalidatesTags: ['Quote', 'QuoteStats']
     }),
 
-    // Get All Quotes (Admin)
+    // Get All Quotes (Admin) - FIXED URL
     getQuotes: builder.query({
       query: (params = {}) => {
         const queryString = new URLSearchParams();
@@ -34,29 +32,29 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
         
         const queryStr = queryString.toString();
         return {
-          url: `${API_ENDPOINTS.QUOTES_URL.GET_ALL}${queryStr ? `?${queryStr}` : ''}`
+          url: `${API_ENDPOINTS.QUOTES.BASE}${queryStr ? `?${queryStr}` : ''}`
         };
       },
       providesTags: (result, error, params) => [
         'Quote',
         ...(result?.data || []).map(quote => ({ type: 'Quote', id: quote._id }))
       ],
-      keepUnusedDataFor: 60 // Keep data for 1 minute
+      keepUnusedDataFor: 60
     }),
 
-    // Get Single Quote (Admin)
+    // Get Single Quote (Admin) - FIXED URL
     getQuoteById: builder.query({
       query: (id) => ({
-        url: API_ENDPOINTS.QUOTES_URL.GET_BY_ID(id)
+        url: API_ENDPOINTS.QUOTES.GET_BY_ID(id)
       }),
       providesTags: (result, error, id) => [{ type: 'Quote', id }],
-      keepUnusedDataFor: 300 // Keep individual quotes longer
+      keepUnusedDataFor: 300
     }),
 
-    // Update Quote (Admin)
+    // Update Quote (Admin) - FIXED URL
     updateQuote: builder.mutation({
       query: ({ id, updateData }) => ({
-        url: API_ENDPOINTS.QUOTES_URL.UPDATE(id),
+        url: API_ENDPOINTS.QUOTES.UPDATE(id),
         method: 'PUT',
         body: updateData
       }),
@@ -65,7 +63,6 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
         { type: 'Quote', id },
         'QuoteStats'
       ],
-      // Optimistic update
       async onQueryStarted({ id, updateData }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           quoteApiSlice.util.updateQueryData('getQuoteById', id, (draft) => {
@@ -81,18 +78,16 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       }
     }),
 
-    // Delete Quote (Admin)
+    // Delete Quote (Admin) - FIXED URL
     deleteQuote: builder.mutation({
       query: (id) => ({
-        url: API_ENDPOINTS.QUOTES_URL.DELETE(id),
+        url: API_ENDPOINTS.QUOTES.DELETE(id),
         method: 'DELETE'
       }),
       invalidatesTags: ['Quote', 'QuoteStats'],
-      // Optimistic update for list queries
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const patchResults = [];
         
-        // Update all getQuotes queries
         patchResults.push(
           dispatch(
             quoteApiSlice.util.updateQueryData('getQuotes', undefined, (draft) => {
@@ -114,46 +109,35 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       }
     }),
 
-    // Get Quote Statistics (Admin)
+    // Get Quote Statistics (Admin) - FIXED URL
     getQuoteStats: builder.query({
-      query: (timeframe = '30d') => ({
-        url: `${API_ENDPOINTS.QUOTES_URL.STATS}?timeframe=${timeframe}`
+      query: () => ({
+        url: API_ENDPOINTS.QUOTES.STATS
       }),
       providesTags: ['QuoteStats'],
       keepUnusedDataFor: 300
     }),
 
-    // Bulk Update Quotes (Admin)
+    // Bulk Update Quotes (Admin) - ADDED THIS ENDPOINT
     bulkUpdateQuotes: builder.mutation({
       query: ({ ids, updateData }) => ({
-        url: API_ENDPOINTS.QUOTES_URL.BULK_UPDATE,
+        url: `${API_ENDPOINTS.QUOTES.BASE}/bulk`,
         method: 'PUT',
         body: { ids, updateData }
       }),
       invalidatesTags: ['Quote', 'QuoteStats']
     }),
 
-    // Bulk Delete Quotes (Admin)
-    bulkDeleteQuotes: builder.mutation({
-      query: (ids) => ({
-        url: API_ENDPOINTS.QUOTES_URL.BULK_DELETE,
-        method: 'DELETE',
-        body: { ids }
-      }),
-      invalidatesTags: ['Quote', 'QuoteStats']
-    }),
-
-    // Add Communication (Admin)
+    // Add Communication (Admin) - ADDED THIS ENDPOINT
     addCommunication: builder.mutation({
       query: ({ quoteId, communicationData }) => ({
-        url: API_ENDPOINTS.QUOTES_URL.ADD_COMMUNICATION(quoteId),
+        url: `${API_ENDPOINTS.QUOTES.BASE}/${quoteId}/communications`,
         method: 'POST',
         body: communicationData
       }),
       invalidatesTags: (result, error, { quoteId }) => [
         { type: 'Quote', id: quoteId }
       ],
-      // Optimistic update
       async onQueryStarted({ quoteId, communicationData }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           quoteApiSlice.util.updateQueryData('getQuoteById', quoteId, (draft) => {
@@ -172,7 +156,6 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
           dispatch(
             quoteApiSlice.util.updateQueryData('getQuoteById', quoteId, (draft) => {
               if (draft.data && draft.data.communications) {
-                // Remove temp communication and add real one
                 draft.data.communications = draft.data.communications.filter(
                   comm => !comm._id.startsWith('temp-')
                 );
@@ -186,12 +169,12 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       }
     }),
 
-    // Export Quotes (Admin)
+    // Export Quotes (Admin) - ADDED THIS ENDPOINT
     exportQuotes: builder.mutation({
       query: (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
         return {
-          url: `${API_ENDPOINTS.QUOTES_URL.EXPORT}${queryString ? `?${queryString}` : ''}`,
+          url: `${API_ENDPOINTS.QUOTES.BASE}/export${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
           responseHandler: async (response) => {
             if (params.format === 'csv') {
@@ -213,10 +196,10 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       }
     }),
 
-    // Update Quote Status (Admin - Quick action)
+    // Update Quote Status (Admin) - ADDED THIS ENDPOINT
     updateQuoteStatus: builder.mutation({
       query: ({ id, status, notes }) => ({
-        url: API_ENDPOINTS.QUOTES_URL.UPDATE_STATUS(id),
+        url: `${API_ENDPOINTS.QUOTES.BASE}/${id}/status`,
         method: 'PATCH',
         body: { status, notes }
       }),
@@ -225,7 +208,6 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
         { type: 'Quote', id },
         'QuoteStats'
       ],
-      // Optimistic update
       async onQueryStarted({ id, status, notes }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           quoteApiSlice.util.updateQueryData('getQuoteById', id, (draft) => {
@@ -249,10 +231,10 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       }
     }),
 
-    // Get Quotes by Status (Admin - for dashboard widgets)
+    // Get Quotes by Status (Admin)
     getQuotesByStatus: builder.query({
       query: (status) => ({
-        url: `${API_ENDPOINTS.QUOTES_URL.GET_ALL}?status=${status}&limit=50`
+        url: `${API_ENDPOINTS.QUOTES.BASE}?status=${status}&limit=50`
       }),
       providesTags: (result, error, status) => [
         { type: 'QuotesByStatus', id: status },
@@ -261,89 +243,31 @@ export const quoteApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 180
     }),
 
-    // Search Quotes (Admin)
-    searchQuotes: builder.query({
-      query: (searchTerm) => ({
-        url: `${API_ENDPOINTS.QUOTES_URL.SEARCH}?q=${encodeURIComponent(searchTerm)}`
-      }),
-      providesTags: ['Quote'],
-      keepUnusedDataFor: 60
-    }),
-
-    // Get Quote Analytics (Admin)
-    getQuoteAnalytics: builder.query({
-      query: (params = {}) => {
-        const queryString = new URLSearchParams(params).toString();
-        return {
-          url: `${API_ENDPOINTS.QUOTES_URL.ANALYTICS}${queryString ? `?${queryString}` : ''}`
-        };
-      },
-      providesTags: ['QuoteAnalytics'],
-      keepUnusedDataFor: 600 // Keep analytics longer
-    }),
-
-    // Get Overdue Quotes (Admin)
-    getOverdueQuotes: builder.query({
-      query: () => ({
-        url: API_ENDPOINTS.QUOTES_URL.OVERDUE
-      }),
-      providesTags: ['OverdueQuotes'],
-      keepUnusedDataFor: 120
-    }),
-
-    // Get Recent Quotes (Admin - for dashboard)
+    // Get Recent Quotes (Admin)
     getRecentQuotes: builder.query({
       query: (limit = 10) => ({
-        url: `${API_ENDPOINTS.QUOTES_URL.RECENT}?limit=${limit}`
+        url: `${API_ENDPOINTS.QUOTES.BASE}?sortBy=createdAt&sortOrder=desc&limit=${limit}`
       }),
       providesTags: ['RecentQuotes'],
       keepUnusedDataFor: 180
     }),
 
-    // Upload Quote Files (Admin - for existing quotes)
-    uploadQuoteFiles: builder.mutation({
-      query: ({ quoteId, files }) => {
-        const formData = new FormData();
-        files.forEach(file => {
-          formData.append('files', file);
-        });
-        
-        return {
-          url: API_ENDPOINTS.QUOTES_URL.UPLOAD_FILES(quoteId),
-          method: 'POST',
-          body: formData,
-          formData: true
-        };
-      },
-      invalidatesTags: (result, error, { quoteId }) => [
-        { type: 'Quote', id: quoteId }
-      ]
-    }),
-
-    // Download Quote File (Admin)
+    // Download Quote File (Admin) - ADDED THIS ENDPOINT
     downloadQuoteFile: builder.mutation({
-      query: ({ quoteId, fileId }) => ({
-        url: API_ENDPOINTS.QUOTES_URL.DOWNLOAD_FILE(quoteId, fileId),
-        method: 'GET',
-        responseHandler: async (response) => {
-          const blob = await response.blob();
-          const contentDisposition = response.headers.get('Content-Disposition');
-          const filename = contentDisposition 
-            ? contentDisposition.split('filename=')[1].replace(/"/g, '')
-            : 'download';
-          
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', filename);
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          window.URL.revokeObjectURL(url);
-          
-          return { success: true, filename };
-        }
-      })
+  query: ({ quoteId, fileId }) => ({
+    url: `${API_ENDPOINTS.QUOTES.BASE}/${quoteId}/files/${fileId}/download`,
+    method: 'GET'
+  }),
+  // Remove the responseHandler since backend returns JSON with signed URL
+}),
+
+    // Get Overdue Quotes (Admin) - ADDED THIS ENDPOINT
+    getOverdueQuotes: builder.query({
+      query: () => ({
+        url: `${API_ENDPOINTS.QUOTES.BASE}?overdue=true`
+      }),
+      providesTags: ['OverdueQuotes'],
+      keepUnusedDataFor: 120
     })
   })
 });
@@ -362,24 +286,18 @@ export const {
   useLazyGetQuoteStatsQuery,
   useGetQuotesByStatusQuery,
   useLazyGetQuotesByStatusQuery,
-  useSearchQuotesQuery,
-  useLazySearchQuotesQuery,
-  useGetQuoteAnalyticsQuery,
-  useLazyGetQuoteAnalyticsQuery,
-  useGetOverdueQuotesQuery,
-  useLazyGetOverdueQuotesQuery,
   useGetRecentQuotesQuery,
   useLazyGetRecentQuotesQuery,
+  useGetOverdueQuotesQuery,
+  useLazyGetOverdueQuotesQuery,
   
   // Admin mutation hooks
   useUpdateQuoteMutation,
   useDeleteQuoteMutation,
   useBulkUpdateQuotesMutation,
-  useBulkDeleteQuotesMutation,
   useAddCommunicationMutation,
   useExportQuotesMutation,
   useUpdateQuoteStatusMutation,
-  useUploadQuoteFilesMutation,
   useDownloadQuoteFileMutation
 } = quoteApiSlice;
 
@@ -390,8 +308,8 @@ export const selectQuotesResult = (state, params) =>
 export const selectQuoteById = (state, id) =>
   quoteApiSlice.endpoints.getQuoteById.select(id)(state);
 
-export const selectQuoteStats = (state, timeframe) =>
-  quoteApiSlice.endpoints.getQuoteStats.select(timeframe)(state);
+export const selectQuoteStats = (state) =>
+  quoteApiSlice.endpoints.getQuoteStats.select()(state);
 
 // Custom selectors with memoization
 export const selectFilteredQuotes = (status, projectType) => (state) => {
@@ -413,7 +331,7 @@ export const selectPendingQuotesCount = (state) => {
 // Helper functions for transforming data
 export const transformQuoteForExport = (quote) => ({
   id: quote._id,
-  reference: quote._id.slice(-8).toUpperCase(),
+  reference: quote._id.toString().slice(-8).toUpperCase(),
   name: `${quote.firstName} ${quote.lastName}`,
   email: quote.email,
   company: quote.company || '',

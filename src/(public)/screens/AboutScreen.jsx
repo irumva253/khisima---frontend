@@ -256,15 +256,15 @@ const AboutScreen = () => {
                     <p className="text-gray-700 italic mb-4">
                       "We realized that preserving languages isn't just about culture—it's about ensuring equal access to the digital future for everyone."
                     </p>
-                    <p className="text-sm text-gray-600">— Mr. Olivier NIYOMUGISHA, Founder & CEO</p>
+                    <p className="text-sm text-gray-600">— Founder & CEO</p>
                   </div>
                 </div>
                 <div className="relative">
-                  <img
+                  {/* <img
                     src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&h=400&fit=crop&q=80"
                     alt="Team collaboration"
                     className="rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-500"
-                  />
+                  /> */}
                   <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
                     <div className="flex items-center space-x-2">
                       <Languages className="w-6 h-6" style={{ color: '#3a7acc' }} />

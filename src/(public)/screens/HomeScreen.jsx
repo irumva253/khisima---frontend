@@ -251,11 +251,7 @@ const HomeScreen = () => {
         <div className="relative z-20 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center text-white">
-              <div className="animate-fade-in-up">
-                <Badge className="mb-6 text-sm px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30">
-                  🌍 Rwanda Based • Global Reach
-                </Badge>
-              </div>
+              
               <div className="animate-fade-in-up animation-delay-300">
                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                   African Words,<br />
@@ -279,7 +275,7 @@ const HomeScreen = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
+                   
                   className="px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 shadow-lg"
                 >
                   <Play className="mr-2 w-5 h-5" />

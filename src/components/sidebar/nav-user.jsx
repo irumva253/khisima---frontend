@@ -110,8 +110,10 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconUserCircle /> Account
+            <DropdownMenuItem asChild>
+              <Link to="/admin/profile">
+                <IconUserCircle /> Account
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link

@@ -1,20 +1,13 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconChartBar,
   IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
-  IconReport,
   IconSearch,
-  IconSettings,
-  IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react"
 
@@ -33,6 +26,7 @@ import {
 import { Link } from "react-router-dom"
 import { IconBell } from "@tabler/icons-react"
 import { IconBriefcase } from "@tabler/icons-react"
+import { IconAffiliate } from "@tabler/icons-react"
 
 const data = {
   user: {
@@ -54,22 +48,12 @@ const data = {
     {
       title: "Services",
       url: "services",
-      icon: IconListDetails,
+      icon: IconAffiliate,
     },
     {
       title: "Careers",
       url: "careers",
       icon: IconBriefcase,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
     },
     {
       title: "Partners",

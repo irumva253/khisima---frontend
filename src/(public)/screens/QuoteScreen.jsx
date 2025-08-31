@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { 
   Calculator, 
@@ -21,14 +22,22 @@ import {
   Check,
   AlertTriangle
 } from 'lucide-react';
-import DynamicText from "@/components/kokonutui/dynamic-text";
-import { useSubmitQuoteRequestMutation } from '@/slices/quoteApiSlice';
+import { 
+  IconBolt,
+  IconCalendarDollar,
+  IconTargetArrow,
+  IconHeartHandshake  
+ } from '@tabler/icons-react';
+ import { toast } from 'sonner';
+
+ import { useSubmitQuoteRequestMutation } from '@/slices/quoteApiSlice';
 
 const QuoteScreen = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
   const [formErrors, setFormErrors] = useState({});
+  const [showValidation, setShowValidation] = useState(false); 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -46,9 +55,6 @@ const QuoteScreen = () => {
     budget: '',
     description: ''
   });
-
-  // Use the mutation hook from the slice
-  const [submitQuoteRequest] = useSubmitQuoteRequestMutation();
 
   const projectTypes = [
     'Document Translation',
@@ -99,6 +105,7 @@ const QuoteScreen = () => {
       } else if (!/\S+@\S+\.\S+/.test(data.email)) {
         errors.email = 'Email is invalid';
       }
+      if (!data.phone.trim()) errors.phone = 'Phone number is required';
       return errors;
     },
     // Step 1: Project Details
@@ -129,11 +136,11 @@ const QuoteScreen = () => {
     () => ({})
   ];
 
+  // Clear validation when step changes
   useEffect(() => {
-    // Validate current step when form data changes
-    const errors = stepValidations[activeStep](formData);
-    setFormErrors(errors);
-  }, [formData, activeStep]);
+    setShowValidation(false);
+    setFormErrors({});
+  }, [activeStep]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -141,7 +148,17 @@ const QuoteScreen = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear specific field error when user starts typing
+    if (showValidation && formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
   };
+
+  const [submitApplication, { isSubmitting }] = useSubmitQuoteRequestMutation();
 
   const handleLanguageChange = (language, isTarget = false) => {
     if (isTarget) {
@@ -151,6 +168,14 @@ const QuoteScreen = () => {
           ? prev.targetLanguages.filter(lang => lang !== language)
           : [...prev.targetLanguages, language]
       }));
+      
+      // Clear validation error when user selects a language
+      if (showValidation && formErrors.targetLanguages) {
+        setFormErrors(prev => ({
+          ...prev,
+          targetLanguages: undefined
+        }));
+      }
     } else {
       setFormData(prev => ({
         ...prev,
@@ -158,6 +183,14 @@ const QuoteScreen = () => {
         // Clear other source language if not "Other"
         otherSourceLanguage: language === 'Other' ? prev.otherSourceLanguage : ''
       }));
+      
+      // Clear validation error when user selects a language
+      if (showValidation && formErrors.sourceLanguage) {
+        setFormErrors(prev => ({
+          ...prev,
+          sourceLanguage: undefined
+        }));
+      }
     }
   };
 
@@ -176,74 +209,103 @@ const QuoteScreen = () => {
   };
 
   const nextStep = () => {
-    if (isStepValid() && activeStep < steps.length - 1) {
+    // Validate the current step
+    const errors = stepValidations[activeStep](formData);
+    
+    if (Object.keys(errors).length > 0) {
+      // Show validation errors if step is invalid
+      setFormErrors(errors);
+      setShowValidation(true);
+      return;
+    }
+    
+    // If valid, move to next step
+    if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
+      setShowValidation(false);
+      setFormErrors({});
     }
   };
 
   const prevStep = () => {
     if (activeStep > 0) {
       setActiveStep(activeStep - 1);
+      setShowValidation(false);
+      setFormErrors({});
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!isStepValid()) return;
-    
-    setIsLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Final validation before submit
+  const errors = stepValidations[activeStep](formData);
+  if (Object.keys(errors).length > 0) {
+    setFormErrors(errors);
+    setShowValidation(true);
+    return;
+  }
+  
+  setIsLoading(true);
 
-    // Create FormData for file upload
-    const submitData = new FormData();
+  try {
+    // Create FormData object
+    const formDataToSend = new FormData();
     
-    // Append form data
+    // Append all form fields to FormData
     Object.keys(formData).forEach(key => {
-      if (key === 'targetLanguages') {
-        submitData.append(key, JSON.stringify(formData[key]));
-      } else {
-        submitData.append(key, formData[key]);
+      if (formData[key] !== null && formData[key] !== '') {
+        if (key === 'targetLanguages') {
+          // Convert array to JSON string for FormData
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
       }
     });
 
-    // Append files
+    // Append files if any
     files.forEach(file => {
-      submitData.append('files', file);
+      formDataToSend.append('files', file);
     });
 
-    try {
-      // Use the mutation from the slice to submit the quote request
-      await submitQuoteRequest(submitData).unwrap();
-      
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        company: '',
-        projectType: '',
-        sourceLanguage: '',
-        targetLanguages: [],
-        otherSourceLanguage: '',
-        otherTargetLanguage: '',
-        wordCount: '',
-        deadline: '',
-        specialRequirements: '',
-        budget: '',
-        description: ''
-      });
-      setFiles([]);
-      
-      // Show success message
-      alert('Quote request submitted successfully! We\'ll get back to you within 24 hours.');
-    } catch (error) {
-      console.error('Error submitting quote request:', error);
-      alert('Error submitting quote request. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Submit the form data
+    const result = await submitApplication(formDataToSend).unwrap();
+    console.log('Quote submitted:', result);
+
+    // Reset form
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      company: '',
+      projectType: '',
+      sourceLanguage: '',
+      targetLanguages: [],
+      otherSourceLanguage: '',
+      otherTargetLanguage: '',
+      wordCount: '',
+      deadline: '',
+      specialRequirements: '',
+      budget: '',
+      description: ''
+    });
+    setFiles([]);
+    setActiveStep(0);
+    setShowValidation(false);
+    setFormErrors({});
+    
+    // Show success message
+    toast.success('Quote request submitted successfully! We\'ll get back to you within 24 hours.');
+    
+  } catch (error) {
+    console.error('Error submitting quote request:', error);
+    toast.error(error?.data?.message || 'Error submitting quote request. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Render the current step content
   const renderStepContent = () => {
@@ -267,11 +329,11 @@ const QuoteScreen = () => {
                   onChange={handleChange}
                   required
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    formErrors.firstName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                    showValidation && formErrors.firstName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
                   placeholder="Your first name"
                 />
-                {formErrors.firstName && (
+                {showValidation && formErrors.firstName && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertTriangle className="w-4 h-4 mr-1" />
                     {formErrors.firstName}
@@ -290,11 +352,11 @@ const QuoteScreen = () => {
                   onChange={handleChange}
                   required
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    formErrors.lastName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                    showValidation && formErrors.lastName ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
                   placeholder="Your last name"
                 />
-                {formErrors.lastName && (
+                {showValidation && formErrors.lastName && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertTriangle className="w-4 h-4 mr-1" />
                     {formErrors.lastName}
@@ -315,11 +377,11 @@ const QuoteScreen = () => {
                   onChange={handleChange}
                   required
                   className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    formErrors.email ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                    showValidation && formErrors.email ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
                   placeholder="your.email@example.com"
                 />
-                {formErrors.email && (
+                {showValidation && formErrors.email && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
                     <AlertTriangle className="w-4 h-4 mr-1" />
                     {formErrors.email}
@@ -329,16 +391,25 @@ const QuoteScreen = () => {
               
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number
+                  Phone Number *
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  required
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200
+                  ${showValidation && formErrors.phone ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}
+                  `}
                   placeholder="+250 xxx xxx xxx"
                 />
+                {showValidation && formErrors.phone && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-1" />
+                    {formErrors.phone}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -375,7 +446,7 @@ const QuoteScreen = () => {
                 onChange={handleChange}
                 required
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                  formErrors.projectType ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  showValidation && formErrors.projectType ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                 }`}
               >
                 <option value="">Select project type</option>
@@ -383,7 +454,7 @@ const QuoteScreen = () => {
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
-              {formErrors.projectType && (
+              {showValidation && formErrors.projectType && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertTriangle className="w-4 h-4 mr-1" />
                   {formErrors.projectType}
@@ -409,7 +480,7 @@ const QuoteScreen = () => {
                 }}
                 required
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                  formErrors.sourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  showValidation && formErrors.sourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                 }`}
               >
                 <option value="">Select source language</option>
@@ -427,11 +498,11 @@ const QuoteScreen = () => {
                     onChange={handleChange}
                     placeholder="Specify source language"
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                      formErrors.otherSourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                      showValidation && formErrors.otherSourceLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                     }`}
                     required
                   />
-                  {formErrors.otherSourceLanguage && (
+                  {showValidation && formErrors.otherSourceLanguage && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertTriangle className="w-4 h-4 mr-1" />
                       {formErrors.otherSourceLanguage}
@@ -439,7 +510,7 @@ const QuoteScreen = () => {
                   )}
                 </div>
               )}
-              {formErrors.sourceLanguage && formData.sourceLanguage !== 'Other' && (
+              {showValidation && formErrors.sourceLanguage && formData.sourceLanguage !== 'Other' && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertTriangle className="w-4 h-4 mr-1" />
                   {formErrors.sourceLanguage}
@@ -452,7 +523,7 @@ const QuoteScreen = () => {
                 Target Languages * (Select multiple)
               </label>
               <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border rounded-xl max-h-48 overflow-y-auto ${
-                formErrors.targetLanguages ? 'border-red-500' : 'border-gray-300'
+                showValidation && formErrors.targetLanguages ? 'border-red-500' : 'border-gray-300'
               }`}>
                 {languages.map(lang => (
                   <label key={lang} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
@@ -475,7 +546,7 @@ const QuoteScreen = () => {
                 ))}
               </div>
               
-              {formErrors.targetLanguages && (
+              {showValidation && formErrors.targetLanguages && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertTriangle className="w-4 h-4 mr-1" />
                   {formErrors.targetLanguages}
@@ -491,11 +562,11 @@ const QuoteScreen = () => {
                     onChange={handleChange}
                     placeholder="Specify target language(s)"
                     className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                      formErrors.otherTargetLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                      showValidation && formErrors.otherTargetLanguage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                     }`}
                     required
                   />
-                  {formErrors.otherTargetLanguage && (
+                  {showValidation && formErrors.otherTargetLanguage && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertTriangle className="w-4 h-4 mr-1" />
                       {formErrors.otherTargetLanguage}
@@ -641,11 +712,11 @@ const QuoteScreen = () => {
                 required
                 rows={6}
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none ${
-                  formErrors.description ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  showValidation && formErrors.description ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
                 }`}
                 placeholder="Describe your project in detail. What do you need translated? What is the purpose? Who is your target audience?"
               />
-              {formErrors.description && (
+              {showValidation && formErrors.description && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertTriangle className="w-4 h-4 mr-1" />
                   {formErrors.description}
@@ -809,38 +880,33 @@ const QuoteScreen = () => {
 
           {/* Hero Content */}
           <div className="text-center animate-slide-up">
-            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-[#86befe] to-white mb-4 leading-tight">
-              Saba!
+            <h1 className="text-6xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-[#86befe] to-white mb-4 leading-tight">
+              Quote Request
             </h1>
-            <p className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-              Request Your Quote
-            </p>
             <p className="text-lg text-white max-w-3xl mx-auto leading-relaxed mb-8"> 
-              <span className="font-semibold text-yellow-300">"Saba"</span> means{" "}
-              "<DynamicText />" in Kinyarwanda. 
-              Get a personalized quote for your translation and localization needs. 
+              Get a personalized quote for your translation, localization and other service needs. 
               We provide transparent pricing with no hidden fees.
             </p>
             
             {/* Key Features */}
             <div className="flex flex-wrap justify-center gap-6 mt-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay">
-                <div className="text-2xl mb-2">⚡</div>
+                <div className="text-2xl mb-2 justify-center flex text-blue-300"><IconBolt/></div>
                 <div className="text-lg font-semibold mb-1">Fast Quotes</div>
                 <div className="text-blue-100 text-sm">24-hour response</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay-2">
-                <div className="text-2xl mb-2">💰</div>
+                <div className="text-2xl mb-2 justify-center flex text-orange-300"><IconCalendarDollar/></div>
                 <div className="text-lg font-semibold mb-1">Transparent</div>
                 <div className="text-blue-100 text-sm">No hidden fees</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay-3">
-                <div className="text-2xl mb-2">🎯</div>
+                <div className="text-2xl mb-2 justify-center flex text-red-300"><IconTargetArrow/></div>
                 <div className="text-lg font-semibold mb-1">Accurate</div>
                 <div className="text-blue-100 text-sm">Detailed estimates</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay-3">
-                <div className="text-2xl mb-2">🤝</div>
+                <div className="text-2xl mb-2 justify-center flex text-blue-100"><IconHeartHandshake/></div>
                 <div className="text-lg font-semibold mb-1">Flexible</div>
                 <div className="text-blue-100 text-sm">Custom solutions</div>
               </div>
@@ -927,12 +993,7 @@ const QuoteScreen = () => {
                       <button
                         type="button"
                         onClick={nextStep}
-                        disabled={!isStepValid()}
-                        className={`flex items-center px-6 py-3 rounded-xl font-medium transition-colors duration-200 ${
-                          isStepValid() 
-                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        }`}
+                        className="flex items-center px-6 py-3 rounded-xl font-medium transition-colors duration-200 bg-blue-600 text-white hover:bg-blue-700"
                       >
                         Next
                         <ChevronRight className="w-5 h-5 ml-2" />
@@ -940,9 +1001,9 @@ const QuoteScreen = () => {
                     ) : (
                       <button
                         type="submit"
-                        disabled={isLoading || !isStepValid()}
+                        disabled={isLoading}
                         className={`flex items-center px-8 py-3 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg ${
-                          isLoading || !isStepValid()
+                          isLoading
                             ? 'bg-gray-400 cursor-not-allowed'
                             : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl'
                         }`}
@@ -1090,7 +1151,7 @@ const QuoteScreen = () => {
           </div>
         </div>
       </div>
-      
+      <div><br/></div>
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes fade-in {

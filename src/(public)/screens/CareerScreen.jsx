@@ -174,7 +174,6 @@ const CareerScreen = () => {
     }
   };
 
-// Alternative approach: Modify the handleSubmit function in CareerScreen.jsx
 const handleSubmit = async (e) => {
   e.preventDefault();
   
