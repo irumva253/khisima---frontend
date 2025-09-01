@@ -28,6 +28,7 @@ import { IconBell } from "@tabler/icons-react"
 import { IconBriefcase } from "@tabler/icons-react"
 import { IconAffiliate } from "@tabler/icons-react"
 import { IconAd2 } from "@tabler/icons-react"
+import { IconBadge } from "@tabler/icons-react"
 
 const data = {
   user: {
@@ -66,6 +67,11 @@ const data = {
       title: "Resources",
       url: "resources",
       icon: IconAd2,
+    },
+    {
+      title: "Workplaces",
+      url: "workplaces",
+      icon: IconBadge,
     }
   ],
   navClouds: [

@@ -65,5 +65,13 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/api/resources/${id}`,
     DELETE: (id) => `/api/resources/${id}`,
     STATS: '/api/resources/stats/summary'
+  },
+   WORKPLACES: {
+    BASE: '/api/workplaces',
+    CREATE: '/api/workplaces',
+    GET_BY_ID: (id) => `/api/workplaces/${id}`,
+    UPDATE: (id) => `/api/workplaces/${id}`,
+    DELETE: (id) => `/api/workplaces/${id}`,
+    STATS: '/api/workplaces/stats/summary'
   }
 };

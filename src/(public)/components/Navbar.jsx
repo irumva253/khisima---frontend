@@ -350,7 +350,7 @@ const Navbar = () => {
 
             <div className="flex items-center space-x-4">
               <div className="relative group hidden lg:block">
-                <button
+                {/* <button
                   onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                   className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
                 >
@@ -358,7 +358,7 @@ const Navbar = () => {
                   <span className="font-medium">{currentLang.flag}</span>
                   <span className="font-medium">{currentLang.code.toUpperCase()}</span>
                   <IconChevronDown size={16} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
+                </button> */}
                 
                 {langDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white text-gray-800 shadow-2xl rounded-xl py-2 border border-gray-100">
@@ -392,7 +392,7 @@ const Navbar = () => {
                 <IconPhone size={18} className="mr-2 group-hover:scale-110 transition-transform" />
                 Contact
               </Link>
-              <Link
+              {/* <Link
                 to="/login"
                 className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
                   isActive("/login") 
@@ -402,7 +402,7 @@ const Navbar = () => {
               >
                 <IconUser size={18} className="mr-2 group-hover:scale-110 transition-transform" />
                 Login
-              </Link>
+              </Link> */}
               <Link
                 to="/quote"
                 className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
@@ -628,7 +628,7 @@ const Navbar = () => {
                 </Link>
               </div>
 
-              <div>
+              {/* <div>
                 <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
                   <IconLanguage size={16} className="mr-2" />
                   Language
@@ -671,7 +671,7 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
             </nav>
 
             <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">

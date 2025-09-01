@@ -29,19 +29,22 @@ const Footer = () => {
   ];
 
   const languages = [
-    "Kinyarwanda",
     "English",
     "French",
+    "Kinyarwanda",
+    "Amharic",
+    "Luganda",
     "Swahili",
-    "Lingala",
-    "Luganda"
+    "Chewa",
+    "Worof",
+    "Oromo"
   ];
 
   const quickLinks = [
     { name: "About Us", href: "about-us" },
     { name: "Our Services", href: "services" },
     { name: "Our Mission", href: "#mission" },
-    { name: "Countries of Operation", href: "#operation-countries" },
+    { name: "Countries of Operation", href: "workplace" },
     { name: "Contact", href: "contact" },
     { name: "Get Quote", href: "quote" }
   ];
