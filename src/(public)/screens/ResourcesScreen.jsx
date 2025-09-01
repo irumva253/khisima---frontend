@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, 
@@ -21,218 +21,45 @@ import {
   Headphones,
   ArrowRight,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from 'lucide-react';
+import {
+  useGetResourcesQuery,
+  useGetResourceStatsQuery,
+  useGetFeaturedResourcesQuery,
+  useIncrementDownloadCountMutation,
+  getResourceTypeIcon,
+  getResourceCategoryColor
+} from '@/slices/resourceSlice';
 
 const ResourcesScreen = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedAccordion, setExpandedAccordion] = useState(null);
 
+  // RTK Query hooks
+  const { data: resourcesData, isLoading: loadingResources } = 
+    useGetResourcesQuery({ 
+      status: 'published', 
+      category: activeCategory === 'all' ? '' : activeCategory,
+      search: searchQuery 
+    });
+  
+  const { data: statsData } = useGetResourceStatsQuery();
+  const { data: featuredData } = useGetFeaturedResourcesQuery(3);
+  const [incrementDownloadCount] = useIncrementDownloadCountMutation();
+
+  const resources = resourcesData?.data || [];
+  const featuredResources = featuredData?.data || [];
+  const stats = statsData?.data || {};
+
   const categories = [
-    { id: 'all', name: 'All Resources', icon: Globe, count: 48 },
-    { id: 'trends', name: 'Language Trends', icon: TrendingUp, count: 12 },
-    { id: 'ai-language', name: 'AI vs Language', icon: Brain, count: 15 },
-    { id: 'linguistics', name: 'Practical Linguistics', icon: BookOpen, count: 14 },
-    { id: 'open-resources', name: 'Open Resources', icon: Download, count: 7 }
-  ];
-
-  const featuredResources = [
-    {
-      id: 1,
-      title: 'The Future of African Languages in Digital Transformation',
-      category: 'trends',
-      type: 'research',
-      description: 'Comprehensive analysis of how African languages are being integrated into digital platforms and the challenges ahead.',
-      author: 'Dr. Amina Kone',
-      date: '2024-08-15',
-      readTime: '12 min',
-      rating: 4.9,
-      downloads: 2847,
-      tags: ['Digital Transformation', 'African Languages', 'Technology'],
-      image: '/api/placeholder/400/250'
-    },
-    {
-      id: 2,
-      title: 'Breaking Language Barriers: AI vs Human Translation',
-      category: 'ai-language',
-      type: 'whitepaper',
-      description: 'In-depth comparison of AI translation systems versus human translators for African languages.',
-      author: 'Khisima Research Team',
-      date: '2024-08-10',
-      readTime: '18 min',
-      rating: 4.8,
-      downloads: 3521,
-      tags: ['AI Translation', 'Machine Learning', 'Language Processing'],
-      image: '/api/placeholder/400/250'
-    },
-    {
-      id: 3,
-      title: 'Practical Guide to Swahili NLP Implementation',
-      category: 'linguistics',
-      type: 'guide',
-      description: 'Step-by-step guide for implementing natural language processing solutions for Swahili language applications.',
-      author: 'Prof. James Mwangi',
-      date: '2024-08-05',
-      readTime: '25 min',
-      rating: 4.9,
-      downloads: 1876,
-      tags: ['Swahili', 'NLP', 'Implementation'],
-      image: '/api/placeholder/400/250'
-    }
-  ];
-
-  const resources = [
-    // Language Trends
-    {
-      id: 4,
-      title: 'African Language Usage Statistics 2024',
-      category: 'trends',
-      type: 'data',
-      description: 'Latest statistics on African language usage across digital platforms.',
-      author: 'Khisima Analytics',
-      date: '2024-07-28',
-      readTime: '8 min',
-      rating: 4.7,
-      downloads: 1234,
-      tags: ['Statistics', 'Usage Data', 'Trends']
-    },
-    {
-      id: 5,
-      title: 'Rise of Voice Technology in Africa',
-      category: 'trends',
-      type: 'article',
-      description: 'How voice assistants and speech recognition are adapting to African languages.',
-      author: 'Sarah Okonkwo',
-      date: '2024-07-20',
-      readTime: '10 min',
-      rating: 4.6,
-      downloads: 892,
-      tags: ['Voice Technology', 'Speech Recognition', 'Africa']
-    },
-    {
-      id: 6,
-      title: 'Mobile Apps Driving Language Preservation',
-      category: 'trends',
-      type: 'case-study',
-      description: 'Case studies of successful mobile applications preserving endangered African languages.',
-      author: 'Dr. Fatima Hassan',
-      date: '2024-07-15',
-      readTime: '15 min',
-      rating: 4.8,
-      downloads: 1567,
-      tags: ['Mobile Apps', 'Language Preservation', 'Case Studies']
-    },
-
-    // AI vs Language
-    {
-      id: 7,
-      title: 'Training Large Language Models for African Languages',
-      category: 'ai-language',
-      type: 'technical',
-      description: 'Technical guide on training and fine-tuning LLMs for low-resource African languages.',
-      author: 'AI Research Collective',
-      date: '2024-07-25',
-      readTime: '22 min',
-      rating: 4.9,
-      downloads: 2341,
-      tags: ['LLM', 'Training', 'African Languages']
-    },
-    {
-      id: 8,
-      title: 'Bias in AI Language Models: African Perspectives',
-      category: 'ai-language',
-      type: 'research',
-      description: 'Analysis of bias in current AI language models when processing African languages.',
-      author: 'Dr. Kwame Asante',
-      date: '2024-07-18',
-      readTime: '16 min',
-      rating: 4.7,
-      downloads: 1876,
-      tags: ['AI Bias', 'Ethics', 'Language Models']
-    },
-    {
-      id: 9,
-      title: 'Code-Switching in Multilingual AI Systems',
-      category: 'ai-language',
-      type: 'paper',
-      description: 'How AI systems handle code-switching in African multilingual contexts.',
-      author: 'Multilingual AI Lab',
-      date: '2024-07-10',
-      readTime: '20 min',
-      rating: 4.8,
-      downloads: 1432,
-      tags: ['Code-Switching', 'Multilingual', 'AI Systems']
-    },
-
-    // Practical Linguistics
-    {
-      id: 10,
-      title: 'Phonetic Analysis Tools for African Languages',
-      category: 'linguistics',
-      type: 'tools',
-      description: 'Collection of phonetic analysis tools specifically designed for African language research.',
-      author: 'Linguistics Toolkit Team',
-      date: '2024-07-30',
-      readTime: '12 min',
-      rating: 4.6,
-      downloads: 987,
-      tags: ['Phonetics', 'Tools', 'Research']
-    },
-    {
-      id: 11,
-      title: 'Tone Recognition in Bantu Languages',
-      category: 'linguistics',
-      type: 'methodology',
-      description: 'Methodologies for implementing tone recognition systems in Bantu language processing.',
-      author: 'Dr. Grace Nyong',
-      date: '2024-07-22',
-      readTime: '18 min',
-      rating: 4.9,
-      downloads: 1654,
-      tags: ['Tone Recognition', 'Bantu Languages', 'Methodology']
-    },
-    {
-      id: 12,
-      title: 'Corpus Building for Low-Resource Languages',
-      category: 'linguistics',
-      type: 'guide',
-      description: 'Best practices for building high-quality corpora for under-resourced African languages.',
-      author: 'Corpus Linguistics Group',
-      date: '2024-07-14',
-      readTime: '14 min',
-      rating: 4.7,
-      downloads: 1298,
-      tags: ['Corpus Building', 'Low-Resource', 'Best Practices']
-    },
-
-    // Open Resources
-    {
-      id: 13,
-      title: 'Open Dataset: Yoruba Speech Recognition',
-      category: 'open-resources',
-      type: 'dataset',
-      description: 'Free dataset containing 500 hours of Yoruba speech with transcriptions.',
-      author: 'Khisima Open Data',
-      date: '2024-08-01',
-      readTime: '5 min',
-      rating: 4.8,
-      downloads: 3456,
-      tags: ['Yoruba', 'Speech Recognition', 'Open Data']
-    },
-    {
-      id: 14,
-      title: 'Hausa Language Processing Toolkit',
-      category: 'open-resources',
-      type: 'software',
-      description: 'Open-source toolkit for Hausa language processing and analysis.',
-      author: 'Open Source Community',
-      date: '2024-07-26',
-      readTime: '7 min',
-      rating: 4.9,
-      downloads: 2187,
-      tags: ['Hausa', 'Open Source', 'Toolkit']
-    }
+    { id: 'all', name: 'All Resources', icon: Globe, count: stats.total || 0 },
+    { id: 'trends', name: 'Language Trends', icon: TrendingUp, count: stats.byCategory?.trends || 0 },
+    { id: 'ai-language', name: 'AI vs Language', icon: Brain, count: stats.byCategory?.['ai-language'] || 0 },
+    { id: 'linguistics', name: 'Practical Linguistics', icon: BookOpen, count: stats.byCategory?.linguistics || 0 },
+    { id: 'open-resources', name: 'Open Resources', icon: Download, count: stats.byCategory?.['open-resources'] || 0 }
   ];
 
   const trendingTopics = [
@@ -243,35 +70,45 @@ const ResourcesScreen = () => {
     { name: 'Multilingual NLP', growth: '+41%', posts: 98 }
   ];
 
-  const filteredResources = [...featuredResources, ...resources].filter(resource => {
-    const matchesCategory = activeCategory === 'all' || resource.category === activeCategory;
-    const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCategory && matchesSearch;
-  });
+  const handleDownload = async (resourceId) => {
+    try {
+      await incrementDownloadCount(resourceId).unwrap();
+      // Additional download logic here
+    } catch (error) {
+      console.error('Failed to increment download count:', error);
+    }
+  };
 
-  const getTypeIcon = (type) => {
+  const getTypeIconComponent = (type) => {
+    const iconName = getResourceTypeIcon(type);
     const icons = {
-      research: FileText,
-      whitepaper: FileText,
-      guide: BookOpen,
-      data: TrendingUp,
-      article: FileText,
-      'case-study': FileText,
-      technical: Cpu,
-      paper: FileText,
-      tools: Download,
-      methodology: BookOpen,
-      dataset: Download,
-      software: Download
+      FileText,
+      Video,
+      Headphones,
+      BookOpen,
+      TrendingUp,
+      Cpu,
+      Download
     };
-    return icons[type] || FileText;
+    return icons[iconName] || FileText;
   };
 
-  const toggleAccordion = (id) => {
-    setExpandedAccordion(expandedAccordion === id ? null : id);
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
+
+  if (loadingResources) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading resources...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -337,7 +174,7 @@ const ResourcesScreen = () => {
             {/* Statistics */}
             <div className="flex flex-wrap justify-center gap-8 mt-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay">
-                <div className="text-2xl font-bold mb-1">48+</div>
+                <div className="text-2xl font-bold mb-1">{stats.total || 0}+</div>
                 <div className="text-blue-100 text-sm">Resources Available</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay-2">
@@ -345,7 +182,7 @@ const ResourcesScreen = () => {
                 <div className="text-blue-100 text-sm">African Languages</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 animate-fade-in-delay-3">
-                <div className="text-2xl font-bold mb-1">25K+</div>
+                <div className="text-2xl font-bold mb-1">{stats.totalDownloads?.toLocaleString() || '25K+'}</div>
                 <div className="text-blue-100 text-sm">Downloads</div>
               </div>
             </div>
@@ -457,77 +294,77 @@ const ResourcesScreen = () => {
               <div className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Resources</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {featuredResources
-                    .filter(resource => activeCategory === 'all' || resource.category === activeCategory)
-                    .map((resource) => {
-                      const TypeIcon = getTypeIcon(resource.type);
-                      return (
-                        <div
-                          key={resource.id}
-                          className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
-                        >
-                          <div className="relative h-48 bg-gradient-to-br from-[#4c91f5] to-indigo-600">
-                            <div className="absolute inset-0 bg-black opacity-20"></div>
-                            <div className="absolute top-4 left-4">
-                              <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 capitalize">
-                                {resource.type}
-                              </span>
+                  {featuredResources.map((resource) => {
+                    const TypeIcon = getTypeIconComponent(resource.type);
+                    const categoryColor = getResourceCategoryColor(resource.category);
+                    
+                    return (
+                      <div
+                        key={resource._id}
+                        className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                      >
+                        <div className="relative h-48 bg-gradient-to-br from-[#4c91f5] to-indigo-600">
+                          {resource.imageUrl && (
+                            <img
+                              src={resource.imageUrl}
+                              alt={resource.title}
+                              className="w-full h-full object-cover opacity-50"
+                            />
+                          )}
+                          <div className="absolute inset-0 bg-black opacity-20"></div>
+                          <div className="absolute top-4 left-4">
+                            <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 capitalize">
+                              {resource.type}
+                            </span>
+                          </div>
+                          <div className="absolute top-4 right-4">
+                            <div className="flex items-center bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full">
+                              <Star className="w-3 h-3 text-yellow-500 mr-1" fill="currentColor" />
+                              <span className="text-xs font-medium text-gray-700">{resource.rating}</span>
                             </div>
-                            <div className="absolute top-4 right-4">
-                              <div className="flex items-center bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full">
-                                <Star className="w-3 h-3 text-yellow-500 mr-1" fill="currentColor" />
-                                <span className="text-xs font-medium text-gray-700">{resource.rating}</span>
-                              </div>
-                            </div>
-                            <div className="absolute bottom-4 left-4 right-4">
-                              <h3 className="text-white font-bold text-lg leading-tight group-hover:text-yellow-200 transition-colors duration-200">
-                                {resource.title}
-                              </h3>
+                          </div>
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <h3 className="text-white font-bold text-lg leading-tight group-hover:text-yellow-200 transition-colors duration-200">
+                              {resource.title}
+                            </h3>
+                          </div>
+                        </div>
+                        
+                        <div className="p-6">
+                          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                            {resource.description}
+                          </p>
+                          
+                          <div className="flex items-center text-xs text-gray-500 mb-4">
+                            <User className="w-3 h-3 mr-1" />
+                            <span className="mr-4">{resource.author}</span>
+                            <Calendar className="w-3 h-3 mr-1" />
+                            <span className="mr-4">{formatDate(resource.createdAt)}</span>
+                            <Clock className="w-3 h-3 mr-1" />
+                            <span>{resource.readTime}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between mb-4">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${categoryColor}`}>
+                              {resource.category}
+                            </span>
+                            <div className="flex items-center text-gray-500 text-xs">
+                              <Download className="w-3 h-3 mr-1" />
+                              <span>{resource.downloads.toLocaleString()} downloads</span>
                             </div>
                           </div>
                           
-                          <div className="p-6">
-                            <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                              {resource.description}
-                            </p>
-                            
-                            <div className="flex items-center text-xs text-gray-500 mb-4">
-                              <User className="w-3 h-3 mr-1" />
-                              <span className="mr-4">{resource.author}</span>
-                              <Calendar className="w-3 h-3 mr-1" />
-                              <span className="mr-4">{new Date(resource.date).toLocaleDateString()}</span>
-                              <Clock className="w-3 h-3 mr-1" />
-                              <span>{resource.readTime}</span>
-                            </div>
-                            
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {resource.tags.slice(0, 2).map((tag, index) => (
-                                <span
-                                  key={index}
-                                  className="bg-blue-50 text-[#4c91f5] px-2 py-1 rounded-full text-xs font-medium"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {resource.tags.length > 2 && (
-                                <span className="text-gray-400 text-xs">+{resource.tags.length - 2} more</span>
-                              )}
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center text-gray-500 text-xs">
-                                <Download className="w-3 h-3 mr-1" />
-                                <span>{resource.downloads.toLocaleString()} downloads</span>
-                              </div>
-                              <button className="bg-[#4c91f5] text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 flex items-center text-sm font-medium">
-                                View
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                              </button>
-                            </div>
-                          </div>
+                          <button 
+                            onClick={() => handleDownload(resource._id)}
+                            className="w-full bg-[#4c91f5] text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center text-sm font-medium"
+                          >
+                            Download
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </button>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -535,11 +372,13 @@ const ResourcesScreen = () => {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">All Resources</h2>
                 <div className="space-y-4">
-                  {filteredResources.slice(3).map((resource) => {
-                    const TypeIcon = getTypeIcon(resource.type);
+                  {resources.map((resource) => {
+                    const TypeIcon = getTypeIconComponent(resource.type);
+                    const categoryColor = getResourceCategoryColor(resource.category);
+                    
                     return (
                       <div
-                        key={resource.id}
+                        key={resource._id}
                         className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group"
                       >
                         <div className="flex items-start justify-between">
@@ -567,27 +406,38 @@ const ResourcesScreen = () => {
                               <User className="w-4 h-4 mr-1" />
                               <span className="mr-6">{resource.author}</span>
                               <Calendar className="w-4 h-4 mr-1" />
-                              <span className="mr-6">{new Date(resource.date).toLocaleDateString()}</span>
+                              <span className="mr-6">{formatDate(resource.createdAt)}</span>
                               <Clock className="w-4 h-4 mr-1" />
                               <span className="mr-6">{resource.readTime}</span>
                               <Download className="w-4 h-4 mr-1" />
                               <span>{resource.downloads.toLocaleString()}</span>
                             </div>
                             
-                            <div className="flex flex-wrap gap-2">
-                              {resource.tags.map((tag, index) => (
-                                <span
-                                  key={index}
-                                  className="bg-gray-50 text-gray-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-50 hover:text-[#4c91f5] transition-colors duration-200 cursor-pointer"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
+                            <div className="flex items-center justify-between">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${categoryColor}`}>
+                                {resource.category}
+                              </span>
+                              <div className="flex flex-wrap gap-2">
+                                {resource.tags.slice(0, 3).map((tag, index) => (
+                                  <span
+                                    key={index}
+                                    className="bg-gray-50 text-gray-600 px-2 py-1 rounded-full text-xs font-medium"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                                {resource.tags.length > 3 && (
+                                  <span className="text-gray-400 text-xs">+{resource.tags.length - 3} more</span>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
                           <div className="ml-6">
-                            <button className="bg-[#4c91f5] text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors duration-200 flex items-center font-medium group-hover:scale-105 transform transition-transform duration-200">
+                            <button 
+                              onClick={() => handleDownload(resource._id)}
+                              className="bg-[#4c91f5] text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors duration-200 flex items-center font-medium group-hover:scale-105 transform transition-transform duration-200"
+                            >
                               Access
                               <ExternalLink className="w-4 h-4 ml-2" />
                             </button>
@@ -599,15 +449,24 @@ const ResourcesScreen = () => {
                 </div>
               </div>
 
-              {/* Pagination */}
-
-
+              {resources.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                    <FileText className="w-16 h-16 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
+                  <p className="text-gray-500">
+                    {searchQuery 
+                      ? `No resources match your search for "${searchQuery}"`
+                      : 'There are no resources available in this category yet.'
+                    }
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-
         </div>
       </div>
-      <div><br/></div>
 
       {/* Custom CSS for animations */}
       <style jsx>{`

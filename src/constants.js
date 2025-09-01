@@ -55,8 +55,15 @@ export const API_ENDPOINTS = {
     CREATE: QUOTES_URL,  // This is the submit endpoint
     UPDATE: (id) => `${QUOTES_URL}/${id}`,
     DELETE: (id) => `${QUOTES_URL}/${id}`,
-    SUBMIT: QUOTES_URL,  // Add this alias for CREATE
+    SUBMIT: QUOTES_URL,  // alias for CREATE
     STATS: `${QUOTES_URL}/stats`,
-    // Add other endpoints as needed...
+  },
+   RESOURCES: {
+    BASE: '/api/resources',
+    CREATE: '/api/resources',
+    GET_BY_ID: (id) => `/api/resources/${id}`,
+    UPDATE: (id) => `/api/resources/${id}`,
+    DELETE: (id) => `/api/resources/${id}`,
+    STATS: '/api/resources/stats/summary'
   }
 };
