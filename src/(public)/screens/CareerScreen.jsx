@@ -5,6 +5,7 @@ import { useSubmitCareerApplicationMutation } from '@/slices/careerApiSlice';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/Spinner';
 import { ChevronLeft, ChevronRight, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import countries from 'country-json/src/country-by-name.json';
 
 const CareerScreen = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -25,7 +26,8 @@ const CareerScreen = () => {
     availability: 'immediate',
     workType: 'remote',
     expectedSalary: '',
-    referralSource: ''
+    referralSource: '',
+    country: ''
   });
 
   const [submitApplication, { isLoading }] = useSubmitCareerApplicationMutation();
@@ -47,7 +49,7 @@ const CareerScreen = () => {
       id: 3,
       title: 'Work Preferences',
       description: 'Your work style and availability',
-      fields: ['workType', 'availability', 'expectedSalary', 'portfolioUrl']
+      fields: ['workType', 'availability', 'expectedSalary', 'portfolioUrl', 'country']
     },
     {
       id: 4,
@@ -214,7 +216,8 @@ const handleSubmit = async (e) => {
       availability: 'immediate',
       workType: 'remote',
       expectedSalary: '',
-      referralSource: ''
+      referralSource: '',
+      country: ''
     });
     setCurrentStep(1);
     setCompletedSteps([]);
@@ -401,6 +404,25 @@ const handleSubmit = async (e) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Country/Location
+                </label>
+                <select
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                >
+                  <option value="" disabled>Select your country</option>
+                  {countries.map((country) => (
+                    <option key={country.country} value={country.country}>
+                      {country.country}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Expected Salary (USD/month)
                 </label>
                 <input
@@ -412,20 +434,20 @@ const handleSubmit = async (e) => {
                   placeholder="e.g., $3000-5000"
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Portfolio/LinkedIn URL
-                </label>
-                <input
-                  type="url"
-                  name="portfolioUrl"
-                  value={formData.portfolioUrl}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  placeholder="https://your-portfolio.com or LinkedIn profile"
-                />
-              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Portfolio/LinkedIn URL
+              </label>
+              <input
+                type="url"
+                name="portfolioUrl"
+                value={formData.portfolioUrl}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="https://your-portfolio.com or LinkedIn profile"
+              />
             </div>
           </div>
         );

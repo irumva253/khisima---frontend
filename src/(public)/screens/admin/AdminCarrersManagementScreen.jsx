@@ -325,6 +325,9 @@ const AdminCareersManagementScreen = () => {
                     Position
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Country
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Experience
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -364,6 +367,11 @@ const AdminCareersManagementScreen = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">
                         {positionTitles[application.position] || application.position}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {application.country || 'Not provided'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -527,6 +535,12 @@ const AdminCareersManagementScreen = () => {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Position</label>
                       <p className="mt-1 text-sm text-gray-900 dark:text-white">
                         {positionTitles[selectedApplication.position]}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
+                        {selectedApplication.country || 'Not provided'}
                       </p>
                     </div>
                     <div>

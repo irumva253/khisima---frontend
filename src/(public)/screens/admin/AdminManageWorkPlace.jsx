@@ -14,7 +14,9 @@ import {
   Clock,
   Building,
   Upload,
-  Star
+  Star,
+  Image as ImageIcon,
+  Link
 } from 'lucide-react';
 import { RichTextEditorWrapper } from '@/components/rich-text-editor/RichTextEditorWrapper';
 import {
@@ -80,7 +82,8 @@ const AdminManageWorkPlace = () => {
 
   const [formData, setFormData] = useState(getInitialFormData());
   const [newFacility, setNewFacility] = useState('');
-  const [imageUploads, setImageUploads] = useState([]);
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [newImageCaption, setNewImageCaption] = useState('');
 
   // RTK Query hooks
   const { data: workplacesData, isLoading: loadingWorkplaces, refetch: refetchWorkplaces } = 
@@ -182,37 +185,37 @@ const AdminManageWorkPlace = () => {
     }));
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map(file => ({
-      url: URL.createObjectURL(file),
-      caption: '',
-      file
-    }));
-    setImageUploads(prev => [...prev, ...newImages]);
+  const handleAddImage = () => {
+    if (newImageUrl.trim()) {
+      const newImage = {
+        url: newImageUrl.trim(),
+        caption: newImageCaption.trim()
+      };
+      
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, newImage]
+      }));
+      
+      setNewImageUrl('');
+      setNewImageCaption('');
+    }
   };
 
   const handleRemoveImage = (index) => {
-    setImageUploads(prev => prev.filter((_, i) => i !== index));
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // TODO: Handle image uploads to your server
-      const submitData = {
-        ...formData,
-        images: [
-          // This would be replaced with actual uploaded image URLs
-          { url: 'https://example.com/image1.jpg', caption: 'Main entrance' },
-          { url: 'https://example.com/image2.jpg', caption: 'Work area' }
-        ]
-      };
-
       if (editMode) {
-        await updateWorkplace({ id: formData._id, updateData: submitData }).unwrap();
+        await updateWorkplace({ id: formData._id, updateData: formData }).unwrap();
       } else {
-        await createWorkplace(submitData).unwrap();
+        await createWorkplace(formData).unwrap();
       }
       handleCloseForm();
       refetchWorkplaces();
@@ -283,7 +286,8 @@ const AdminManageWorkPlace = () => {
     setShowForm(false);
     setEditMode(false);
     setFormData(getInitialFormData());
-    setImageUploads([]);
+    setNewImageUrl('');
+    setNewImageCaption('');
     setNewFacility('');
   };
 
@@ -574,6 +578,7 @@ const AdminManageWorkPlace = () => {
                     value={formData.country?.flagImage || ''}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    placeholder="https://example.com/flag.png"
                   />
                 </div>
               </div>
@@ -794,6 +799,101 @@ const AdminManageWorkPlace = () => {
                 </div>
               </div>
 
+              {/* Images */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
+                
+                <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Link className="w-5 h-5 mr-2 text-blue-600" />
+                    <span className="text-sm font-medium">Add Image by URL</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Image URL *
+                      </label>
+                      <input
+                        type="url"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Image Caption
+                      </label>
+                      <input
+                        type="text"
+                        value={newImageCaption}
+                        onChange={(e) => setNewImageCaption(e.target.value)}
+                        placeholder="Image description"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      />
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={handleAddImage}
+                    disabled={!newImageUrl.trim()}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    Add Image
+                  </button>
+                </div>
+
+                {formData.images.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    {formData.images.map((image, index) => (
+                      <div key={index} className="relative border rounded-lg p-3">
+                        <div className="flex items-center mb-2">
+                          <ImageIcon className="w-4 h-4 mr-2 text-gray-500" />
+                          <span className="text-sm font-medium truncate">
+                            Image {index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(index)}
+                            className="ml-auto text-red-600 hover:text-red-800"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="flex flex-col md:flex-row gap-3">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={image.url}
+                              alt={`Workplace ${index + 1}`}
+                              className="w-20 h-20 object-cover rounded-lg"
+                              onError={(e) => {
+                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCA0MEM0My4zMTM3IDQwIDQ2IDM3LjMxMzcgNDYgMzRDNDYgMzAuNjg2MyA0My4zMTM3IDI4IDQwIDI4QzM2LjY4NjMgMjggMzQgMzAuNjg2MyAzNCAzNEMzNCAzNy4zMTM3IDM2LjY4NjMgNDAgNDAgNDBaTTQwIDUyQzMyLjI2IDUyIDI1LjA2IDQ4LjU4IDIwIDQyLjU4QzIwIDM2IDI4IDMzLjUgNDAgMzMuNUM1MiAzMy41IDYwIDM2IDYwIDQyLjU4QzU0Ljk0IDQ4LjU4IDQ3Ljc0IDUyIDQwIDUyWiIgZmlsbD0iIzlDAUVDQyIvPgo8L3N2Zz4K';
+                              }}
+                            />
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="text-xs text-gray-500 mb-1 truncate">
+                              URL: {image.url}
+                            </div>
+                            {image.caption && (
+                              <div className="text-sm">
+                                Caption: {image.caption}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Facilities */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Facilities</h3>
@@ -832,64 +932,6 @@ const AdminManageWorkPlace = () => {
                     </span>
                   ))}
                 </div>
-              </div>
-
-              {/* Images */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
-                
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm text-gray-600 mb-4">
-                    Upload workplace images (JPEG, PNG, GIF)
-                  </p>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
-                  >
-                    Select Images
-                  </label>
-                </div>
-
-                {imageUploads.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    {imageUploads.map((image, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={image.url}
-                          alt={`Upload ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(index)}
-                          className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                        <input
-                          type="text"
-                          placeholder="Image caption"
-                          value={image.caption}
-                          onChange={(e) => {
-                            const newUploads = [...imageUploads];
-                            newUploads[index].caption = e.target.value;
-                            setImageUploads(newUploads);
-                          }}
-                          className="w-full mt-2 px-2 py-1 text-sm border border-gray-300 rounded"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Highlight Video */}

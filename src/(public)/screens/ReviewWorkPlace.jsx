@@ -11,7 +11,8 @@ import {
   Building,
   ArrowLeft,
   Calendar,
-  Video
+  Video,
+  Image as ImageIcon
 } from 'lucide-react';
 import { RenderDescription } from '@/components/rich-text-editor/RenderDescription';
 import {
@@ -23,6 +24,12 @@ const ReviewWorkPlace = () => {
   const { data: workplaceData, isLoading, error } = useGetWorkplaceByIdQuery(id);
 
   const workplace = workplaceData?.data;
+
+  // Function to handle image loading errors
+  const handleImageError = (e) => {
+    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCA0MEM0My4zMTM3IDQwIDQ2IDM3LjMxMzcgNDYgMzRDNDYgMzAuNjg2MyA0My4zMTM3IDI4IDQwIDI4QzM2LjY4NjMgMjggMzQgMzAuNjg2MyAzNCAzNEMzNCAzNy4zMTM3IDM2LjY4NjMgNDAgNDAgNDBaTTQwIDUyQzMyLjI2IDUyIDI1LjA2IDQ4LjU4IDIwIDQyLjU4QzIwIDM2IDI4IDMzLjUgNDAgMzMuNUM1MiAzMy41IDYwIDM2IDYwIDQyLjU4QzU0Ljk0IDQ4LjU4IDQ3Ljc0IDUyIDQwIDUyWiIgZmlsbD0iIzlDAUVDQyIvPgo8L3N2Zz4K';
+    e.target.alt = 'Image not available';
+  };
 
   if (isLoading) {
     return (
@@ -67,12 +74,17 @@ const ReviewWorkPlace = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          {workplace.images && workplace.images[0] && (
+          {workplace.images && workplace.images[0] ? (
             <img
               src={workplace.images[0].url}
-              alt={workplace.title}
+              alt={workplace.images[0].caption || workplace.title}
               className="w-full h-64 md:h-96 object-cover"
+              onError={handleImageError}
             />
+          ) : (
+            <div className="w-full h-64 md:h-96 bg-gray-200 flex items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-gray-400" />
+            </div>
           )}
           
           <div className="p-6">
@@ -91,8 +103,8 @@ const ReviewWorkPlace = () => {
                 <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mr-4">
                   <div className="flex items-center">
                     <Star className="w-5 h-5 mr-1" fill="currentColor" />
-                    <span className="font-semibold">{workplace.rating.average.toFixed(1)}</span>
-                    <span className="text-sm ml-1">({workplace.rating.count})</span>
+                    <span className="font-semibold">{workplace.rating?.average?.toFixed(1) || '0.0'}</span>
+                    <span className="text-sm ml-1">({workplace.rating?.count || 0})</span>
                   </div>
                 </div>
                 
@@ -146,12 +158,19 @@ const ReviewWorkPlace = () => {
             <h3 className="text-xl font-semibold text-gray-900 mb-4">Gallery</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {workplace.images.slice(1).map((image, index) => (
-                <img
-                  key={index}
-                  src={image.url}
-                  alt={image.caption || `Workplace image ${index + 2}`}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
+                <div key={index} className="relative group">
+                  <img
+                    src={image.url}
+                    alt={image.caption || `Workplace image ${index + 2}`}
+                    className="w-full h-48 object-cover rounded-lg"
+                    onError={handleImageError}
+                  />
+                  {image.caption && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-2 text-sm rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      {image.caption}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -166,6 +185,7 @@ const ReviewWorkPlace = () => {
                 src={workplace.highlightVideo}
                 className="w-full h-64 md:h-96 rounded-lg"
                 allowFullScreen
+                title="Workplace highlight video"
               />
             </div>
           </div>
@@ -219,6 +239,7 @@ const ReviewWorkPlace = () => {
                     src={`https://maps.google.com/maps?q=${workplace.coordinates.latitude},${workplace.coordinates.longitude}&z=15&output=embed`}
                     className="w-full h-48 rounded-lg"
                     allowFullScreen
+                    title="Workplace location map"
                   />
                 </div>
               )}

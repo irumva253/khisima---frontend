@@ -12,7 +12,8 @@ import {
   Users,
   Building,
   ChevronRight,
-  Loader2
+  Loader2,
+  Image as ImageIcon
 } from 'lucide-react';
 import {
   useGetWorkplacesQuery,
@@ -39,6 +40,12 @@ const WorkPlaceScreen = () => {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Function to handle image loading errors
+  const handleImageError = (e) => {
+    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCA0MEM0My4zMTM3IDQwIDQ2IDM3LjMxMzcgNDYgMzRDNDYgMzAuNjg2MyA0My4zMTM3IDI4IDQwIDI4QzM2LjY4NjMgMjggMzQgMzAuNjg2MyAzNCAzNEMzNCAzNy4zMTM3IDM2LjY4NjMgNDAgNDAgNDBaTTQwIDUyQzMyLjI2IDUyIDI1LjA2IDQ4LjU4IDIwIDQyLjU4QzIwIDM2IDI4IDMzLjUgNDAgMzMuNUM1MiAzMy41IDYwIDM2IDYwIDQyLjU4QzU0Ljk0IDQ4LjU4IDQ3Ljc0IDUyIDQwIDUyWiIgZmlsbD0iIzlDAUVDQyIvPgo8L3N2Zz4K';
+    e.target.alt = 'Image not available';
   };
 
   if (loadingWorkplaces) {
@@ -150,12 +157,17 @@ const WorkPlaceScreen = () => {
                   key={workplace._id}
                   className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
                 >
-                  {workplace.images && workplace.images[0] && (
+                  {workplace.images && workplace.images[0] ? (
                     <img
                       src={workplace.images[0].url}
-                      alt={workplace.title}
+                      alt={workplace.images[0].caption || workplace.title}
                       className="w-full h-48 object-cover"
+                      onError={handleImageError}
                     />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                      <ImageIcon className="w-12 h-12 text-gray-400" />
+                    </div>
                   )}
                   
                   <div className="p-6">
@@ -172,7 +184,7 @@ const WorkPlaceScreen = () => {
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" />
                         <span className="text-sm font-medium text-gray-700">
-                          {workplace.rating.average.toFixed(1)} ({workplace.rating.count})
+                          {workplace.rating?.average?.toFixed(1) || '0.0'} ({workplace.rating?.count || 0})
                         </span>
                       </div>
                       <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -208,12 +220,17 @@ const WorkPlaceScreen = () => {
                 className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
-                  {workplace.images && workplace.images[0] && (
+                  {workplace.images && workplace.images[0] ? (
                     <img
                       src={workplace.images[0].url}
-                      alt={workplace.title}
+                      alt={workplace.images[0].caption || workplace.title}
                       className="w-full md:w-64 h-48 object-cover rounded-lg"
+                      onError={handleImageError}
                     />
+                  ) : (
+                    <div className="w-full md:w-64 h-48 bg-gray-200 flex items-center justify-center rounded-lg">
+                      <ImageIcon className="w-12 h-12 text-gray-400" />
+                    </div>
                   )}
                   
                   <div className="flex-1">
@@ -229,7 +246,7 @@ const WorkPlaceScreen = () => {
                     <div className="flex items-center mb-4">
                       <Star className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" />
                       <span className="text-sm font-medium text-gray-700 mr-4">
-                        {workplace.rating.average.toFixed(1)} ({workplace.rating.count})
+                        {workplace.rating?.average?.toFixed(1) || '0.0'} ({workplace.rating?.count || 0})
                       </span>
                       <Building className="w-4 h-4 text-gray-400 mr-1" />
                       <span className="text-sm text-gray-500">
