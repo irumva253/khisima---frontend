@@ -4,8 +4,10 @@ import { S3_BASE_URL } from "@/constants";
 import { useGetPartnersQuery } from "@/slices/partnerApiSlice";
 import Spinner from "@/components/ui/Spinner";
 import { Link } from 'react-router-dom';
+import.meta.env.MODE
 
-// Debug component - set SHOW_DEBUG to true to enable debugging
+
+// Temporary debug component - remove after debugging
 const DebugPartners = ({ data, error }) => {
   return (
     <div className="fixed bottom-0 right-0 bg-black text-white p-4 max-w-md max-h-64 overflow-auto z-50 text-xs">
@@ -23,21 +25,11 @@ const DebugPartners = ({ data, error }) => {
 
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
-  
-  // Set this to true to enable debug mode
-  const SHOW_DEBUG = true;
 
   // Enhanced error logging
   if (isError) {
     console.error("Partners API Error:", error);
   }
-
-  // Log the API response for debugging
-  React.useEffect(() => {
-    if (partnersData && SHOW_DEBUG) {
-      console.log("Partners API Response:", partnersData);
-    }
-  }, [partnersData]);
 
   // Handle loading state
   if (isLoading) {
@@ -63,7 +55,7 @@ const Partners = () => {
             Contact support
           </Link>
         </div>
-        {SHOW_DEBUG && (
+        {import.meta.env.MODE === 'development' && (
           <DebugPartners data={partnersData} error={error} />
         )}
       </>
@@ -84,9 +76,10 @@ const Partners = () => {
             Become a partner
           </Link>
         </div>
-        {SHOW_DEBUG && (
+        {import.meta.env.MODE === 'development' && (
           <DebugPartners data={partnersData} error={error} />
         )}
+
       </>
     );
   }
@@ -127,8 +120,8 @@ const Partners = () => {
           />
         </div>
       </section>
-      
-      {SHOW_DEBUG && (
+
+      {import.meta.env.MODE === 'development' && (
         <DebugPartners data={partnersData} error={error} />
       )}
     </>
