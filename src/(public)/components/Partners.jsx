@@ -8,7 +8,7 @@ import {Link} from 'react-router-dom';
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
 
-  const partners = partnersData?.data || [];
+  const partners = partnersData || []; // <-- fixed
 
   if (isLoading) {
     return (
@@ -56,7 +56,6 @@ const Partners = () => {
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4 md:text-5xl">
             Our Trusted Partners
@@ -67,7 +66,6 @@ const Partners = () => {
           </p>
         </div>
 
-        {/* Carousel */}
         <CardCarousel
           items={carouselItems}
           autoSlide={true}
