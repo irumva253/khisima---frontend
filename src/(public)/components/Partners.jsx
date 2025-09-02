@@ -6,7 +6,7 @@ import Spinner from "@/components/ui/Spinner";
 import { Link } from 'react-router-dom';
 
 // Debug component
-const DebugPartners = ({ data, error, url }) => {
+const DebugPartners = ({ data, error, url, response }) => {
   return (
     <div className="fixed bottom-0 right-0 bg-black text-white p-4 max-w-md max-h-64 overflow-auto z-50 text-xs">
       <h3 className="font-bold mb-2">API Debug Information:</h3>
@@ -15,16 +15,33 @@ const DebugPartners = ({ data, error, url }) => {
         {url}
       </div>
       <div className="mb-2">
-        <span className="font-semibold">Status: </span>
-        {error ? `Error - ${error.status}` : data ? 'Success' : 'No data'}
+        <span className="font-semibold">RTK Query Status: </span>
+        {error ? `Error` : data ? 'Success' : 'No data'}
       </div>
       <div className="mb-2">
         <span className="font-semibold">Error Type: </span>
         {error?.error || 'None'}
       </div>
-      <pre className="whitespace-pre-wrap break-words mt-2">
-        {error ? JSON.stringify(error, null, 2) : data ? JSON.stringify(data, null, 2) : 'No data received'}
-      </pre>
+      <div className="mb-2">
+        <span className="font-semibold">Direct Response: </span>
+        <pre className="whitespace-pre-wrap break-words mt-1">
+          {response ? JSON.stringify(response, null, 2) : 'No direct response'}
+        </pre>
+      </div>
+      <div className="mt-4">
+        <span className="font-semibold">RTK Query Data: </span>
+        <pre className="whitespace-pre-wrap break-words mt-1">
+          {data ? JSON.stringify(data, null, 2) : 'No data from RTK Query'}
+        </pre>
+      </div>
+      {error && (
+        <div className="mt-4">
+          <span className="font-semibold">RTK Query Error: </span>
+          <pre className="whitespace-pre-wrap break-words mt-1">
+            {JSON.stringify(error, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
@@ -32,30 +49,77 @@ const DebugPartners = ({ data, error, url }) => {
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
   
-  // Set this to false to disable debug mode after fixing
-  const SHOW_DEBUG = true;
+  // Debug state
+  const [debugInfo, setDebugInfo] = React.useState({
+    directResponse: null,
+    directError: null,
+    corsTest: null
+  });
   
-  // API URL for debugging - you might need to adjust this based on your API_ENDPOINTS
+  const SHOW_DEBUG = true;
   const API_URL = "https://khisima-backend.onrender.com/api/partners";
+
+  // Test the API directly on component mount
+  React.useEffect(() => {
+    if (SHOW_DEBUG) {
+      // Test CORS with a simple fetch
+      fetch(API_URL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors'
+      })
+      .then(async response => {
+        const data = await response.json();
+        setDebugInfo(prev => ({
+          ...prev,
+          directResponse: {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries([...response.headers]),
+            data
+          }
+        }));
+        console.log("Direct fetch success:", response.status, data);
+      })
+      .catch(err => {
+        setDebugInfo(prev => ({...prev, directError: err.message}));
+        console.error("Direct fetch error:", err);
+      });
+
+      // Test CORS preflight
+      fetch(API_URL, {
+        method: 'OPTIONS',
+        mode: 'cors'
+      })
+      .then(response => {
+        setDebugInfo(prev => ({
+          ...prev,
+          corsTest: {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries([...response.headers])
+          }
+        }));
+        console.log("CORS preflight test:", response.status);
+      })
+      .catch(err => {
+        console.error("CORS test error:", err);
+      });
+    }
+  }, [API_URL, SHOW_DEBUG]);
 
   // Enhanced error logging
   React.useEffect(() => {
     if (isError) {
-      console.error("Partners API Error Details:", error);
-      console.log("Attempted to fetch from:", API_URL);
-      
-      // Test the API endpoint directly
-      if (SHOW_DEBUG) {
-        fetch(API_URL)
-          .then(response => {
-            console.log("Direct fetch response status:", response.status);
-            return response.json();
-          })
-          .then(data => console.log("Direct fetch data:", data))
-          .catch(err => console.error("Direct fetch error:", err));
-      }
+      console.error("RTK Query Error Details:", error);
+      console.log("RTK Query attempted to fetch from:", API_URL);
     }
-  }, [isError, error, API_URL]);
+    if (partnersData) {
+      console.log("RTK Query Success Data:", partnersData);
+    }
+  }, [isError, error, API_URL, partnersData]);
 
   // Handle loading state
   if (isLoading) {
@@ -81,7 +145,14 @@ const Partners = () => {
           <div className="mt-4 text-xs bg-red-100 p-3 rounded max-w-md mx-auto">
             <p className="font-semibold">Technical Details:</p>
             <p>Error: {error?.error || "Failed to fetch"}</p>
+            <p>Status: {error?.status || "Unknown"}</p>
             <p>URL: {API_URL}</p>
+            {debugInfo.directResponse && (
+              <p>Direct test: Success ({debugInfo.directResponse.status})</p>
+            )}
+            {debugInfo.directError && (
+              <p>Direct test error: {debugInfo.directError}</p>
+            )}
           </div>
           <div className="mt-6 space-x-4">
             <button 
@@ -96,7 +167,12 @@ const Partners = () => {
           </div>
         </div>
         {SHOW_DEBUG && (
-          <DebugPartners data={partnersData} error={error} url={API_URL} />
+          <DebugPartners 
+            data={partnersData} 
+            error={error} 
+            url={API_URL}
+            response={debugInfo.directResponse}
+          />
         )}
       </>
     );
@@ -117,7 +193,12 @@ const Partners = () => {
           </Link>
         </div>
         {SHOW_DEBUG && (
-          <DebugPartners data={partnersData} error={error} url={API_URL} />
+          <DebugPartners 
+            data={partnersData} 
+            error={error} 
+            url={API_URL}
+            response={debugInfo.directResponse}
+          />
         )}
       </>
     );
@@ -161,7 +242,12 @@ const Partners = () => {
       </section>
       
       {SHOW_DEBUG && (
-        <DebugPartners data={partnersData} error={error} url={API_URL} />
+        <DebugPartners 
+          data={partnersData} 
+          error={error} 
+          url={API_URL}
+          response={debugInfo.directResponse}
+        />
       )}
     </>
   );
