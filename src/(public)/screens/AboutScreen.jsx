@@ -17,7 +17,6 @@ import {
   Quote
 } from 'lucide-react';
 import SocialButton from '@/components/kokonutui/social-button';
-import CTA from '../components/CTA';
 import Partners from '../components/Partners';
 
 const AboutScreen = () => {
@@ -85,42 +84,42 @@ const AboutScreen = () => {
     }
   ];
 
-  const team = [
-    {
-      name: "Mr. Olivier NIYOMUGISHA",
-      role: "Founder & CEO",
-      bio: "Computational linguist with 10+ years in African language research and NLP.",
-      languages: "Kinyarwanda, English, French, Swahili",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b217?w=400&h=400&fit=crop&q=80"
-    },
-    {
-      name: "Jean-Baptiste Nkurikiye",
-      role: "Head of Localization",
-      bio: "Expert translator specializing in African language localization for tech companies.",
-      languages: "Kinyarwanda, English, French, Kirundi",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&q=80"
-    },
-    {
-      name: "Sarah Mukamana",
-      role: "NLP Data Specialist",
-      bio: "AI researcher focused on low-resource language processing and data collection.",
-      languages: "Kinyarwanda, English, Luganda",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&q=80"
-    },
-    {
-      name: "David Mutabazi",
-      role: "Cultural Consultant",
-      bio: "Cultural anthropologist ensuring authentic representation in all our projects.",
-      languages: "Kinyarwanda, Swahili, English, Lingala",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&q=80"
-    }
-  ];
+  // const team = [
+  //   {
+  //     name: "Mr. Olivier NIYOMUGISHA",
+  //     role: "Founder & CEO",
+  //     bio: "Computational linguist with 10+ years in African language research and NLP.",
+  //     languages: "Kinyarwanda, English, French, Swahili",
+  //     image: "https://images.unsplash.com/photo-1494790108755-2616b612b217?w=400&h=400&fit=crop&q=80"
+  //   },
+  //   {
+  //     name: "Jean-Baptiste Nkurikiye",
+  //     role: "Head of Localization",
+  //     bio: "Expert translator specializing in African language localization for tech companies.",
+  //     languages: "Kinyarwanda, English, French, Kirundi",
+  //     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&q=80"
+  //   },
+  //   {
+  //     name: "Sarah Mukamana",
+  //     role: "NLP Data Specialist",
+  //     bio: "AI researcher focused on low-resource language processing and data collection.",
+  //     languages: "Kinyarwanda, English, Luganda",
+  //     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&q=80"
+  //   },
+  //   {
+  //     name: "David Mutabazi",
+  //     role: "Cultural Consultant",
+  //     bio: "Cultural anthropologist ensuring authentic representation in all our projects.",
+  //     languages: "Kinyarwanda, Swahili, English, Lingala",
+  //     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&q=80"
+  //   }
+  // ];
 
   const tabs = [
     { id: 'story', label: 'Our Story', icon: <BookOpen className="w-4 h-4" /> },
     { id: 'mission', label: 'Mission & Vision', icon: <Target className="w-4 h-4" /> },
     { id: 'values', label: 'Our Values', icon: <Heart className="w-4 h-4" /> },
-    { id: 'team', label: 'Our Team', icon: <Users className="w-4 h-4" /> }
+    // { id: 'team', label: 'Our Team', icon: <Users className="w-4 h-4" /> }
   ];
 
   useEffect(() => {
@@ -140,7 +139,7 @@ const AboutScreen = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-gray-900 dark:to-gray-800">
       <style jsx="true">{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
@@ -171,18 +170,18 @@ const AboutScreen = () => {
       `}</style>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-indigo-100">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30">
         <div className="max-w-7xl mx-auto text-center">
           <div className="animate-fade-in-up">
             <Badge className="mb-6 text-sm px-4 py-2" style={{ backgroundColor: '#3a7acc', color: 'white' }}>
               <MapPin className="w-4 h-4 mr-2" />
               About Khisima
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               Bridging Languages,<br />
               <span style={{ color: '#3a7acc' }}>Building Futures</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Born from the vibrant multilingual landscape of Rwanda, Khisima stands at the intersection of tradition and innovation, bringing African voices to the forefront of global technology.
             </p>
           </div>
@@ -191,7 +190,7 @@ const AboutScreen = () => {
       
 
       {/* Stats Section */}
-      <section id="stats" className="py-16 bg-white">
+      <section id="stats" className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -203,8 +202,8 @@ const AboutScreen = () => {
                 <div className="text-3xl md:text-4xl font-bold mb-2 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }}>
                   {stat.number}
                 </div>
-                <div className="text-lg font-semibold text-gray-900 mb-1">{stat.label}</div>
-                <div className="text-sm text-gray-600">{stat.description}</div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{stat.label}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{stat.description}</div>
               </div>
             ))}
           </div>
@@ -212,7 +211,7 @@ const AboutScreen = () => {
       </section>
 
       {/* Navigation Tabs */}
-      <section className="py-8 bg-white border-b">
+      <section className="py-8 bg-white dark:bg-gray-900 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-center space-x-1 sm:space-x-4">
             {tabs.map((tab) => (
@@ -222,7 +221,7 @@ const AboutScreen = () => {
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 mb-2 sm:mb-0 ${
                   activeTab === tab.id
                     ? 'text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
                 style={activeTab === tab.id ? { backgroundColor: '#3a7acc' } : {}}
               >
@@ -235,40 +234,40 @@ const AboutScreen = () => {
       </section>
 
       {/* Tab Content */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           {/* Our Story Tab */}
           {activeTab === 'story' && (
             <div className="animate-fade-in-up">
               <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                     From Rwanda's Multilingual Heart
                   </h2>
-                  <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                     Khisima was born from a simple yet powerful realization: in a world increasingly connected by technology, too many voices were being left behind. Founded in Rwanda, one of Africa's most linguistically diverse nations, we witnessed firsthand the daily miracle of multilingual communication.
                   </p>
-                  <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                     Our journey began when we saw brilliant minds switching between Kinyarwanda, English, French, and Swahili in a single conversation, yet finding their languages absent from the digital tools shaping their futures. This gap between linguistic richness and technological representation sparked our mission.
                   </p>
-                  <div className="bg-blue-50 p-6 rounded-xl border-l-4" style={{ borderColor: '#3a7acc' }}>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border-l-4" style={{ borderColor: '#3a7acc' }}>
                     <Quote className="w-8 h-8 mb-4" style={{ color: '#3a7acc' }} />
-                    <p className="text-gray-700 italic mb-4">
+                    <p className="text-gray-700 dark:text-gray-300 italic mb-4">
                       "We realized that preserving languages isn't just about culture—it's about ensuring equal access to the digital future for everyone."
                     </p>
-                    <p className="text-sm text-gray-600">— Founder & CEO</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">— Founder & CEO</p>
                   </div>
                 </div>
                 <div className="relative">
-                  {/* <img
-                    src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&h=400&fit=crop&q=80"
-                    alt="Team collaboration"
+                  <img
+                    src="https://res.cloudinary.com/dcueemfxj/image/upload/v1756809066/khisima-abt-hero_eafytn.jpg"
+                    alt="About Hero"
                     className="rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-500"
-                  /> */}
-                  <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
+                  />
+                  <div className="absolute -bottom-6 -right-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg">
                     <div className="flex items-center space-x-2">
                       <Languages className="w-6 h-6" style={{ color: '#3a7acc' }} />
-                      <span className="font-semibold text-gray-900">6+ Languages</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">6+ Languages</span>
                     </div>
                     <div className="mt-2">
                       <SocialButton  />
@@ -279,24 +278,24 @@ const AboutScreen = () => {
 
               {/* Timeline */}
               <div className="mt-16">
-                <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Journey</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Our Journey</h3>
                 <div className="relative">
-                  <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200"></div>
+                  <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 dark:bg-gray-700"></div>
                   {timeline.map((item, index) => (
                     <div key={index} className={`relative flex items-center mb-12 ${index % 2 === 0 ? 'flex-row-reverse' : ''}`}>
                       <div className={`w-1/2 ${index % 2 === 0 ? 'text-right pr-8' : 'pl-8'}`}>
-                        <Card className="hover:shadow-xl transition-all duration-300 hover-lift">
+                        <Card className="hover:shadow-xl transition-all duration-300 hover-lift dark:bg-gray-800">
                           <CardContent className="p-6">
                             <div className="flex items-center space-x-3 mb-3">
                               <div className="p-2 rounded-lg" style={{ backgroundColor: '#3a7acc' }}>
                                 {React.cloneElement(item.icon, { className: "w-6 h-6 text-white" })}
                               </div>
                               <div>
-                                <Badge variant="outline" className="text-xs">{item.year}</Badge>
-                                <h4 className="font-bold text-lg text-gray-900">{item.title}</h4>
+                                <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">{item.year}</Badge>
+                                <h4 className="font-bold text-lg text-gray-900 dark:text-white">{item.title}</h4>
                               </div>
                             </div>
-                            <p className="text-gray-600">{item.description}</p>
+                            <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
                           </CardContent>
                         </Card>
                       </div>
@@ -312,63 +311,63 @@ const AboutScreen = () => {
           {activeTab === 'mission' && (
             <div className="animate-fade-in-up">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
                   Our Mission & Vision
                 </h2>
               </div>
               
               <div className="grid md:grid-cols-2 gap-12">
-                <Card className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg">
+                <Card className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg dark:bg-gray-800">
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#3a7acc' }}>
                       <Target className="w-8 h-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-gray-900">Our Mission</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">Our Mission</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <p className="text-lg text-gray-600 leading-relaxed mb-6">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                       To bridge the digital divide for African languages by providing world-class language services and NLP data solutions that amplify African voices in global systems.
                     </p>
                     <div className="space-y-3">
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">Make African languages digitally accessible</span>
+                        <span className="text-gray-700 dark:text-gray-300">Make African languages digitally accessible</span>
                       </div>
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">Preserve cultural heritage through technology</span>
+                        <span className="text-gray-700 dark:text-gray-300">Preserve cultural heritage through technology</span>
                       </div>
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">Enable equal participation in the digital economy</span>
+                        <span className="text-gray-700 dark:text-gray-300">Enable equal participation in the digital economy</span>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg">
+                <Card className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg dark:bg-gray-800">
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#3a7acc' }}>
                       <Lightbulb className="w-8 h-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-gray-900">Our Vision</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">Our Vision</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <p className="text-lg text-gray-600 leading-relaxed mb-6">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                       A world where every African language has equal representation in digital systems, where technology speaks the languages of all people, and where linguistic diversity drives innovation.
                     </p>
                     <div className="space-y-3">
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">Universal digital language inclusion</span>
+                        <span className="text-gray-700 dark:text-gray-300">Universal digital language inclusion</span>
                       </div>
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">AI systems that understand African languages</span>
+                        <span className="text-gray-700 dark:text-gray-300">AI systems that understand African languages</span>
                       </div>
                       <div className="flex items-start space-x-3">
                         <CheckCircle className="w-5 h-5 mt-1" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-700">Empowered African communities through technology</span>
+                        <span className="text-gray-700 dark:text-gray-300">Empowered African communities through technology</span>
                       </div>
                     </div>
                   </CardContent>
@@ -381,10 +380,10 @@ const AboutScreen = () => {
           {activeTab === 'values' && (
             <div className="animate-fade-in-up">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                   What Drives Us
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                   Our values shape every project, every partnership, and every decision we make.
                 </p>
               </div>
@@ -393,7 +392,7 @@ const AboutScreen = () => {
                 {values.map((value, index) => (
                   <Card 
                     key={index}
-                    className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg group"
+                    className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg group dark:bg-gray-800"
                   >
                     <CardContent className="p-8">
                       <div className="flex items-start space-x-4">
@@ -404,10 +403,10 @@ const AboutScreen = () => {
                           {React.cloneElement(value.icon, { style: { color: value.color } })}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 transition-colors duration-300">
                             {value.title}
                           </h3>
-                          <p className="text-gray-600 leading-relaxed">
+                          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                             {value.description}
                           </p>
                         </div>
@@ -420,13 +419,13 @@ const AboutScreen = () => {
           )}
 
           {/* Team Tab */}
-          {activeTab === 'team' && (
+          {/* {activeTab === 'team' && (
             <div className="animate-fade-in-up">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                   Meet Our Team
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                   A diverse group of linguists, technologists, and cultural experts united by a shared vision.
                 </p>
               </div>
@@ -435,7 +434,7 @@ const AboutScreen = () => {
                 {team.map((member, index) => (
                   <Card 
                     key={index}
-                    className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg group overflow-hidden"
+                    className="hover:shadow-2xl transition-all duration-500 hover-lift border-0 shadow-lg group overflow-hidden dark:bg-gray-800"
                   >
                     <div className="relative">
                       <img
@@ -446,22 +445,22 @@ const AboutScreen = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     <CardContent className="p-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{member.name}</h3>
                       <p className="text-sm font-medium mb-3" style={{ color: '#3a7acc' }}>{member.role}</p>
-                      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{member.bio}</p>
-                      <div className="border-t pt-4">
-                        <p className="text-xs text-gray-500 mb-1">Languages:</p>
-                        <p className="text-sm text-gray-700">{member.languages}</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">{member.bio}</p>
+                      <div className="border-t pt-4 dark:border-gray-700">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Languages:</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">{member.languages}</p>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </section>
-      <hr className='my-8 border-gray-200' />
+      <hr className='my-8 border-gray-200 dark:border-gray-700' />
       {/*  Partners */}
        <Partners />
 
