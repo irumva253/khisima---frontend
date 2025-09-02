@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Languages, FileText, Database, Users, CheckCircle, ArrowRight, Play, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -266,21 +266,34 @@ const HomeScreen = () => {
                   We amplify African voices in global systems through expert translation, localization, and NLP data services.
                 </p>
               </div>
-              <div className="animate-fade-in-up animation-delay-900 flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 transition-all duration-300 px-8 py-3 shadow-lg"
-                >
-                  Start Your Project <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button 
-                  size="lg" 
-                  className="px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 shadow-lg"
-                >
-                  <Play className="mr-2 w-5 h-5" />
-                  Learn More
-                </Button>
-              </div>
+              <div className="animate-fade-in-up animation-delay-900 flex flex-col sm:flex-row gap-6 justify-center items-center mt-8">
+              <Link
+                to="/careers"
+                className="group relative inline-flex items-center justify-center gap-2 rounded-full 
+                          bg-gradient-to-r from-blue-600 to-blue-700 
+                          px-8 py-3 text-lg font-semibold text-white 
+                          shadow-lg shadow-blue-500/30 
+                          transition-all duration-300 
+                          hover:scale-105 hover:shadow-blue-500/50"
+              >
+                Start Your Project
+                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+
+              <Link
+                to="/about-us"
+                className="group inline-flex items-center justify-center gap-2 rounded-full 
+                          border-2 border-white 
+                          px-8 py-3 text-lg font-semibold text-white 
+                          shadow-md 
+                          transition-all duration-300 
+                          hover:bg-white hover:text-blue-600 hover:scale-105"
+              >
+                <Play className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                Learn More
+              </Link>
+            </div>
+
             </div>
           </div>
         </div>

@@ -281,32 +281,72 @@ const AboutScreen = () => {
 
               {/* Timeline */}
               <div className="mt-16">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Our Journey</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+                  Our Journey
+                </h3>
+
                 <div className="relative">
-                  <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 dark:bg-gray-700"></div>
+                  {/* Vertical line */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 dark:bg-gray-700 
+                                  md:left-1/2 md:-translate-x-1/2 
+                                  left-4 md:left-1/2 md:-translate-x-1/2"></div>
+
                   {timeline.map((item, index) => (
-                    <div key={index} className={`relative flex items-center mb-12 ${index % 2 === 0 ? 'flex-row-reverse' : ''}`}>
-                      <div className={`w-1/2 ${index % 2 === 0 ? 'text-right pr-8' : 'pl-8'}`}>
+                    <div
+                      key={index}
+                      className={`relative flex items-center mb-12 
+                        md:flex-row 
+                        ${index % 2 === 0 ? "md:flex-row-reverse" : ""} 
+                        flex-col md:flex-row`}
+                    >
+                      {/* Timeline card */}
+                      <div
+                        className={`
+                          w-full md:w-1/2 
+                          ${index % 2 === 0 ? "md:text-right md:pr-8" : "md:pl-8"} 
+                          px-6 md:px-0
+                        `}
+                      >
                         <Card className="hover:shadow-xl transition-all duration-300 hover-lift dark:bg-gray-800">
                           <CardContent className="p-6">
                             <div className="flex items-center space-x-3 mb-3">
-                              <div className="p-2 rounded-lg" style={{ backgroundColor: '#3a7acc' }}>
-                                {React.cloneElement(item.icon, { className: "w-6 h-6 text-white" })}
+                              <div
+                                className="p-2 rounded-lg"
+                                style={{ backgroundColor: "#3a7acc" }}
+                              >
+                                {React.cloneElement(item.icon, {
+                                  className: "w-6 h-6 text-white",
+                                })}
                               </div>
                               <div>
-                                <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">{item.year}</Badge>
-                                <h4 className="font-bold text-lg text-gray-900 dark:text-white">{item.title}</h4>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                                >
+                                  {item.year}
+                                </Badge>
+                                <h4 className="font-bold text-lg text-gray-900 dark:text-white">
+                                  {item.title}
+                                </h4>
                               </div>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
+                            <p className="text-gray-600 dark:text-gray-300">
+                              {item.description}
+                            </p>
                           </CardContent>
                         </Card>
                       </div>
-                      <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full" style={{ backgroundColor: '#3a7acc' }}></div>
+
+                      {/* Timeline dot */}
+                      <div
+                        className="absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2 w-4 h-4 rounded-full"
+                        style={{ backgroundColor: "#3a7acc" }}
+                      ></div>
                     </div>
                   ))}
                 </div>
               </div>
+
             </div>
           )}
 

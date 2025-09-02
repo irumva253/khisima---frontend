@@ -5,6 +5,7 @@ import { Home, ArrowRight, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import {motion } from "framer-motion";
 import Logo from "@/assets/logo.png";
+import Meta from "./Meta";
 
 function NotFound() {
   const [isVisible, setIsVisible] = useState(false);
@@ -24,8 +25,10 @@ function NotFound() {
   }, []);
 
   return (
+    <>
+    <Meta title="404 Not Found - Khisima" description="The page you are looking for does not exist." />
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4 py-16 relative overflow-hidden">
-      {/* Animated background elements */}
+
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(15)].map((_, i) => (
           <motion.div
@@ -195,6 +198,7 @@ function NotFound() {
         }
       `}</style>
     </div>
+    </>
   );
 }
 

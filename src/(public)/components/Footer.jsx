@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ModeToggle } from './ModeToggle';
 import { toast } from 'sonner';
 import { useCreateSubscriberMutation } from '@/slices/subscriberApiSlice';
 import { 
@@ -21,7 +20,7 @@ import {
   ArrowUp,
   Loader2
 } from 'lucide-react';
-import { IconBrandX } from '@tabler/icons-react';
+import { IconBrandX, IconCircleChevronUp } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -351,11 +350,6 @@ const Footer = () => {
                 Careers <ExternalLink className="w-3 h-3 ml-1" />
               </Link>
             </div>
-
-            <div className="flex items-center space-x-1 text-sm text-gray-400">
-              <span>Theme: </span>
-              <ModeToggle />
-            </div>
           </div>
         </div>
       </div>
@@ -368,7 +362,7 @@ const Footer = () => {
         }`}
         aria-label="Scroll to top"
       >
-        <ArrowUp className="w-5 h-5" />
+        <IconCircleChevronUp stroke={2} className="w-5 h-5" />
       </button>
     </footer>
   );

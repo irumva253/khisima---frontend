@@ -1,21 +1,11 @@
 /* eslint-disable no-unused-vars */
 "use client";
 
-/**
- * @author: @dorian_baffier
- * @description: Social Button
- * @version: 1.0.1 (fixed imports & small bugs)
- * @date: 2025-08-16
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Instagram, Linkedin, Link as LinkIcon } from "lucide-react";
-import { IconBrandX } from '@tabler/icons-react';
+import { IconBrandX } from "@tabler/icons-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -24,14 +14,31 @@ export default function SocialButton({ className, ...props }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const shareButtons = [
-    { icon: IconBrandX, label: "Share on Twitter" },
-    { icon: Instagram, label: "Share on Instagram" },
-    { icon: Linkedin, label: "Share on LinkedIn" },
-    { icon: FaWhatsapp, label: "Share on WhatsApp" },
+    {
+      icon: IconBrandX,
+      label: "Twitter / X",
+      url: "https://x.com/Khisima_lsp?t=TZlhsibDZZZPKSjhqTiEzA&s=09", 
+    },
+    {
+      icon: Instagram,
+      label: "Instagram",
+      url: "https://www.instagram.com/khisima_lsp/",
+    },
+    {
+      icon: Linkedin,
+      label: "LinkedIn",
+      url: "https://www.linkedin.com/company/khisima/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3B%2FwevVHPPRviJQYMgTP2Dcw%3D%3D", 
+    },
+    {
+      icon: FaWhatsapp,
+      label: "WhatsApp",
+      url: "https://wa.me/message/BJAPVTZERQWWH1", 
+    },
   ];
 
-  const handleShare = (index) => {
+  const handleShare = (url, index) => {
     setActiveIndex(index);
+    window.open(url, "_blank", "noopener,noreferrer");
     setTimeout(() => setActiveIndex(null), 300);
   };
 
@@ -76,7 +83,7 @@ export default function SocialButton({ className, ...props }) {
             type="button"
             key={`share-${button.label}`}
             aria-label={button.label}
-            onClick={() => handleShare(i)}
+            onClick={() => handleShare(button.url, i)}
             className={cn(
               "h-10 w-10 flex items-center justify-center",
               "bg-black dark:bg-white",
