@@ -19,6 +19,7 @@ import {
   IconGlobe,
   IconChevronRight
 } from '@tabler/icons-react';
+import { ModeToggle } from "./ModeToggle";
 
 import {Link, useLocation} from 'react-router-dom';
 import {
@@ -191,8 +192,15 @@ const Navbar = () => {
               </button>
 
               <Link to="/" className="flex items-center group">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#4993f2] to-[#3b82f6] rounded-xl flex items-center justify-center text-white font-bold mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <span className="text-lg">K</span>
+                <div
+                  className="w-10 h-10 flex items-center justify-center
+                            rounded-lg bg-gradient-to-br from-[#4993f2] to-[#3b82f6]
+                            text-white font-bold text-base tracking-wide
+                            shadow-md transition-all duration-300
+                            group-hover:shadow-lg group-hover:scale-105
+                            mr-4"
+                >
+                  <span className="select-none"><IconCircleDottedLetterK stroke={2} /></span>
                 </div>
                 <div className="hidden sm:block">
                   <span className="text-2xl font-black text-gray-800 group-hover:text-[#4993f2] transition-colors duration-300">
@@ -392,23 +400,19 @@ const Navbar = () => {
                 <IconPhone size={18} className="mr-2 group-hover:scale-110 transition-transform" />
                 Contact
               </Link>
-              {/* <Link
-                to="/login"
-                className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
-                  isActive("/login") 
-                    ? 'text-[#4993f2] bg-blue-50' 
-                    : 'text-gray-700 hover:text-[#4993f2]'
-                }`}
-              >
-                <IconUser size={18} className="mr-2 group-hover:scale-110 transition-transform" />
-                Login
-              </Link> */}
+              
               <Link
                 to="/quote"
-                className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
+                className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] 
+                          hover:from-[#3b82f6] hover:to-[#2563eb] 
+                          text-white px-4 py-2 rounded-md text-sm font-medium
+                          transition-all duration-300 shadow-md 
+                          hover:shadow-lg hover:scale-105 
+                          flex items-center gap-2"
               >
                 <span>Get Quote</span>
               </Link>
+              <ModeToggle className="ml-4" />
             </div>
           </div>
         </div>
@@ -451,7 +455,7 @@ const Navbar = () => {
               <div>
                 <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
                   <IconCircleDottedLetterK size={16} className="mr-2" />
-                  Company
+                  Khisima
                 </h3>
                 <div className="space-y-1">
                   {companyItems.map((item) => (

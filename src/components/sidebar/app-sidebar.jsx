@@ -29,6 +29,7 @@ import { IconBriefcase } from "@tabler/icons-react"
 import { IconAffiliate } from "@tabler/icons-react"
 import { IconAd2 } from "@tabler/icons-react"
 import { IconBadge } from "@tabler/icons-react"
+import { IconUserExclamation } from "@tabler/icons-react"
 
 const data = {
   user: {
@@ -129,9 +130,9 @@ const data = {
       icon: IconBell,
     },
     {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
+      title: "Subscribers",
+      url: "/admin/subscribers",
+      icon: IconUserExclamation,
     },
     {
       title: "Search",

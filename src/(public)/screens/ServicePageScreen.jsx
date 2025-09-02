@@ -11,6 +11,7 @@ import Spinner from "@/components/ui/Spinner";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { S3_BASE_URL } from "@/constants";
+import Meta from "../components/Meta";
 import { useState, useMemo, useEffect } from "react";
 
 const ServicePageScreen = () => {
@@ -57,10 +58,10 @@ const ServicePageScreen = () => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      draft: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      published: "bg-green-100 text-green-800 border-green-200"
+      draft: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700/50",
+      published: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700/50"
     };
-    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200";
+    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
   };
 
   const getYouTubeId = (url) => {
@@ -202,11 +203,11 @@ if (allServicesData?.data) {
   // Loading state
   if (isCategoryLoading || isServicesLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center animate-pulse">
-          <div className="w-16 h-16 bg-blue-200 rounded-full mx-auto mb-4 animate-spin"></div>
+          <div className="w-16 h-16 bg-blue-200 dark:bg-blue-800 rounded-full mx-auto mb-4 animate-spin"></div>
           <Spinner size="xl" />
-          <p className="mt-4 text-gray-600 font-medium">Loading services...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300 font-medium">Loading services...</p>
         </div>
       </div>
     );
@@ -215,7 +216,7 @@ if (allServicesData?.data) {
   // Error state for category
   if (isCategoryError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
         <div className="max-w-md w-full">
           <ErrorMessage
             title="Category Error"
@@ -233,7 +234,7 @@ if (allServicesData?.data) {
   // Category not found
   if (!categoryData?.data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
         <div className="max-w-md w-full">
           <ErrorMessage
             title="Category Not Found"
@@ -250,7 +251,9 @@ if (allServicesData?.data) {
   const allServices = servicesData?.data || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <>
+    <Meta title={category.title} description={category.smallDescription} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section with Category */}
       <div className="relative bg-gradient-to-r from-[#498cef] via-blue-700 to-indigo-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -302,7 +305,7 @@ if (allServicesData?.data) {
 
         {/* Wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50">
+          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50 dark:text-gray-900">
             <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
           </svg>
         </div>
@@ -315,14 +318,14 @@ if (allServicesData?.data) {
             <div className="lg:w-[70%]">
               {/* Services List */}
               {isServicesError ? (
-                <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100 animate-fade-in">
-                  <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-6 animate-bounce">
-                    <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center border border-gray-100 dark:border-gray-700 animate-fade-in">
+                  <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-6 animate-bounce">
+                    <svg className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Unable to load services</h3>
-                  <p className="text-gray-500 mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Unable to load services</h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">
                     {servicesError?.data?.message || "Failed to load services for this category"}
                   </p>
                   <button
@@ -333,14 +336,14 @@ if (allServicesData?.data) {
                   </button>
                 </div>
               ) : totalPublishedServices === 0 ? (
-                <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100 animate-fade-in">
-                  <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-[#498cef] mb-6 animate-pulse">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center border border-gray-100 dark:border-gray-700 animate-fade-in">
+                  <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-[#498cef] dark:text-blue-400 mb-6 animate-pulse">
                     <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">No published services available</h3>
-                  <p className="text-gray-500 mb-6">There are no published services available in this category yet.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">No published services available</h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">There are no published services available in this category yet.</p>
                   <Link
                     to="/services"
                     className="inline-block px-6 py-3 bg-[#498cef] text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -352,32 +355,32 @@ if (allServicesData?.data) {
                 <div className="animate-fade-in-up relative">
                   {/* Loading overlay when changing pages */}
                   {isPageChanging && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-2xl">
+                    <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-2xl">
                       <div className="text-center">
                         <div className="w-12 h-12 bg-[#498cef] rounded-full mx-auto mb-4 animate-spin flex items-center justify-center">
-                          <div className="w-6 h-6 bg-white rounded-full"></div>
+                          <div className="w-6 h-6 bg-white dark:bg-gray-800 rounded-full"></div>
                         </div>
-                        <p className="text-gray-600 font-medium">Loading page {currentPage}...</p>
+                        <p className="text-gray-600 dark:text-gray-300 font-medium">Loading page {currentPage}...</p>
                       </div>
                     </div>
                   )}
                   
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
                     <div className="relative">
-                      <h2 className="text-3xl font-bold text-gray-900 animate-slide-right relative overflow-hidden">
-                        <span className="relative z-10 bg-gradient-to-r from-gray-900 via-[#498cef] to-gray-900 bg-clip-text text-transparent animate-gradient-x">
+                      <h2 className="text-3xl font-bold text-gray-900 dark:text-white animate-slide-right relative overflow-hidden">
+                        <span className="relative z-10 bg-gradient-to-r from-gray-900 dark:from-gray-100 via-[#498cef] to-gray-900 dark:to-gray-100 bg-clip-text text-transparent animate-gradient-x">
                           Our Services
                         </span>
                         <div className="absolute -bottom-1 left-0 w-0 h-1 bg-gradient-to-r from-[#498cef] to-indigo-500 rounded-full animate-expand-line"></div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/30 to-transparent rounded-lg animate-shimmer"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/30 dark:via-blue-900/20 to-transparent rounded-lg animate-shimmer"></div>
                       </h2>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-semibold text-[#498cef] bg-blue-100 px-4 py-2 rounded-full border border-blue-200 animate-fade-in">
+                      <span className="text-sm font-semibold text-[#498cef] dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-4 py-2 rounded-full border border-blue-200 dark:border-blue-700 animate-fade-in">
                         {totalPublishedServices} {totalPublishedServices === 1 ? 'published service' : 'published services'} available
                       </span>
                       {totalPages > 1 && (
-                        <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
+                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600">
                           Page {currentPage} of {totalPages}
                         </span>
                       )}
@@ -388,13 +391,13 @@ if (allServicesData?.data) {
                     {sortedAndPaginatedServices.map((service, index) => (
                       <div
                         key={service._id}
-                        className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 group transform hover:-translate-y-1 animate-fade-in-up"
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 group transform hover:-translate-y-1 animate-fade-in-up"
                         style={{ animationDelay: `${index * 150}ms` }}
                       >
                         {/* Service Header with Image */}
                         <div className="relative">
                           {service.fileKey && (
-                            <div className="h-64 md:h-80 overflow-hidden bg-gradient-to-r from-blue-100 to-indigo-100">
+                            <div className="h-64 md:h-80 overflow-hidden bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/50 dark:to-indigo-900/50">
                               <img
                                 src={`${S3_BASE_URL}/${service.fileKey}`}
                                 alt={service.title}
@@ -405,8 +408,8 @@ if (allServicesData?.data) {
                                 }}
                               />
                               {/* Fallback placeholder */}
-                              <div className="hidden w-full h-full bg-gradient-to-br from-blue-200 to-indigo-200 items-center justify-center">
-                                <div className="text-center text-[#498cef]">
+                              <div className="hidden w-full h-full bg-gradient-to-br from-blue-200 to-indigo-200 dark:from-blue-900/50 dark:to-indigo-900/50 items-center justify-center">
+                                <div className="text-center text-[#498cef] dark:text-blue-400">
                                   <svg className="w-16 h-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                   </svg>
@@ -427,13 +430,13 @@ if (allServicesData?.data) {
                         <div className="p-8">
                           {/* Service Title and Small Description */}
                           <div className="mb-6">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#498cef] transition-colors duration-300">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-[#498cef] dark:group-hover:text-blue-400 transition-colors duration-300">
                               {service.title}
                             </h3>
                             
                             {service.smallDescription && (
-                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border-l-4 border-blue-500 transform hover:scale-[1.01] transition-transform duration-200">
-                                <p className="text-gray-700 font-medium leading-relaxed">
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-xl border-l-4 border-blue-500 transform hover:scale-[1.01] transition-transform duration-200">
+                                <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">
                                   {service.smallDescription}
                                 </p>
                               </div>
@@ -444,59 +447,54 @@ if (allServicesData?.data) {
                           <div className="grid lg:grid-cols-3 gap-6 mb-8">
                             {/* Description Column */}
                             <div className="lg:col-span-2">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                <svg className="w-5 h-5 mr-2 text-[#498cef]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Service Details
-                              </h4>
+                              
                               {service.description ? (
-                                <div className="prose prose-gray max-w-none bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
+                                <div className="prose prose-gray dark:prose-invert max-w-none bg-gray-50 dark:bg-gray-700 rounded-xl p-6 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300">
                                   <RenderDescription json={service.description} />
                                 </div>
                               ) : (
-                                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                                  <p className="text-gray-400 italic">No detailed description available.</p>
+                                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 text-center">
+                                  <p className="text-gray-400 dark:text-gray-500 italic">No detailed description available.</p>
                                 </div>
                               )}
                             </div>
 
                             {/* Quick Info Column */}
                             <div className="space-y-4">
-                              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 hover:shadow-md transition-shadow duration-300">
-                                <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                                  <svg className="w-5 h-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-100 dark:border-green-800 hover:shadow-md transition-shadow duration-300">
+                                <h5 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                                  <svg className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                   Service Info
                                 </h5>
                                 <div className="space-y-2 text-sm">
                                   <div className="flex justify-between">
-                                    <span className="text-gray-600">Added:</span>
-                                    <span className="font-medium">{formatDate(service.createdAt)}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">Added:</span>
+                                    <span className="font-medium text-gray-900 dark:text-white">{formatDate(service.createdAt)}</span>
                                   </div>
                                   {service.updatedAt !== service.createdAt && (
                                     <div className="flex justify-between">
-                                      <span className="text-gray-600">Updated:</span>
-                                      <span className="font-medium">{formatDate(service.updatedAt)}</span>
+                                      <span className="text-gray-600 dark:text-gray-400">Updated:</span>
+                                      <span className="font-medium text-gray-900 dark:text-white">{formatDate(service.updatedAt)}</span>
                                     </div>
                                   )}
                                   <div className="flex justify-between">
-                                    <span className="text-gray-600">Status:</span>
-                                    <span className="font-medium capitalize">{service.status}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                                    <span className="font-medium text-gray-900 dark:text-white capitalize">{service.status}</span>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Delivery Promise */}
-                              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                                <div className="flex items-center text-blue-700 mb-2">
+                              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
+                                <div className="flex items-center text-blue-700 dark:text-blue-400 mb-2">
                                   <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                   <span className="font-semibold">Fast Delivery</span>
                                 </div>
-                                <p className="text-sm text-gray-600">Professional service delivery within 24-48 hours</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Professional service delivery within 24-48 hours</p>
                               </div>
                             </div>
                           </div>
@@ -504,13 +502,8 @@ if (allServicesData?.data) {
                           {/* Video Section */}
                           {service.videoUrl && (
                             <div className="mb-8 animate-fade-in-up">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                <svg className="w-5 h-5 mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                                Service Overview 
-                              </h4>
-                              <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
+                              
+                              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 shadow-lg border border-gray-100 dark:border-gray-600">
                                 <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
                                   {getYouTubeId(service.videoUrl) ? (
                                     <iframe
@@ -555,8 +548,8 @@ if (allServicesData?.data) {
                           </div>
 
                           {/* Service Metadata */}
-                          <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-                            <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                            <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
                               <div className="flex items-center">
                                 <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z" />
@@ -585,7 +578,7 @@ if (allServicesData?.data) {
                         disabled={currentPage === 1 || isPageChanging}
                         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
                           currentPage === 1 || isPageChanging
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                             : 'bg-[#498cef] text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         }`}
                       >
@@ -609,8 +602,8 @@ if (allServicesData?.data) {
                               currentPage === page
                                 ? 'bg-[#498cef] text-white shadow-lg'
                                 : isPageChanging 
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                             }`}
                           >
                             {isPageChanging && currentPage === page ? (
@@ -627,7 +620,7 @@ if (allServicesData?.data) {
                         disabled={currentPage === totalPages || isPageChanging}
                         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
                           currentPage === totalPages || isPageChanging
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                             : 'bg-[#498cef] text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                         }`}
                       >
@@ -649,10 +642,10 @@ if (allServicesData?.data) {
             {/* Recent Updates Sidebar - 30% on large screens */}
             <div className="lg:w-[30%]">
               <div className="sticky top-6 animate-fade-in-right">
-               <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                      <svg className="w-4 h-4 text-[#498cef]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-shadow duration-300">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 pb-3 border-b border-gray-200 dark:border-gray-600 flex items-center">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-[#498cef] dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
@@ -668,14 +661,14 @@ if (allServicesData?.data) {
                         >
                           <Link 
                             to={`/services/${update.categoryId}?page=${update.page}`}
-                            className="block p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border border-blue-100 group-hover:border-blue-200 group-hover:shadow-md transform group-hover:-translate-y-0.5"
+                            className="block p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-800/30 dark:hover:to-indigo-800/30 transition-all duration-300 border border-blue-100 dark:border-blue-800 group-hover:border-blue-200 dark:group-hover:border-blue-700 group-hover:shadow-md transform group-hover:-translate-y-0.5"
                           >
-                            <p className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-[#498cef] transition-colors duration-200">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-[#498cef] dark:group-hover:text-blue-400 transition-colors duration-200">
                               {update.title}
                             </p>
-                            <p className="text-xs text-gray-500 font-medium mb-1">{update.date}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">{update.date}</p>
                             <div className="flex items-center text-xs">
-                              <span className="text-[#498cef] font-medium bg-blue-100 px-2 py-1 rounded-full">
+                              <span className="text-[#498cef] dark:text-blue-400 font-medium bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
                                 {update.category}
                               </span>
                             </div>
@@ -685,12 +678,12 @@ if (allServicesData?.data) {
                     </ul>
                   ) : (
                     <div className="text-center py-8">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <p className="text-gray-400 text-sm">No recent updates available</p>
+                      <p className="text-gray-400 dark:text-gray-500 text-sm">No recent updates available</p>
                     </div>
                   )}
                 </div>
@@ -721,27 +714,27 @@ if (allServicesData?.data) {
                 </div>
 
                 {/* Service Statistics */}
-                <div className="bg-white rounded-2xl shadow-xl p-6 mt-6 border border-gray-100 animate-fade-in-delay">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                      <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mt-6 border border-gray-100 dark:border-gray-700 animate-fade-in-delay">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
                     Category Stats
                   </h3>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <span className="text-sm font-medium text-gray-600">Total Services</span>
-                      <span className="text-xl font-bold text-[#498cef]">{allServices.length}</span>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Services</span>
+                      <span className="text-xl font-bold text-[#498cef] dark:text-blue-400">{allServices.length}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <span className="text-sm font-medium text-gray-600">Published</span>
-                      <span className="text-xl font-bold text-green-600">{totalPublishedServices}</span>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Published</span>
+                      <span className="text-xl font-bold text-green-600 dark:text-green-400">{totalPublishedServices}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <span className="text-sm font-medium text-gray-600">In Draft</span>
-                      <span className="text-xl font-bold text-yellow-600">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">In Draft</span>
+                      <span className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
                         {allServices.filter(s => s.status === 'draft').length}
                       </span>
                     </div>
@@ -872,6 +865,7 @@ if (allServicesData?.data) {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

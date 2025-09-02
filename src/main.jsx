@@ -48,13 +48,15 @@ import AdminCheckQuoteScreen from './(public)/screens/admin/AdminCheckQuoteScree
 import AdminCarrersManagementScreen from './(public)/screens/admin/AdminCarrersManagementScreen';
 import AdminResourcesScreen from './(public)/screens/admin/AdminResourcesScreen';
 import AdminManageWorkPlace from './(public)/screens/admin/AdminManageWorkPlace';
+import AdminSubscribersManagement from './(public)/screens/admin/AdminSubscribersManagement';
 
+// Import the NotFound component
+import NotFound from './(public)/components/NotFound';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       {/* Public routes */}
-      
       <Route path="/" element={<App />}>
         <Route index element={<HomeScreen />} />
         <Route path="about-us" element={<AboutScreen />} />
@@ -74,31 +76,28 @@ const router = createBrowserRouter(
         <Route path="/solutions" element={<SolutionScreen />} />
         <Route path="/services/:id" element={<ServicePageScreen />} />
         <Route path="/solutions/:id" element={<SolutionPageScreen />} />
-
-
       </Route>
+
+      <Route path="*" element={<NotFound />} />
 
       {/* Admin protected routes */}
       <Route path="" element={<PrivateRoute allowedRoles={['admin']} />}>
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<AdminIndexPage />} />
-           <Route path="dashboard" element={<AdminIndexPage />} />
-           <Route path="notifications" element={<NotificationScreen />} />
-           <Route path="services" element={<ServiceManagementScreen />} />
-           <Route path="services/create" element={<CreateNewServiceScreen />} />
-           <Route path="solutions" element={<SolutionsManagementScreen />} />
-           <Route path="solutions/create" element={<CreateNewSolutionScreen />} />
-           <Route path="partners" element={<PartnersManagementScreen />} />
-           <Route path="quotes" element={<AdminCheckQuoteScreen />} />
-           <Route path="careers" element={<AdminCarrersManagementScreen />} />
-           <Route path="resources" element={<AdminResourcesScreen />} />
-           <Route path="workplaces" element={<AdminManageWorkPlace />} />
-
+          <Route path="dashboard" element={<AdminIndexPage />} />
+          <Route path="notifications" element={<NotificationScreen />} />
+          <Route path="services" element={<ServiceManagementScreen />} />
+          <Route path="services/create" element={<CreateNewServiceScreen />} />
+          <Route path="solutions" element={<SolutionsManagementScreen />} />
+          <Route path="solutions/create" element={<CreateNewSolutionScreen />} />
+          <Route path="partners" element={<PartnersManagementScreen />} />
+          <Route path="quotes" element={<AdminCheckQuoteScreen />} />
+          <Route path="careers" element={<AdminCarrersManagementScreen />} />
+          <Route path="resources" element={<AdminResourcesScreen />} />
+          <Route path="workplaces" element={<AdminManageWorkPlace />} />
+          <Route path="subscribers" element={<AdminSubscribersManagement />} />
         </Route>
       </Route>
-
-      {/* Catch-all redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
     </>
   )
 );

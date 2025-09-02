@@ -17,6 +17,7 @@ import {
   Quote
 } from 'lucide-react';
 import SocialButton from '@/components/kokonutui/social-button';
+import Meta from '../components/Meta';
 import Partners from '../components/Partners';
 
 const AboutScreen = () => {
@@ -139,6 +140,8 @@ const AboutScreen = () => {
   }, []);
 
   return (
+    <>
+    <Meta title="About Us" description="Learn more about Khisima's mission, values, and team." />
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-gray-900 dark:to-gray-800">
       <style jsx="true">{`
         @keyframes fadeInUp {
@@ -465,6 +468,7 @@ const AboutScreen = () => {
        <Partners />
 
     </div>
+    </>
   );
 };
 

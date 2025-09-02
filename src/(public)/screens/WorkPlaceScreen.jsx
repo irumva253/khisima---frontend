@@ -2,14 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, 
-  Filter,
   MapPin,
   Star,
-  Phone,
-  Mail,
-  Clock,
-  Globe,
-  Users,
   Building,
   ChevronRight,
   Loader2,
@@ -20,6 +14,7 @@ import {
   useGetWorkplaceStatsQuery,
   useGetFeaturedWorkplacesQuery
 } from '@/slices/workplaceSlice';
+import Meta from '../components/Meta';
 
 const WorkPlaceScreen = () => {
   const [filters, setFilters] = useState({
@@ -50,15 +45,17 @@ const WorkPlaceScreen = () => {
 
   if (loadingWorkplaces) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading workplaces...</span>
+      <div className="flex items-center justify-center h-64 bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+        <span className="ml-2 text-gray-600 dark:text-gray-300">Loading workplaces...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+    <Meta title="Our Workplaces" description="Explore our global network of workplaces." />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -81,7 +78,7 @@ const WorkPlaceScreen = () => {
                   placeholder="Search workplaces by name, city, or country..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white/95 backdrop-blur-sm rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl"
+                  className="w-full pl-12 pr-4 py-4 text-gray-900 dark:text-white bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
             </div>
@@ -109,14 +106,14 @@ const WorkPlaceScreen = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters */}
-        <div className="bg-white rounded-lg p-6 shadow mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search workplaces..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full"
+                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
@@ -125,7 +122,7 @@ const WorkPlaceScreen = () => {
             <select
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">All Countries</option>
               {Object.keys(stats.byCountry || {}).map(country => (
@@ -138,7 +135,7 @@ const WorkPlaceScreen = () => {
             <select
               value={filters.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -150,12 +147,12 @@ const WorkPlaceScreen = () => {
         {/* Featured Workplaces */}
         {featuredWorkplaces.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Workplaces</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Featured Workplaces</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {featuredWorkplaces.map((workplace) => (
                 <div
                   key={workplace._id}
-                  className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 group"
                 >
                   {workplace.images && workplace.images[0] ? (
                     <img
@@ -165,17 +162,17 @@ const WorkPlaceScreen = () => {
                       onError={handleImageError}
                     />
                   ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                      <ImageIcon className="w-12 h-12 text-gray-400" />
+                    <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                      <ImageIcon className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                   
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                       {workplace.title}
                     </h3>
                     
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <MapPin className="w-4 h-4 mr-1" />
                       <span>{workplace.address.city}, {workplace.country.name}</span>
                     </div>
@@ -183,22 +180,22 @@ const WorkPlaceScreen = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" />
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {workplace.rating?.average?.toFixed(1) || '0.0'} ({workplace.rating?.count || 0})
                         </span>
                       </div>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">
                         Featured
                       </span>
                     </div>
                     
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
                       {workplace.introduction}
                     </p>
                     
                     <Link
                       to={`/workplace/${workplace._id}`}
-                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                      className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                     >
                       View Details
                       <ChevronRight className="w-4 h-4 ml-1" />
@@ -212,12 +209,12 @@ const WorkPlaceScreen = () => {
 
         {/* All Workplaces */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">All Workplaces</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">All Workplaces</h2>
           <div className="grid grid-cols-1 gap-6">
             {workplaces.map((workplace) => (
               <div
                 key={workplace._id}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   {workplace.images && workplace.images[0] ? (
@@ -228,33 +225,33 @@ const WorkPlaceScreen = () => {
                       onError={handleImageError}
                     />
                   ) : (
-                    <div className="w-full md:w-64 h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                      <ImageIcon className="w-12 h-12 text-gray-400" />
+                    <div className="w-full md:w-64 h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center rounded-lg">
+                      <ImageIcon className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                   
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                       {workplace.title}
                     </h3>
                     
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <MapPin className="w-4 h-4 mr-1" />
                       <span>{workplace.address.city}, {workplace.country.name}</span>
                     </div>
                     
                     <div className="flex items-center mb-4">
                       <Star className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" />
-                      <span className="text-sm font-medium text-gray-700 mr-4">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-4">
                         {workplace.rating?.average?.toFixed(1) || '0.0'} ({workplace.rating?.count || 0})
                       </span>
-                      <Building className="w-4 h-4 text-gray-400 mr-1" />
-                      <span className="text-sm text-gray-500">
+                      <Building className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-1" />
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         Head: {workplace.headOfStation}
                       </span>
                     </div>
                     
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
                       {workplace.introduction}
                     </p>
                     
@@ -262,13 +259,13 @@ const WorkPlaceScreen = () => {
                       {workplace.facilities?.slice(0, 4).map((facility, index) => (
                         <span
                           key={index}
-                          className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs"
+                          className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs"
                         >
                           {facility}
                         </span>
                       ))}
                       {workplace.facilities?.length > 4 && (
-                        <span className="text-gray-400 text-xs">
+                        <span className="text-gray-400 dark:text-gray-500 text-xs">
                           +{workplace.facilities.length - 4} more
                         </span>
                       )}
@@ -276,7 +273,7 @@ const WorkPlaceScreen = () => {
                     
                     <Link
                       to={`/workplace/${workplace._id}`}
-                      className="inline-flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                      className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200"
                     >
                       View Workplace
                       <ChevronRight className="w-4 h-4 ml-1" />
@@ -289,11 +286,11 @@ const WorkPlaceScreen = () => {
 
           {workplaces.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 mb-4">
+              <div className="text-gray-400 dark:text-gray-500 mb-4">
                 <Building className="w-16 h-16 mx-auto" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No workplaces found</h3>
-              <p className="text-gray-500">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No workplaces found</h3>
+              <p className="text-gray-500 dark:text-gray-400">
                 {filters.search 
                   ? `No workplaces match your search for "${filters.search}"`
                   : 'There are no workplaces available with the current filters.'
@@ -304,6 +301,7 @@ const WorkPlaceScreen = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

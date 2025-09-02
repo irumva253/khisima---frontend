@@ -16,8 +16,8 @@ function App() {
   ];
 
   const isResetPasswordRoute = location.pathname.startsWith('/reset-password');
-
   const isLayoutExcluded = noLayoutRoutes.includes(location.pathname) || isResetPasswordRoute;
+  const isNotFoundPage = location.pathname === '*'; 
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -45,7 +45,8 @@ function App() {
               <Outlet />
             </div>
           </main>
-          <Footer />
+          {/* Don't show footer on 404 page */}
+          {!isNotFoundPage && <Footer />}
         </>
       )}
     </ThemeProvider>

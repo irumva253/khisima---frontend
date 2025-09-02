@@ -5,6 +5,7 @@ import { useSubmitCareerApplicationMutation } from '@/slices/careerApiSlice';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/Spinner';
 import { ChevronLeft, ChevronRight, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import Meta from '../components/Meta';
 import countries from 'country-json/src/country-by-name.json';
 
 const CareerScreen = () => {
@@ -238,7 +239,7 @@ const handleSubmit = async (e) => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   First Name *
                 </label>
                 <input
@@ -247,13 +248,13 @@ const handleSubmit = async (e) => {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                   placeholder="Enter your first name"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Last Name *
                 </label>
                 <input
@@ -262,7 +263,7 @@ const handleSubmit = async (e) => {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                   placeholder="Enter your last name"
                 />
               </div>
@@ -270,7 +271,7 @@ const handleSubmit = async (e) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Email Address *
                 </label>
                 <input
@@ -279,13 +280,13 @@ const handleSubmit = async (e) => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                   placeholder="your@email.com"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Phone Number
                 </label>
                 <input
@@ -293,7 +294,7 @@ const handleSubmit = async (e) => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                   placeholder="+250 7xx xxx xxx"
                 />
               </div>
@@ -306,7 +307,7 @@ const handleSubmit = async (e) => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Position of Interest *
                 </label>
                 <select
@@ -314,7 +315,7 @@ const handleSubmit = async (e) => {
                   value={formData.position}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="">Select a position</option>
                   {positions.map(pos => (
@@ -325,7 +326,7 @@ const handleSubmit = async (e) => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Years of Experience *
                 </label>
                 <select
@@ -333,7 +334,7 @@ const handleSubmit = async (e) => {
                   value={formData.experience}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="">Select experience level</option>
                   <option value="0-1">0-1 years (Entry Level)</option>
@@ -346,7 +347,7 @@ const handleSubmit = async (e) => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Languages (with proficiency levels) *
               </label>
               <textarea
@@ -355,7 +356,7 @@ const handleSubmit = async (e) => {
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none dark:bg-gray-700 dark:text-white"
                 placeholder="e.g., English (Native), French (Fluent), Spanish (Intermediate), etc."
               />
             </div>
@@ -367,14 +368,14 @@ const handleSubmit = async (e) => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Work Type Preference
                 </label>
                 <select
                   name="workType"
                   value={formData.workType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="remote">Remote</option>
                   <option value="freelance">Freelance</option>
@@ -384,14 +385,14 @@ const handleSubmit = async (e) => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Availability
                 </label>
                 <select
                   name="availability"
                   value={formData.availability}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="immediate">Immediate</option>
                   <option value="2weeks">2 weeks notice</option>
@@ -403,14 +404,14 @@ const handleSubmit = async (e) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Country/Location
                 </label>
                 <select
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="" disabled>Select your country</option>
                   {countries.map((country) => (
@@ -422,7 +423,7 @@ const handleSubmit = async (e) => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Expected Salary (USD/month)
                 </label>
                 <input
@@ -430,14 +431,14 @@ const handleSubmit = async (e) => {
                   name="expectedSalary"
                   value={formData.expectedSalary}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g., $3000-5000"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Portfolio/LinkedIn URL
               </label>
               <input
@@ -445,7 +446,7 @@ const handleSubmit = async (e) => {
                 name="portfolioUrl"
                 value={formData.portfolioUrl}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
                 placeholder="https://your-portfolio.com or LinkedIn profile"
               />
             </div>
@@ -456,7 +457,7 @@ const handleSubmit = async (e) => {
         return (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Resume/CV *
               </label>
               <div className="relative">
@@ -466,10 +467,10 @@ const handleSubmit = async (e) => {
                   onChange={handleInputChange}
                   required
                   accept=".pdf,.doc,.docx"
-                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100"
+                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
                 />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-gray-500 dark:text-gray-400 text-sm">
                     {formData.resumeFile ? formData.resumeFile.name : 'Upload your resume (PDF, DOC, DOCX)'}
                   </span>
                 </div>
@@ -477,7 +478,7 @@ const handleSubmit = async (e) => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Cover Letter *
               </label>
               <textarea
@@ -486,21 +487,21 @@ const handleSubmit = async (e) => {
                 onChange={handleInputChange}
                 required
                 rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none dark:bg-gray-700 dark:text-white"
                 placeholder="Tell us about yourself, your experience, and why you want to join Khisima. What drives your passion for languages?"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 How did you hear about us?
               </label>
               <select
                 name="referralSource"
                 value={formData.referralSource}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              >
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
+                >
                 <option value="">Select an option</option>
                 <option value="website">Company Website</option>
                 <option value="linkedin">LinkedIn</option>
@@ -520,7 +521,9 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <>
+    <Meta title="Careers" description="Join our team at Khisima" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -593,7 +596,7 @@ const handleSubmit = async (e) => {
 
         {/* Wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50">
+          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50 dark:text-gray-900">
             <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
           </svg>
         </div>
@@ -602,38 +605,38 @@ const handleSubmit = async (e) => {
       <div className="relative -mt-10 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Open Positions Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-12 border border-gray-100 animate-fade-in-up">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Open Positions</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12 border border-gray-100 dark:border-gray-700 animate-fade-in-up">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Open Positions</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {positions.map((position, index) => (
                 <div
                   key={position.id}
-                  className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 group animate-fade-in"
+                  className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all duration-300 group animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors duration-200">
                         {position.title}
                       </h3>
                       <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
-                        position.type === 'Freelance' ? 'bg-green-100 text-green-800' :
-                        position.type === 'Remote' ? 'bg-blue-100 text-blue-800' :
-                        'bg-purple-100 text-purple-800'
+                        position.type === 'Freelance' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                        position.type === 'Remote' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
                       }`}>
                         {position.type}
                       </span>
                     </div>
                   </div>
                   
-                  <p className="text-gray-600 mb-4 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                     {position.description}
                   </p>
                   
                   <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Requirements:</h4>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                       {position.requirements.map((req, idx) => (
                         <li key={idx} className="flex items-start">
                           <span className="text-blue-500 mr-2 mt-1">•</span>
@@ -648,7 +651,7 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* Application Form Section with Stepper */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 animate-fade-in-up">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 animate-fade-in-up">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 md:p-8 text-white">
                 <h2 className="text-2xl md:text-3xl font-bold mb-2 md:mb-4">Apply Now</h2>
                 <p className="text-blue-100 leading-relaxed text-sm md:text-base">
@@ -657,7 +660,7 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Stepper Header - Responsive Version */}
-            <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50 border-b border-gray-200">
+            <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                 {steps.map((step, index) => (
                     <div key={step.id} className="flex items-center">
@@ -669,8 +672,8 @@ const handleSubmit = async (e) => {
                             : step.id === currentStep
                             ? 'bg-blue-600 border-blue-600 text-white'
                             : step.id < currentStep || completedSteps.includes(step.id - 1)
-                            ? 'border-gray-300 text-gray-500 hover:border-blue-400'
-                            : 'border-gray-200 text-gray-300 cursor-not-allowed'
+                            ? 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-blue-400'
+                            : 'border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed'
                         }`}
                     >
                         {completedSteps.includes(step.id) ? (
@@ -682,20 +685,20 @@ const handleSubmit = async (e) => {
                     
                     <div className="ml-3 md:ml-4 flex-1">
                         <div className={`text-xs md:text-sm font-semibold ${
-                        step.id === currentStep ? 'text-blue-600' :
-                        completedSteps.includes(step.id) ? 'text-green-600' :
-                        'text-gray-500'
+                        step.id === currentStep ? 'text-blue-600 dark:text-blue-400' :
+                        completedSteps.includes(step.id) ? 'text-green-600 dark:text-green-400' :
+                        'text-gray-500 dark:text-gray-400'
                         }`}>
                         {step.title}
                         </div>
-                        <div className="text-xs text-gray-500 hidden md:block">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 hidden md:block">
                         {step.description}
                         </div>
                     </div>
                     
                     {index < steps.length - 1 && (
                         <div className={`hidden md:block w-16 h-0.5 ml-4 ${
-                        completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-300'
+                        completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                         }`} />
                     )}
                     </div>
@@ -706,10 +709,10 @@ const handleSubmit = async (e) => {
             {/* Form Content */}
             <form onSubmit={handleSubmit} className="p-4 md:p-8">
                 <div className="mb-6 md:mb-8">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     {steps.find(s => s.id === currentStep)?.title}
                 </h3>
-                <p className="text-gray-600 text-sm md:text-base">
+                <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
                     {steps.find(s => s.id === currentStep)?.description}
                 </p>
                 </div>
@@ -717,15 +720,15 @@ const handleSubmit = async (e) => {
                 {renderStepContent()}
 
                 {/* Navigation Buttons - Responsive Version */}
-                <div className="flex flex-col-reverse md:flex-row justify-between items-center pt-6 md:pt-8 mt-6 md:mt-8 border-t border-gray-200 space-y-reverse space-y-4 md:space-y-0">
+                <div className="flex flex-col-reverse md:flex-row justify-between items-center pt-6 md:pt-8 mt-6 md:mt-8 border-t border-gray-200 dark:border-gray-600 space-y-reverse space-y-4 md:space-y-0">
                 <button
                     type="button"
                     onClick={handlePrevious}
                     disabled={currentStep === 1}
                     className={`flex items-center px-4 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-200 w-full md:w-auto justify-center ${
                     currentStep === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
                     }`}
                 >
                     <ChevronLeft size={18} className="mr-2" />
@@ -741,7 +744,7 @@ const handleSubmit = async (e) => {
                             ? 'bg-blue-600 w-4 md:w-8'
                             : completedSteps.includes(step.id)
                             ? 'bg-green-500'
-                            : 'bg-gray-300'
+                            : 'bg-gray-300 dark:bg-gray-600'
                         }`}
                     />
                     ))}
@@ -838,27 +841,27 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* FAQ Section with Accordions */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-16 border border-gray-100 animate-fade-in">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-16 border border-gray-100 dark:border-gray-700 animate-fade-in">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Frequently Asked Questions</h2>
             
             <div className="max-w-4xl mx-auto">
               {faqData.map((faq, index) => (
                 <div
                   key={faq.id}
-                  className="border border-gray-200 rounded-xl mb-4 overflow-hidden transition-all duration-200 hover:shadow-md"
+                  className="border border-gray-200 dark:border-gray-600 rounded-xl mb-4 overflow-hidden transition-all duration-200 hover:shadow-md"
                 >
                   <button
                     onClick={() => toggleAccordion(faq.id)}
-                    className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between group"
+                    className="w-full px-6 py-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-between group"
                   >
-                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                    <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors duration-200">
                       {faq.question}
                     </h3>
                     <div className="ml-4 flex-shrink-0">
                       {openAccordion === faq.id ? (
-                        <ChevronUp className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors duration-200" />
+                        <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 transition-colors duration-200" />
                       ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors duration-200" />
+                        <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 transition-colors duration-200" />
                       )}
                     </div>
                   </button>
@@ -870,8 +873,8 @@ const handleSubmit = async (e) => {
                         : 'max-h-0 opacity-0 overflow-hidden'
                     }`}
                   >
-                    <div className="px-6 py-4 bg-white border-t border-gray-100">
-                      <p className="text-gray-600 leading-relaxed">
+                    <div className="px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                         {faq.answer}
                       </p>
                     </div>
@@ -882,9 +885,9 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* Contact Information */}
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl shadow-xl p-8 text-center border border-gray-100 animate-fade-in">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Have Questions?</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+          <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl shadow-xl p-8 text-center border border-gray-100 dark:border-gray-700 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Have Questions?</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
               Our HR team is here to help. Reach out if you have any questions about our open positions or application process.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -899,7 +902,7 @@ const handleSubmit = async (e) => {
               </a>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200"
+                className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-semibold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 dark:border-blue-400 dark:hover:bg-blue-400"
               >
                 Contact Form
               </Link>
@@ -989,6 +992,7 @@ const handleSubmit = async (e) => {
         }
       `}</style>
     </div>
+   </>
   );
 };
 

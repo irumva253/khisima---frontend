@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { S3_BASE_URL } from '@/constants';
+import Meta from '../components/Meta';
 
 const SolutionScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,10 +51,10 @@ const SolutionScreen = () => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      draft: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      published: "bg-green-100 text-green-800 border-green-200"
+      draft: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700/50",
+      published: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700/50"
     };
-    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200";
+    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
   };
 
   const truncateText = (text, maxLength = 150) => {
@@ -112,11 +113,11 @@ const SolutionScreen = () => {
   // Loading state
   if (isSolutionsLoading || isCategoriesLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center animate-pulse">
-          <div className="w-16 h-16 bg-blue-200 rounded-full mx-auto mb-4 animate-spin"></div>
+          <div className="w-16 h-16 bg-blue-200 dark:bg-blue-800 rounded-full mx-auto mb-4 animate-spin"></div>
           <Spinner size="xl" />
-          <p className="mt-4 text-gray-600 font-medium">Loading solutions...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300 font-medium">Loading solutions...</p>
         </div>
       </div>
     );
@@ -125,7 +126,7 @@ const SolutionScreen = () => {
   // Error state
   if (isSolutionsError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
         <div className="max-w-md w-full">
           <ErrorMessage
             title="Solutions Error"
@@ -144,12 +145,14 @@ const SolutionScreen = () => {
   const draftSolutions = solutions.filter(s => s.status === 'draft');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <>
+    <Meta title="Our Solutions" description="Discover our comprehensive range of professional solutions designed to meet your needs. From consultation to implementation, we've got you covered." />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-indigo-500/10"></div>
-        
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-700/10 to-indigo-500/10"></div>
+
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Floating Bubbles */}
@@ -178,12 +181,12 @@ const SolutionScreen = () => {
           </div>
           <div className="absolute bottom-1/3 right-24 text-white/20 animate-float-icon-4">
             <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/>
+              <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5  4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/>
             </svg>
           </div>
           <div className="absolute top-40 left-1/2 text-white/15 animate-float-icon-5">
             <svg className="w-9 h-9" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l.91-1.01L12 2z"/>
             </svg>
           </div>
           
@@ -196,16 +199,16 @@ const SolutionScreen = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           {/* Breadcrumb */}
           <nav className="mb-8 animate-fade-in">
-            <ol className="flex items-center space-x-2 text-sm text-blue-100">
-              <li>
-                <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
-              </li>
-              <li className="flex items-center">
-                <span className="mx-2">/</span>
-                <span className="text-white font-medium">Solutions</span>
-              </li>
-            </ol>
-          </nav>
+          <ol className="flex items-center space-x-2 text-sm text-blue-100">
+            <li>
+              <Link to="/" className="hover:text-white transition-colors duration-200">Home</Link>
+            </li>
+            <li className="flex items-center">
+              <span className="mx-2">/</span>
+              <span className="text-white font-medium">Solutions</span>
+            </li>
+          </ol>
+        </nav>
 
           {/* Hero Content */}
           <div className="text-center animate-slide-up">
@@ -237,7 +240,7 @@ const SolutionScreen = () => {
 
         {/* Wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50">
+          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50 dark:text-gray-900">
             <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
           </svg>
         </div>
@@ -246,7 +249,7 @@ const SolutionScreen = () => {
       <div className="relative -mt-10 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Filters and Search */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 animate-fade-in-up">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700 animate-fade-in-up">
             <div className="flex flex-col lg:flex-row gap-6 items-center">
               {/* Search */}
               <div className="flex-1 relative">
@@ -258,7 +261,7 @@ const SolutionScreen = () => {
                 <input
                   type="text"
                   placeholder="Search published solutions..."
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 dark:focus:placeholder-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -267,7 +270,7 @@ const SolutionScreen = () => {
               {/* Category Filter */}
               <div className="w-full lg:w-auto">
                 <select
-                  className="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
@@ -283,7 +286,7 @@ const SolutionScreen = () => {
               {/* Sort */}
               <div className="w-full lg:w-auto">
                 <select
-                  className="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -294,13 +297,13 @@ const SolutionScreen = () => {
               </div>
 
               {/* View Mode Toggle */}
-              <div className="flex bg-gray-100 rounded-xl p-1">
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     viewMode === 'grid'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
                   }`}
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -311,8 +314,8 @@ const SolutionScreen = () => {
                   onClick={() => setViewMode('list')}
                   className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     viewMode === 'list'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
                   }`}
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -323,7 +326,7 @@ const SolutionScreen = () => {
             </div>
 
             {/* Results info */}
-            <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+            <div className="mt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
               <span>
                 Showing {filteredAndSortedSolutions.length} of {publishedSolutions.length} published solutions
               </span>
@@ -337,14 +340,14 @@ const SolutionScreen = () => {
 
           {/* Solutions Display */}
           {filteredAndSortedSolutions.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-xl p-12 text-center border border-gray-100 animate-fade-in">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12 text-center border border-gray-100 dark:border-gray-700 animate-fade-in">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6">
                 <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">No published solutions found</h3>
-              <p className="text-gray-500 mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">No published solutions found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">
                 {searchQuery
                   ? `No published solutions match your search "${searchQuery}"`
                   : "No published solutions available in the selected category"
@@ -371,7 +374,7 @@ const SolutionScreen = () => {
               {filteredAndSortedSolutions.map((solution, index) => (
                 <div
                   key={solution._id}
-                  className={`bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 group transform hover:-translate-y-1 animate-fade-in-up ${
+                  className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 group transform hover:-translate-y-1 animate-fade-in-up ${
                     viewMode === 'list' ? 'flex' : ''
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
@@ -391,10 +394,10 @@ const SolutionScreen = () => {
                     ) : null}
                     
                     {/* Fallback placeholder */}
-                    <div className={`${solution.fileKey ? 'hidden' : 'flex'} w-full h-full bg-gradient-to-br from-blue-200 to-indigo-200 items-center justify-center`}>
-                      <div className="text-center text-blue-600">
+                    <div className={`${solution.fileKey ? 'hidden' : 'flex'} w-full h-full bg-gradient-to-br from-blue-200 to-indigo-200 dark:from-blue-900/50 dark:to-indigo-900/50 items-center justify-center`}>
+                      <div className="text-center text-blue-600 dark:text-blue-400">
                         <svg className="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 极l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 极 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                         <p className="font-medium text-sm">Solution Image</p>
                       </div>
@@ -416,7 +419,7 @@ const SolutionScreen = () => {
                         <div className="mb-3">
                           <Link
                             to={`/solutions/${solution.category}`}
-                            className="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200"
+                            className="inline-block px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
                           >
                             {categories.find(cat => cat._id === solution.category)?.title}
                           </Link>
@@ -424,12 +427,12 @@ const SolutionScreen = () => {
                       )}
 
                       {/* Title and Description */}
-                      <h3 className="text-xl font-bold text-gray-极 mb-3 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
                         {solution.title}
                       </h3>
 
                       {solution.smallDescription && (
-                        <p className="text-gray-600 mb-4 leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                           {viewMode === 'list' 
                             ? truncateText(solution.smallDescription, 200)
                             : truncateText(solution.smallDescription, 120)
@@ -438,10 +441,10 @@ const SolutionScreen = () => {
                       )}
 
                       {/* Solution metadata */}
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
                         <div className="flex items-center">
                           <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 极 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                           <span>{formatDate(solution.createdAt)}</span>
                         </div>
@@ -498,20 +501,20 @@ const SolutionScreen = () => {
                         Request Custom Solution
                       </button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="dark:bg-gray-800 dark:text-white">
                       <DialogHeader>
-                        <DialogTitle>Request Custom Solution</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="dark:text-white">Request Custom Solution</DialogTitle>
+                        <DialogDescription className="dark:text-gray-300">
                           Please provide details about your custom solution request.
                         </DialogDescription>
                       </DialogHeader>
-                          <blockquote className="mt-6 border-l-2 pl-6 italic">
-                            &quot;After all,&quot; share it via our email:, &quot;<a href="mailto:info@khisima.com">info@khisima.com</a>
+                          <blockquote className="mt-6 border-l-2 pl-6 italic dark:border-gray-600 dark:text-gray-300">
+                            &quot;After all,&quot; share it via our email:, &quot;<a href="mailto:info@khisima.com" className="text-blue-600 dark:text-blue-400">info@khisima.com</a>
                             &apos;s email.&quot;
                           </blockquote>
                                               
                       <DialogFooter>
-                        <DialogClose className="text-blue-600">Close</DialogClose>
+                        <DialogClose className="text-blue-600 dark:text-blue-400">Close</DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -570,7 +573,7 @@ const SolutionScreen = () => {
         }
         
         .animate-fade-in-delay-2 {
-          animation: fade-in 极.8s ease-out 0.6s both;
+          animation: fade-in 0.8s ease-out 0.6s both;
         }
         
         .animate-fade-in-delay-3 {
@@ -585,6 +588,7 @@ const SolutionScreen = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

@@ -32,6 +32,7 @@ import {
   getResourceTypeIcon,
   getResourceCategoryColor
 } from '@/slices/resourceSlice';
+import Meta from '../components/Meta';
 
 const ResourcesScreen = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -103,15 +104,17 @@ const ResourcesScreen = () => {
 
   if (loadingResources) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading resources...</span>
+      <div className="flex items-center justify-center h-64 dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin dark:text-white" />
+        <span className="ml-2 dark:text-white">Loading resources...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <>
+    <Meta title="Resources" description="Explore our collection of language resources" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-[#4c91f5] via-blue-600 to-indigo-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -166,7 +169,7 @@ const ResourcesScreen = () => {
                   placeholder="Search resources, topics, or authors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white/95 backdrop-blur-sm rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl"
+                  className="w-full pl-12 pr-4 py-4 text-gray-900 dark:text-white bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl dark:placeholder-gray-400"
                 />
               </div>
             </div>
@@ -191,7 +194,7 @@ const ResourcesScreen = () => {
 
         {/* Wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50">
+          <svg viewBox="0 0 1440 120" className="w-full h-20 text-slate-50 dark:text-gray-900">
             <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,200L1392,200C1344,200,1248,200,1152,200C1056,200,960,200,864,200C768,200,672,200,576,200C480,200,384,200,288,200C192,200,96,200,48,200L0,200Z"></path>
           </svg>
         </div>
@@ -204,8 +207,8 @@ const ResourcesScreen = () => {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               {/* Categories Filter */}
-              <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8 sticky top-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 mb-8 sticky top-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                   <Filter className="w-5 h-5 mr-2" />
                   Categories
                 </h3>
@@ -219,14 +222,14 @@ const ResourcesScreen = () => {
                         className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${
                           activeCategory === category.id
                             ? 'bg-[#4c91f5] text-white border border-blue-300'
-                            : 'text-gray-600 hover:bg-blue-50 hover:text-[#4c91f5]'
+                            : 'text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-[#4c91f5] dark:hover:text-blue-300'
                         }`}
                       >
                         <div className="flex items-center">
                           <IconComponent className="w-5 h-5 mr-3" />
                           <span className="font-medium">{category.name}</span>
                         </div>
-                        <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
                           {category.count}
                         </span>
                       </button>
@@ -236,8 +239,8 @@ const ResourcesScreen = () => {
               </div>
 
               {/* Trending Topics */}
-              <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                   <TrendingUp className="w-5 h-5 mr-2" />
                   Trending Topics
                 </h3>
@@ -245,8 +248,8 @@ const ResourcesScreen = () => {
                   {trendingTopics.map((topic, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">{topic.name}</div>
-                        <div className="text-xs text-gray-500">{topic.posts} resources</div>
+                        <div className="font-medium text-gray-900 dark:text-white">{topic.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{topic.posts} resources</div>
                       </div>
                       <div className="text-right">
                         <div className="text-green-600 font-semibold text-sm">{topic.growth}</div>
@@ -257,12 +260,12 @@ const ResourcesScreen = () => {
               </div>
 
               {/* Quick Links */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Access</h3>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl shadow-xl p-6 border border-blue-100 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Access</h3>
                 <div className="space-y-3">
                   <Link
                     to="/datasets"
-                    className="flex items-center text-[#4c91f5] hover:text-blue-700 transition-colors duration-200"
+                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Open Datasets
@@ -270,7 +273,7 @@ const ResourcesScreen = () => {
                   </Link>
                   <Link
                     to="/tools"
-                    className="flex items-center text-[#4c91f5] hover:text-blue-700 transition-colors duration-200"
+                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
                   >
                     <Cpu className="w-4 h-4 mr-2" />
                     Language Tools
@@ -278,7 +281,7 @@ const ResourcesScreen = () => {
                   </Link>
                   <Link
                     to="/research"
-                    className="flex items-center text-[#4c91f5] hover:text-blue-700 transition-colors duration-200"
+                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Research Papers
@@ -292,7 +295,7 @@ const ResourcesScreen = () => {
             <div className="lg:col-span-3">
               {/* Featured Resources */}
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Resources</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Featured Resources</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {featuredResources.map((resource) => {
                     const TypeIcon = getTypeIconComponent(resource.type);
@@ -301,7 +304,7 @@ const ResourcesScreen = () => {
                     return (
                       <div
                         key={resource._id}
-                        className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 group"
                       >
                         <div className="relative h-48 bg-gradient-to-br from-[#4c91f5] to-indigo-600">
                           {resource.imageUrl && (
@@ -313,14 +316,14 @@ const ResourcesScreen = () => {
                           )}
                           <div className="absolute inset-0 bg-black opacity-20"></div>
                           <div className="absolute top-4 left-4">
-                            <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 capitalize">
+                            <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 dark:text-gray-300 capitalize">
                               {resource.type}
                             </span>
                           </div>
                           <div className="absolute top-4 right-4">
-                            <div className="flex items-center bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full">
+                            <div className="flex items-center bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-full">
                               <Star className="w-3 h-3 text-yellow-500 mr-1" fill="currentColor" />
-                              <span className="text-xs font-medium text-gray-700">{resource.rating}</span>
+                              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{resource.rating}</span>
                             </div>
                           </div>
                           <div className="absolute bottom-4 left-4 right-4">
@@ -331,11 +334,11 @@ const ResourcesScreen = () => {
                         </div>
                         
                         <div className="p-6">
-                          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
                             {resource.description}
                           </p>
                           
-                          <div className="flex items-center text-xs text-gray-500 mb-4">
+                          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-4">
                             <User className="w-3 h-3 mr-1" />
                             <span className="mr-4">{resource.author}</span>
                             <Calendar className="w-3 h-3 mr-1" />
@@ -348,7 +351,7 @@ const ResourcesScreen = () => {
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${categoryColor}`}>
                               {resource.category}
                             </span>
-                            <div className="flex items-center text-gray-500 text-xs">
+                            <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
                               <Download className="w-3 h-3 mr-1" />
                               <span>{resource.downloads.toLocaleString()} downloads</span>
                             </div>
@@ -370,7 +373,7 @@ const ResourcesScreen = () => {
 
               {/* All Resources */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">All Resources</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">All Resources</h2>
                 <div className="space-y-4">
                   {resources.map((resource) => {
                     const TypeIcon = getTypeIconComponent(resource.type);
@@ -379,30 +382,30 @@ const ResourcesScreen = () => {
                     return (
                       <div
                         key={resource._id}
-                        className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group"
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 group"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center mb-2">
                               <TypeIcon className="w-5 h-5 text-[#4c91f5] mr-2" />
-                              <span className="bg-blue-50 text-[#4c91f5] px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                              <span className="bg-blue-50 dark:bg-blue-900/30 text-[#4c91f5] dark:text-blue-300 px-3 py-1 rounded-full text-xs font-semibold capitalize">
                                 {resource.type}
                               </span>
-                              <div className="flex items-center ml-4 bg-gray-50 px-2 py-1 rounded-full">
+                              <div className="flex items-center ml-4 bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded-full">
                                 <Star className="w-3 h-3 text-yellow-500 mr-1" fill="currentColor" />
-                                <span className="text-xs font-medium text-gray-600">{resource.rating}</span>
+                                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">{resource.rating}</span>
                               </div>
                             </div>
                             
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#4c91f5] transition-colors duration-200">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-[#4c91f5] transition-colors duration-200">
                               {resource.title}
                             </h3>
                             
-                            <p className="text-gray-600 mb-4 leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                               {resource.description}
                             </p>
                             
-                            <div className="flex items-center text-sm text-gray-500 mb-4">
+                            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
                               <User className="w-4 h-4 mr-1" />
                               <span className="mr-6">{resource.author}</span>
                               <Calendar className="w-4 h-4 mr-1" />
@@ -421,7 +424,7 @@ const ResourcesScreen = () => {
                                 {resource.tags.slice(0, 3).map((tag, index) => (
                                   <span
                                     key={index}
-                                    className="bg-gray-50 text-gray-600 px-2 py-1 rounded-full text-xs font-medium"
+                                    className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full text-xs font-medium"
                                   >
                                     {tag}
                                   </span>
@@ -454,8 +457,8 @@ const ResourcesScreen = () => {
                   <div className="text-gray-400 mb-4">
                     <FileText className="w-16 h-16 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
-                  <p className="text-gray-500">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No resources found</h3>
+                  <p className="text-gray-500 dark:text-gray-400">
                     {searchQuery 
                       ? `No resources match your search for "${searchQuery}"`
                       : 'There are no resources available in this category yet.'
@@ -556,6 +559,7 @@ const ResourcesScreen = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

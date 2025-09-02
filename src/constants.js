@@ -144,4 +144,12 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/api/workplaces/${id}`,
     STATS: "/api/workplaces/stats/summary",
   },
+  SUBSCRIBERS: {
+    BASE: "/api/subscribers",
+    GET_ALL: "/api/subscribers",
+    GET_BY_ID: (id) => `/api/subscribers/${id}`,
+    CREATE: "/api/subscribers",
+    UPDATE: (id) => `/api/subscribers/${id}`,
+    DELETE: (id) => `/api/subscribers/${id}`,
+  },
 };
