@@ -3,13 +3,17 @@ import { CardCarousel } from "@/components/ui/card-carousel";
 import { S3_BASE_URL } from "@/constants";
 import { useGetPartnersQuery } from "@/slices/partnerApiSlice";
 import Spinner from "@/components/ui/Spinner";
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
 
-  const partners = partnersData || []; // <-- fixed
+  // Enhanced error logging
+  if (isError) {
+    console.error("Partners API Error:", error);
+  }
 
+  // Handle loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -18,15 +22,25 @@ const Partners = () => {
     );
   }
 
+  // Handle error state with more detailed information
   if (isError) {
     return (
       <div className="text-center py-24 text-red-600">
         <p className="text-lg font-medium">
-          Error loading partners: {error?.data?.message || "Please try again later"}
+          Error loading partners
         </p>
+        <p className="text-sm mt-2">
+          {error?.data?.message || error?.error || "Please try again later"}
+        </p>
+        <Link to="/contact" className="text-blue-600 hover:underline mt-4 inline-block">
+          Contact support
+        </Link>
       </div>
     );
   }
+
+  // Ensure partners is always an array
+  const partners = Array.isArray(partnersData) ? partnersData : [];
 
   const activePartners = partners.filter((partner) => partner.status === "active");
 

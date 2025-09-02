@@ -7,10 +7,26 @@ export const partnerApiSlice = apiSlice.injectEndpoints({
     // GET all partners
     getPartners: builder.query({
       query: () => API_ENDPOINTS.PARTNERS.GET_ALL,
-      // Transform backend response to always return an array
+      // Enhanced transformResponse to handle different response formats
       transformResponse: (response) => {
         console.log('Partners API response:', response);
-        return Array.isArray(response) ? response : response.partners || [];
+        
+        // Handle different possible response formats
+        if (Array.isArray(response)) {
+          return response;
+        } else if (response && Array.isArray(response.partners)) {
+          return response.partners;
+        } else if (response && response.data && Array.isArray(response.data)) {
+          return response.data;
+        } else {
+          console.warn('Unexpected API response format:', response);
+          return []; // Return empty array as fallback
+        }
+      },
+      // Add error handling transform
+      transformErrorResponse: (response) => {
+        console.error('Partners API error:', response);
+        return response;
       },
       providesTags: ['Partner'],
     }),
