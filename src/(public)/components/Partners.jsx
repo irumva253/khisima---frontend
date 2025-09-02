@@ -4,24 +4,20 @@ import { S3_BASE_URL } from "@/constants";
 import { useGetPartnersQuery } from "@/slices/partnerApiSlice";
 import Spinner from "@/components/ui/Spinner";
 import { Link } from 'react-router-dom';
-import.meta.env.MODE
-
 
 // Temporary debug component - remove after debugging
-const DebugPartners = ({ data, error }) => {
-  return (
-    <div className="fixed bottom-0 right-0 bg-black text-white p-4 max-w-md max-h-64 overflow-auto z-50 text-xs">
-      <h3 className="font-bold mb-2">API Response Debug:</h3>
-      <div className="mb-2">
-        <span className="font-semibold">Status: </span>
-        {error ? `Error - ${error.status}` : 'Success'}
-      </div>
-      <pre className="whitespace-pre-wrap break-words">
-        {error ? JSON.stringify(error, null, 2) : JSON.stringify(data, null, 2)}
-      </pre>
+const DebugPartners = ({ data, error }) => (
+  <div className="fixed bottom-0 right-0 bg-black text-white p-4 max-w-md max-h-64 overflow-auto z-50 text-xs">
+    <h3 className="font-bold mb-2">API Response Debug:</h3>
+    <div className="mb-2">
+      <span className="font-semibold">Status: </span>
+      {error ? `Error - ${error.status}` : 'Success'}
     </div>
-  );
-};
+    <pre className="whitespace-pre-wrap break-words">
+      {error ? JSON.stringify(error, null, 2) : JSON.stringify(data, null, 2)}
+    </pre>
+  </div>
+);
 
 const Partners = () => {
   const { data: partnersData, isLoading, isError, error } = useGetPartnersQuery();
@@ -40,14 +36,15 @@ const Partners = () => {
     );
   }
 
-  // Handle error state with more detailed information
+  // Ensure partners is always an array
+  const partners = Array.isArray(partnersData) ? partnersData : [];
+
+  // Handle error state with detailed info
   if (isError) {
     return (
       <>
         <div className="text-center py-24 text-red-600">
-          <p className="text-lg font-medium">
-            Error loading partners
-          </p>
+          <p className="text-lg font-medium">Error loading partners</p>
           <p className="text-sm mt-2">
             {error?.data?.message || error?.error || "Please try again later"}
           </p>
@@ -61,9 +58,6 @@ const Partners = () => {
       </>
     );
   }
-
-  // Ensure partners is always an array
-  const partners = Array.isArray(partnersData) ? partnersData : [];
 
   const activePartners = partners.filter((partner) => partner.status === "active");
 
@@ -79,7 +73,6 @@ const Partners = () => {
         {import.meta.env.MODE === 'development' && (
           <DebugPartners data={partnersData} error={error} />
         )}
-
       </>
     );
   }
@@ -87,7 +80,7 @@ const Partners = () => {
   const carouselItems = activePartners.map((partner) => ({
     id: partner._id,
     title: partner.title,
-    image: `${S3_BASE_URL}/${partner.fileKey}`,
+    image: partner.fileKey ? `${S3_BASE_URL}/${partner.fileKey}` : '', // avoid broken images
     content: (
       <div className="text-center p-4">
         <h3 className="font-semibold text-lg mb-2 text-gray-800">{partner.title}</h3>
