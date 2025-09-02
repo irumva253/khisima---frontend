@@ -40,7 +40,7 @@ function App() {
       ) : (
         <>
           <Navbar />
-          <main className="pt-25">
+          <main className="pt-20">
             <div>
               <Outlet />
             </div>
