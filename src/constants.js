@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 
 // Backend API
-export const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL || "http://localhost:5000";
+// export const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL || "http://localhost:5000";
 // Production example:
-// export const BASE_URL = "https://your-production-backend.com";
+export const BASE_URL = "https://khisima-backend.onrender.com";
 
 // S3
 // For Tigris, the URL format is: https://{bucket-name}.t3.storage.dev
