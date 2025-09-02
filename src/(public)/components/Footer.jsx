@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ModeToggle } from './ModeToggle';
 import { 
   Globe, 
   Languages, 
@@ -248,6 +249,12 @@ const Footer = () => {
               <Link to ="/careers" className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
                 Careers <ExternalLink className="w-3 h-3 ml-1" />
               </Link>
+            </div>
+
+            {/* theme */}
+            <div className="flex items-center space-x-1 text-sm text-gray-400">
+              <span>Theme: </span>
+              <ModeToggle />
             </div>
           </div>
         </div>

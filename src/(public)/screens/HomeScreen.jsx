@@ -107,7 +107,7 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-gray-900 dark:to-gray-800">
       <style jsx="true">{`
         @keyframes fadeInUp {
           from {
@@ -208,7 +208,7 @@ const HomeScreen = () => {
                 index === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <div className="absolute inset-0 bg-black/40 z-10"></div>
+              <div className="absolute inset-0 bg-black/40 dark:bg-black/60 z-10"></div>
               <img
                 src={slide.image}
                 alt={slide.title}
@@ -275,7 +275,6 @@ const HomeScreen = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                   
                   className="px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 shadow-lg"
                 >
                   <Play className="mr-2 w-5 h-5" />
@@ -288,7 +287,7 @@ const HomeScreen = () => {
       </section>
 
       {/* Stats Section */}
-      <section id="stats" className="py-16 bg-white/50">
+      <section id="stats" className="py-16 bg-white/50 dark:bg-gray-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
@@ -300,7 +299,7 @@ const HomeScreen = () => {
                 <div className="text-3xl md:text-4xl font-bold mb-2 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }}>
                   {stat.number}
                 </div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
+                <div className="text-gray-600 dark:text-gray-400 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -308,65 +307,65 @@ const HomeScreen = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className={`${isVisible.about ? 'animate-slide-in-left' : 'opacity-0'}`}>
               <Badge className="mb-4" style={{ backgroundColor: '#3a7acc', color: 'white' }}>
                 About Khisima
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                 At the crossroads of language, culture, and technology
               </h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                 Born in one of Africa's most multilingual nations where Kinyarwanda, English, French, Lingala, Luganda, and Swahili live side by side, Khisima understands the power of linguistic diversity.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3 group">
                   <CheckCircle className="w-6 h-6 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }} />
                   <div>
-                    <h3 className="font-semibold text-gray-900">We don't just translate, we empower</h3>
-                    <p className="text-gray-600">Combining linguistic expertise with cultural intelligence</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">We don't just translate, we empower</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Combining linguistic expertise with cultural intelligence</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3 group">
                   <CheckCircle className="w-6 h-6 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }} />
                   <div>
-                    <h3 className="font-semibold text-gray-900">We don't just annotate, we preserve</h3>
-                    <p className="text-gray-600">Building representation for underserved languages</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">We don't just annotate, we preserve</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Building representation for underserved languages</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3 group">
                   <CheckCircle className="w-6 h-6 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }} />
                   <div>
-                    <h3 className="font-semibold text-gray-900">We don't just build data, we build representation</h3>
-                    <p className="text-gray-600">Making language equity real in digital systems</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">We don't just build data, we build representation</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Making language equity real in digital systems</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className={`relative ${isVisible.about ? 'animate-slide-in-right' : 'opacity-0'}`}>
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl hover:shadow-2xl transition-all duration-500">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 p-8 rounded-2xl hover:shadow-2xl transition-all duration-500">
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
                     <Languages className="w-8 h-8 mx-auto mb-3 animate-bounce" style={{ color: '#3a7acc' }} />
-                    <div className="font-semibold">6+ Languages</div>
-                    <div className="text-sm text-gray-600">In Rwanda</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">6+ Languages</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">In Rwanda</div>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
                     <Globe className="w-8 h-8 mx-auto mb-3 animate-bounce" style={{ color: '#3a7acc', animationDelay: '0.2s' }} />
-                    <div className="font-semibold">Global Reach</div>
-                    <div className="text-sm text-gray-600">Worldwide Impact</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">Global Reach</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Worldwide Impact</div>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
                     <Users className="w-8 h-8 mx-auto mb-3 animate-bounce" style={{ color: '#3a7acc', animationDelay: '0.4s' }} />
-                    <div className="font-semibold">Expert Team</div>
-                    <div className="text-sm text-gray-600">Native Speakers</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">Expert Team</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Native Speakers</div>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
+                  <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
                     <Database className="w-8 h-8 mx-auto mb-3 animate-bounce" style={{ color: '#3a7acc', animationDelay: '0.6s' }} />
-                    <div className="font-semibold">AI Ready</div>
-                    <div className="text-sm text-gray-600">NLP Data</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">AI Ready</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">NLP Data</div>
                   </div>
                 </div>
               </div>
@@ -376,27 +375,27 @@ const HomeScreen = () => {
       </section>
 
       {/* Mission Section */}
-      <section id="mission" className="py-20 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <section id="mission" className="py-20 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className={`${isVisible.mission ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <Badge className="mb-6" style={{ backgroundColor: '#3a7acc', color: 'white' }}>
               Our Mission
             </Badge>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-8">
               Making African languages digitally visible
             </h2>
           </div>
           <div className="max-w-4xl mx-auto">
             <div className={`${isVisible.mission ? 'animate-fade-in-up animation-delay-300' : 'opacity-0'}`}>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                 Africa is home to over 2,000 languages, yet the majority remain digitally invisible. They are absent from translation apps, neglected by speech recognition systems, and largely underrepresented in artificial intelligence.
               </p>
             </div>
-            <div className={`bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift ${isVisible.mission ? 'animate-fade-in-up animation-delay-600' : 'opacity-0'}`}>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ color: '#3a7acc' }}>
+            <div className={`bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift ${isVisible.mission ? 'animate-fade-in-up animation-delay-600' : 'opacity-0'}`}>
+              <h3 className="text-2xl font-bold mb-4" style={{ color: '#3a7acc' }}>
                 We believe every language deserves space in the digital future
               </h3>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                 In the 21st century, language is more than communication. It is access, identity, and power. We're building the linguistic infrastructure that enables African words to reach global audiences.
               </p>
             </div>
@@ -405,16 +404,16 @@ const HomeScreen = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className={`text-center mb-16 ${isVisible.services ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <Badge className="mb-4" style={{ backgroundColor: '#3a7acc', color: 'white' }}>
               Our Services
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Comprehensive language solutions
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               From translation and localization to NLP data services, we provide everything you need to make African languages part of your digital strategy.
             </p>
           </div>
@@ -423,7 +422,7 @@ const HomeScreen = () => {
             {services.map((service, index) => (
               <Card 
                 key={index} 
-                className={`group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg hover-lift hover:scale-105 ${
+                className={`group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg hover-lift hover:scale-105 dark:bg-gray-800 ${
                   isVisible.services ? 'animate-bounce-in' : 'opacity-0'
                 }`}
                 style={{ animationDelay: `${index * 0.2}s` }}
@@ -433,7 +432,7 @@ const HomeScreen = () => {
                     <div className="p-2 rounded-lg group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#3a7acc' }}>
                       {React.cloneElement(service.icon, { className: "w-6 h-6 text-white" })}
                     </div>
-                    <CardTitle className="text-xl group-hover:text-blue-600 transition-colors duration-300">{service.category}</CardTitle>
+                    <CardTitle className="text-xl group-hover:text-blue-600 transition-colors duration-300 dark:text-white">{service.category}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -441,7 +440,7 @@ const HomeScreen = () => {
                     {service.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-start space-x-2 group-hover:translate-x-1 transition-transform duration-300" style={{ transitionDelay: `${itemIndex * 0.05}s` }}>
                         <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#3a7acc' }} />
-                        <span className="text-gray-600">{item}</span>
+                        <span className="text-gray-600 dark:text-gray-300">{item}</span>
                       </li>
                     ))}
                   </ul>
