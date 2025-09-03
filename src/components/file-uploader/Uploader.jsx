@@ -10,16 +10,24 @@ import { useGetPresignedUrlMutation, useDeleteFileMutation } from "@/slices/uplo
 
 export default function Uploader({ value, onChange, fileTypeAccepted = "image" }) {
   const [file, setFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(
-    value ? `${import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES}/${value}` : null
-  );
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const [getPresignedUrl] = useGetPresignedUrlMutation();
   const [deleteFile] = useDeleteFileMutation();
 
-  // Generate preview locally
+  // Base URL from environment variable
+  const BASE_URL = import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES;
+
+  // Set initial preview URL for existing value
+  useEffect(() => {
+    if (value) {
+      setPreviewUrl(`${BASE_URL}/${value}`);
+    }
+  }, [value, BASE_URL]);
+
+  // Generate preview for selected file before upload
   useEffect(() => {
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
@@ -39,10 +47,8 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
           contentType: file.type,
         }).unwrap();
 
-        console.log("Received presigned URL:", presignedUrl);
-        console.log("File key:", key);
+        console.log("Received presigned URL:", presignedUrl, "Key:", key);
 
-        // Upload using presigned URL
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
@@ -63,9 +69,8 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
           throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
         }
 
-        
-        const baseUrl = import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES;
-        setPreviewUrl(`${baseUrl}/${key}`);
+        // Use environment variable to build correct URL
+        setPreviewUrl(`${BASE_URL}/${key}`);
         onChange?.(key);
         setFile(null);
         toast.success("File uploaded successfully!");
@@ -80,7 +85,7 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
         setUploading(false);
       }
     },
-    [getPresignedUrl, onChange]
+    [getPresignedUrl, onChange, BASE_URL]
   );
 
   // Delete file
@@ -110,7 +115,7 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
       if (acceptedFiles.length === 0) return;
       const selectedFile = acceptedFiles[0];
       setFile(selectedFile);
-      uploadFile(selectedFile); // auto-upload
+      uploadFile(selectedFile);
     },
     [uploadFile]
   );
