@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Mail } from 'lucide-react';
+import { IconCircleDottedLetterK } from '@tabler/icons-react';
 import { useForgotPasswordMutation } from '@/slices/userApiSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import Meta from '../components/Meta';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -113,11 +115,13 @@ function ForgotPasswordScreen({ className, ...props }) {
   };
 
   return (
+    <>
+    <Meta title="Forgot Password - Khisima" description="Reset your password for your Khisima account." />
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className={cn("w-full max-w-md", className)} {...props}>
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
-            K
+            <IconCircleDottedLetterK stroke={2} />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Forgot Password</h1>
           <p className="text-slate-600">Enter your registered email to receive a reset link</p>
@@ -198,6 +202,7 @@ function ForgotPasswordScreen({ className, ...props }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

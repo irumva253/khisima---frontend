@@ -25,6 +25,15 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Auth']
     }),
+    // Add the missing getProfile query
+    getProfile: builder.query({
+      query: () => ({
+        url: API_ENDPOINTS.USERS.PROFILE,
+        method: 'GET'
+      }),
+      providesTags: ['Auth'],
+      keepUnusedDataFor: 5
+    }),
     updateProfile: builder.mutation({
       query: (userData) => ({
         url: API_ENDPOINTS.USERS.PROFILE,
@@ -40,7 +49,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data, 
       }),
     }),
-
     resetPassword: builder.mutation({
       query: ({ token, password }) => ({
         url: `/api/auth/reset-password/${token}`, 
@@ -48,7 +56,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: { password },
       }),
     }),
-
     getUsers: builder.query({
       query: () => ({
         url: API_ENDPOINTS.USERS.GET_ALL
@@ -84,6 +91,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
+  useGetProfileQuery, 
   useUpdateProfileMutation,
   useGetUsersQuery,
   useGetUserDetailsQuery,

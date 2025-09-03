@@ -49,6 +49,7 @@ import AdminCarrersManagementScreen from './(public)/screens/admin/AdminCarrersM
 import AdminResourcesScreen from './(public)/screens/admin/AdminResourcesScreen';
 import AdminManageWorkPlace from './(public)/screens/admin/AdminManageWorkPlace';
 import AdminSubscribersManagement from './(public)/screens/admin/AdminSubscribersManagement';
+import ProfileScreen from './(public)/screens/admin/ProfileScreen';
 
 // Import the NotFound component
 import NotFound from './(public)/components/NotFound';
@@ -96,6 +97,7 @@ const router = createBrowserRouter(
           <Route path="resources" element={<AdminResourcesScreen />} />
           <Route path="workplaces" element={<AdminManageWorkPlace />} />
           <Route path="subscribers" element={<AdminSubscribersManagement />} />
+          <Route path="profile" element={<ProfileScreen />} />
         </Route>
       </Route>
     </>

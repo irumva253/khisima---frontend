@@ -2,9 +2,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, Phone, Chrome, Check, X } from 'lucide-react';
+import { IconCircleDottedLetterK } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '@/slices/userApiSlice';
 import { toast } from 'sonner';
+import Meta from '../components/Meta';
+
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -81,7 +84,7 @@ const Label = ({ children, ...props }) => (
   </label>
 );
 
-// ✅ Fixed Checkbox component
+
 const Checkbox = ({ checked, onChange, name }) => (
   <div
     onClick={() => onChange(name, !checked)}
@@ -110,6 +113,8 @@ const PasswordStrength = ({ password }) => {
   if (!password) return null;
 
   return (
+    <>
+    <Meta title="Sign Up - Khisima" description="Create your Khisima account to access our services and solutions." />
     <div className="mt-2 space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-600">Password strength:</span>
@@ -147,6 +152,7 @@ const PasswordStrength = ({ password }) => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 
@@ -168,7 +174,7 @@ function SignupScreen() {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
 
-  // ✅ Updated input/checkbox handler
+ 
   const handleInputChange = (eOrName, maybeValue) => {
     if (typeof eOrName === 'string') {
       // Checkbox toggle
@@ -284,7 +290,7 @@ function SignupScreen() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
-            K
+            <IconCircleDottedLetterK stroke={2} />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Join Khisima</h1>
           <p className="text-slate-600">Create your account to get started</p>
