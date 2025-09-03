@@ -480,7 +480,7 @@ const SolutionPageScreen = () => {
                           )}
 
                           {/* Call to Action */}
-                          <div className="bg-gradient-to-r from-[#498cef] to-indigo-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
+                           <div className="bg-gradient-to-r from-[#498cef] to-indigo-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
                             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                               <div>
                                 <h4 className="text-2xl font-bold mb-2">Ready to get started?</h4>
@@ -488,10 +488,10 @@ const SolutionPageScreen = () => {
                               </div>
                               <div className="flex flex-col sm:flex-row gap-3">
                                 <button className="bg-white text-[#498cef] px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                                  Request Solution
+                                  <Link to="/contact">Request Solution</Link>
                                 </button>
                                 <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-[#498cef] transition-all duration-200">
-                                  Get Quote
+                                  <Link to="/quote">Get Quote</Link>
                                 </button>
                               </div>
                             </div>

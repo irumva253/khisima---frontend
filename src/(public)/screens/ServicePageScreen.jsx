@@ -538,10 +538,10 @@ if (allServicesData?.data) {
                               </div>
                               <div className="flex flex-col sm:flex-row gap-3">
                                 <button className="bg-white text-[#498cef] px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                                  Request Service
+                                  <Link to="/contact">Request Service</Link>
                                 </button>
                                 <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-[#498cef] transition-all duration-200">
-                                  Get Quote
+                                 <Link to="/quote">Get Quote</Link>
                                 </button>
                               </div>
                             </div>

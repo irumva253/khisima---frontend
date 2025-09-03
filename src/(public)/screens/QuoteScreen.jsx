@@ -1141,7 +1141,7 @@ const QuoteScreen = () => {
                       <Phone className="w-4 h-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">+250 788 123 456</p>
+                      <p className="font-semibold text-gray-900 text-sm"> +250 789 619 370</p>
                       <p className="text-xs text-gray-600">Mon-Fri, 9AM-6PM CAT</p>
                     </div>
                   </div>
