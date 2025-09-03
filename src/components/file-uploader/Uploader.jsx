@@ -17,13 +17,17 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
   const [getPresignedUrl] = useGetPresignedUrlMutation();
   const [deleteFile] = useDeleteFileMutation();
 
-  // Base URL from environment variable
+  // Base URL from Vercel env variable
   const BASE_URL = import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES;
+
+  // Sanitize key to prevent double slashes
+  const sanitizeKey = (key) => key?.startsWith("/") ? key.slice(1) : key;
 
   // Set initial preview URL for existing value
   useEffect(() => {
-    if (value) {
-      setPreviewUrl(`${BASE_URL}/${value}`);
+    if (value && BASE_URL) {
+      const cleanKey = sanitizeKey(value);
+      setPreviewUrl(`${BASE_URL}/${cleanKey}`);
     }
   }, [value, BASE_URL]);
 
@@ -40,14 +44,10 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
     async (file) => {
       setUploading(true);
       try {
-        console.log("Requesting presigned URL for:", file.name, file.type);
-
         const { presignedUrl, key } = await getPresignedUrl({
           fileName: file.name,
           contentType: file.type,
         }).unwrap();
-
-        console.log("Received presigned URL:", presignedUrl, "Key:", key);
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -69,9 +69,10 @@ export default function Uploader({ value, onChange, fileTypeAccepted = "image" }
           throw new Error(`Upload failed: ${res.status} ${res.statusText}`);
         }
 
-        // Use environment variable to build correct URL
-        setPreviewUrl(`${BASE_URL}/${key}`);
-        onChange?.(key);
+        // Construct safe preview URL using env variable
+        const cleanKey = sanitizeKey(key);
+        setPreviewUrl(`${BASE_URL}/${cleanKey}`);
+        onChange?.(cleanKey);
         setFile(null);
         toast.success("File uploaded successfully!");
       } catch (err) {
