@@ -10,9 +10,12 @@ export const BASE_URL = normalizeUrl(
 
 // S3
 // For Tigris, the URL format is: https://{bucket-name}.t3.storage.dev
-export const S3_BASE_URL = normalizeUrl(
-  `https://${import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES}.t3.storage.dev`
-);
+export const S3_BASE_URL = (() => {
+  const bucket = import.meta.env.VITE_PUBLIC_S3_BUCKET_NAME_IMAGES;
+  if (!bucket) return "https://undefined.t3.storage.dev";
+  return `https://${bucket}.t3.storage.dev`;
+})();
+
 
 // API routes
 export const USERS_URL = "/api/users";
