@@ -66,7 +66,7 @@ const CTA = ({ isVisible }) => {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-                to="/get-quote"
+                to="/quote"
                 className="inline-block bg-white text-blue-600 font-semibold text-lg px-10 py-3 rounded-lg shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
                 Request Quote
