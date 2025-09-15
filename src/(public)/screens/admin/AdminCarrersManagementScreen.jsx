@@ -604,14 +604,7 @@ const AdminCareersManagementScreen = () => {
                         </a>
                       </div>
                     )}
-                    {selectedApplication.expectedSalary && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Expected Salary</label>
-                        <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                          {selectedApplication.expectedSalary}
-                        </p>
-                      </div>
-                    )}
+                   
                     {selectedApplication.referralSource && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Referral Source</label>
