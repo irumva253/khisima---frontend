@@ -380,7 +380,7 @@ const ContactScreen = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white">Business Hours</h4>
-                        <p className="text-gray-600 dark:text-gray-300">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                        <p className="text-gray-600 dark:text-gray-300">Mon - Fri: 7:00 AM - 6:00 PM</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Central Africa Time (CAT)</p>
                       </div>
                     </div>
