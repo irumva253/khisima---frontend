@@ -378,7 +378,7 @@ const HomeScreen = () => {
                   <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover-lift hover:shadow-lg transition-all duration-300">
                     <Database className="w-8 h-8 mx-auto mb-3 animate-bounce" style={{ color: '#3a7acc', animationDelay: '0.6s' }} />
                     <div className="font-semibold text-gray-900 dark:text-white">AI Ready</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">NLP Data</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Language Data</div>
                   </div>
                 </div>
               </div>
