@@ -199,7 +199,7 @@ const AboutScreen = () => {
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 mb-2 sm:mb-0 ${
                   activeTab === tab.id
                     ? 'text-white shadow-lg'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                    : 'text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50'
                 }`}
                 style={activeTab === tab.id ? { backgroundColor: '#3a7acc' } : {}}
               >
@@ -279,7 +279,7 @@ const AboutScreen = () => {
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-                      To bridge the digital divide for African languages by providing world-class language services and NLP data solutions that amplify African voices in global systems.
+                      To bridge the digital divide for African languages by providing world-class language services and Language data solutions that amplify African voices in global systems.
                     </p>
                     <div className="space-y-3">
                       <div className="flex items-start space-x-3">

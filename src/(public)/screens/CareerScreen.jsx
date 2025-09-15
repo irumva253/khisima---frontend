@@ -567,7 +567,7 @@ const handleSubmit = async (e) => {
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 md:p-8 text-white">
                 <h2 className="text-2xl md:text-3xl font-bold mb-2 md:mb-4">Apply Now</h2>
                 <p className="text-blue-100 leading-relaxed text-sm md:text-base">
-                Ready to join our team? Fill out the application below and we'll get back to you within 48 hours.
+                Ready to join our team? Fill out the application below and we'll get back to you shortly.
                 </p>
             </div>
 
