@@ -521,7 +521,7 @@ const handleSubmit = async (e) => {
           {/* Hero Content */}
           <div className="text-center animate-slide-up">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Join the Khisima Team
+              Join the Khisima LSP
             </h1>
             <p className="text-xl text-blue-100 leading-relaxed max-w-3xl mx-auto mb-8">
               Be part of a mission-driven team that's empowering languages worldwide. 

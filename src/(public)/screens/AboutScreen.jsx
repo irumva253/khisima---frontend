@@ -156,8 +156,8 @@ const AboutScreen = () => {
               About Khisima
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Bridging Languages,<br />
-              <span style={{ color: '#3a7acc' }}>Building Futures</span>
+              Connecting Languages,<br />
+              <span style={{ color: '#3a7acc' }}>Creating Opportunities</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Born from the vibrant multilingual landscape of Rwanda, Khisima stands at the intersection of tradition and innovation, bringing African voices to the forefront of global technology.
