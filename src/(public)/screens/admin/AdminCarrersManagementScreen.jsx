@@ -107,19 +107,16 @@ const AdminCareersManagementScreen = () => {
 
   const [getDownloadUrl, { isLoading: isDownloading }] = useGetResumeDownloadUrlMutation();
 
-    const handleDownloadResume = async (application) => {
+  const handleDownloadResume = async (application) => {
     try {
-               
-        const { data } = await getDownloadUrl(application._id).unwrap();
-    
-        // FIX: Check for the actual response format (without success/data wrapper)
-        if (data?.downloadUrl) {
-       
+      const { data } = await getDownloadUrl(application._id).unwrap();
+  
+      if (data?.downloadUrl) {
         // Test if the URL is accessible
         try {
-            const testResponse = await fetch(data.downloadUrl, { method: 'HEAD' });
+          const testResponse = await fetch(data.downloadUrl, { method: 'HEAD' });
 
-            if (testResponse.ok) {
+          if (testResponse.ok) {
             // Create download link
             const link = document.createElement('a');
             link.href = data.downloadUrl;
@@ -132,28 +129,28 @@ const AdminCareersManagementScreen = () => {
             document.body.removeChild(link);
             
             toast.success('Download started!');
-            } else {
+          } else {
             toast.error('Download link is not accessible');
-            }
+          }
         } catch (fetchError) {
-            console.error('❌ URL test failed:', fetchError);
-            toast.error('⚠️ Cannot access download link. Trying alternative method...');
-            
-            // Fallback: open in new tab
-            window.open(data.downloadUrl, '_blank', 'noopener,noreferrer');
+          console.error('❌ URL test failed:', fetchError);
+          toast.error('⚠️ Cannot access download link. Trying alternative method...');
+          
+          // Fallback: open in new tab
+          window.open(data.downloadUrl, '_blank', 'noopener,noreferrer');
         }
-        } else {
+      } else {
         console.error('Invalid API response format:', data);
         toast.error('Failed to generate download link: Invalid response format');
-        }
+      }
     } catch (error) {
-        console.error('Download error details:', error);
-        toast.error(error?.data?.message || 'Failed to download resume');
+      console.error('Download error details:', error);
+      toast.error(error?.data?.message || 'Failed to download resume');
     }
-    };
+  };
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
+    setFilters(prev => ({ ...prev, [key]: value, page: key === 'page' ? value : 1 }));
   };
 
   const handleSearch = (e) => {
@@ -414,16 +411,16 @@ const AdminCareersManagementScreen = () => {
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                        onClick={(e) => handleDownloadResume(application, e)}
-                        disabled={isDownloading}
-                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1 disabled:opacity-50"
-                        title="Download Resume"
+                          onClick={() => handleDownloadResume(application)}
+                          disabled={isDownloading}
+                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1 disabled:opacity-50"
+                          title="Download Resume"
                         >
-                        {isDownloading ? (
+                          {isDownloading ? (
                             <span className="animate-spin">⏳</span>
-                        ) : (
+                          ) : (
                             <Download className="w-4 h-4" />
-                        )}
+                          )}
                         </button>
                         <button
                           onClick={() => setStatusUpdate(prev => ({ ...prev, [application._id]: true }))}
@@ -448,7 +445,7 @@ const AdminCareersManagementScreen = () => {
           </div>
 
           {/* Pagination */}
-          {pagination.pages > 1 && (
+          {pagination && pagination.pages > 1 && (
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-700 dark:text-gray-300">
@@ -460,14 +457,22 @@ const AdminCareersManagementScreen = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => handleFilterChange('page', filters.page - 1)}
+                    onClick={() => {
+                      if (pagination.hasPrev) {
+                        handleFilterChange('page', filters.page - 1);
+                      }
+                    }}
                     disabled={!pagination.hasPrev}
                     className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-600 dark:text-white"
                   >
                     Previous
                   </button>
                   <button
-                    onClick={() => handleFilterChange('page', filters.page + 1)}
+                    onClick={() => {
+                      if (pagination.hasNext) {
+                        handleFilterChange('page', filters.page + 1);
+                      }
+                    }}
                     disabled={!pagination.hasNext}
                     className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-600 dark:text-white"
                   >
