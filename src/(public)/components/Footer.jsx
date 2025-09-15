@@ -89,7 +89,7 @@ const Footer = () => {
 
   const services = [
     "Translation & Localization",
-    "NLP Data Services",
+    "Language Data Services",
     "AI Language Consulting",
     "Cultural Adaptation",
     "Voice-over & Dubbing",
