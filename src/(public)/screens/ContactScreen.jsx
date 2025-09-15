@@ -370,7 +370,7 @@ const ContactScreen = () => {
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white">Call Us</h4>
                         <p className="text-gray-600 dark:text-gray-300">+250 789 619 370</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Mon-Fri, 9AM-6PM (CAT)</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Mon-Fri, 7AM-10PM (CAT)</p>
                       </div>
                     </div>
 

@@ -238,57 +238,7 @@ const ResourcesScreen = () => {
                 </div>
               </div>
 
-              {/* Trending Topics */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Trending Topics
-                </h3>
-                <div className="space-y-3">
-                  {trendingTopics.map((topic, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-white">{topic.name}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{topic.posts} resources</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-green-600 font-semibold text-sm">{topic.growth}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Links */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl shadow-xl p-6 border border-blue-100 dark:border-gray-600">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Access</h3>
-                <div className="space-y-3">
-                  <Link
-                    to="/datasets"
-                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Open Datasets
-                    <ExternalLink className="w-3 h-3 ml-auto" />
-                  </Link>
-                  <Link
-                    to="/tools"
-                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
-                  >
-                    <Cpu className="w-4 h-4 mr-2" />
-                    Language Tools
-                    <ExternalLink className="w-3 h-3 ml-auto" />
-                  </Link>
-                  <Link
-                    to="/research"
-                    className="flex items-center text-[#4c91f5] dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 transition-colors duration-200"
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Research Papers
-                    <ExternalLink className="w-3 h-3 ml-auto" />
-                  </Link>
-                </div>
-              </div>
+           
             </div>
 
             {/* Main Content */}

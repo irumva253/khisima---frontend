@@ -287,7 +287,7 @@ const QuoteScreen = () => {
       otherTargetLanguage: '',
       wordCount: '',
       deadline: '',
-      specialRequirements: '',
+      
       budget: '',
       description: ''
     });
@@ -686,20 +686,6 @@ const QuoteScreen = () => {
             <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
               Additional Information
             </h3>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Special Requirements
-              </label>
-              <textarea
-                name="specialRequirements"
-                value={formData.specialRequirements}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                placeholder="Any specific formatting, style guides, or technical requirements..."
-              />
-            </div>
             
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -1142,7 +1128,7 @@ const QuoteScreen = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 text-sm"> +250 789 619 370</p>
-                      <p className="text-xs text-gray-600">Mon-Fri, 9AM-6PM CAT</p>
+                      <p className="text-xs text-gray-600">Mon-Fri, 7AM-10PM CAT</p>
                     </div>
                   </div>
                 </div>

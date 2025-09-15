@@ -14,13 +14,13 @@ const HomeScreen = () => {
     {
       title: "Multilingual Rwanda",
       subtitle: "Where 6+ languages coexist",
-      description: "From Kinyarwanda to Swahili, experience the linguistic diversity",
+      description: " From Africa for African Culture, experience the linguistic diversity",
       image: "https://c4.wallpaperflare.com/wallpaper/258/633/113/linguistics-vowels-international-phonetic-alphabet-languages-wallpaper-preview.jpg"
     },
     {
       title: "Digital Innovation",
       subtitle: "Technology meets tradition",
-      description: "Bridging ancient languages with modern AI systems",
+      description: "Bridging linguistic heritage with modern AI innovations",
       image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop&q=80"
     },
     {
@@ -47,7 +47,7 @@ const HomeScreen = () => {
       ]
     },
     {
-      category: "NLP Data Services",
+      category: "Language data services",
       icon: <Database className="w-6 h-6" />,
       items: [
         "Text and Speech Data Collection",
@@ -263,12 +263,12 @@ const HomeScreen = () => {
                   {carouselImages[currentSlide].description}
                 </p>
                 <p className="text-lg mb-8 max-w-3xl mx-auto leading-relaxed opacity-80">
-                  We amplify African voices in global systems through expert translation, localization, and NLP data services.
+                 We empower African voices through high-quality translation, localization, interpretation, and language data services.
                 </p>
               </div>
               <div className="animate-fade-in-up animation-delay-900 flex flex-col sm:flex-row gap-6 justify-center items-center mt-8">
               <Link
-                to="/careers"
+                to="/quote"
                 className="group relative inline-flex items-center justify-center gap-2 rounded-full 
                           bg-gradient-to-r from-blue-600 to-blue-700 
                           px-8 py-3 text-lg font-semibold text-white 
@@ -344,15 +344,15 @@ const HomeScreen = () => {
                 <div className="flex items-start space-x-3 group">
                   <CheckCircle className="w-6 h-6 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }} />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">We don't just annotate, we preserve</h3>
-                    <p className="text-gray-600 dark:text-gray-400">Building representation for underserved languages</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white"> We don’t just interpret — we connect.</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Strengthening representation for underserved languages.</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3 group">
                   <CheckCircle className="w-6 h-6 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#3a7acc' }} />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">We don't just build data, we build representation</h3>
-                    <p className="text-gray-600 dark:text-gray-400">Making language equity real in digital systems</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">We protect Africa’s stories and traditions.</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Keeping Africa’s cultural legacy alive and vibrant.</p>
                   </div>
                 </div>
               </div>
@@ -427,7 +427,7 @@ const HomeScreen = () => {
               Comprehensive language solutions
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              From translation and localization to NLP data services, we provide everything you need to make African languages part of your digital strategy.
+              From translation and localization to Language data services, we provide everything you need to make African languages part of your digital strategy.
             </p>
           </div>
           

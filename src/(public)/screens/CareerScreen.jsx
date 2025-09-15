@@ -70,59 +70,28 @@ const CareerScreen = () => {
     },
     {
       id: 'interpreter',
-      title: 'Remote Interpreter',
+      title: 'Interpreter (Remote)',
       type: 'Remote',
       description: 'Provide real-time interpretation services for business meetings and events',
       requirements: ['Excellent verbal communication', 'Quick thinking abilities', 'Professional demeanor']
     },
     {
-      id: 'intern-linguistic',
-      title: 'Linguistic Research Intern',
-      type: 'Internship',
-      description: 'Support our research team in language documentation and analysis',
-      requirements: ['Currently studying linguistics/languages', 'Research experience preferred', 'Academic excellence']
+      id: 'site-interpreter',
+      title: 'Interpreter (On-site)',
+      type: 'On-site',
+      description: 'Provide real-time interpretation services for business meetings and events',
+      requirements: ['Excellent verbal communication', 'Quick thinking abilities', 'Professional demeanor']
     },
+
     {
-      id: 'intern-tech',
-      title: 'Tech & Localization Intern',
-      type: 'Internship',
-      description: 'Help develop language learning tools and localization solutions',
-      requirements: ['Tech background preferred', 'Interest in language technology', 'Problem-solving skills']
+      id: 'language-data-collector',
+      title: 'Language Data Collector',
+      type: 'Part-time/Contract',
+      description: 'Assist in gathering and curating language data for our projects',
+      requirements: ['Strong organizational skills', 'Attention to detail', 'Interest in languages']
     }
   ];
 
-  const faqData = [
-    {
-      id: 1,
-      question: 'What qualifications do I need?',
-      answer: 'Requirements vary by position. For translation roles, we typically require native proficiency in at least two languages. Certifications and relevant experience are preferred but not always required.'
-    },
-    {
-      id: 2,
-      question: 'Do you hire remote workers?',
-      answer: 'Yes! Most of our positions are remote-friendly. We believe talent knows no borders, and we\'re committed to building a global team.'
-    },
-    {
-      id: 3,
-      question: 'What\'s the application process?',
-      answer: 'After submitting your application, we\'ll review it within 48 hours. Qualified candidates will be contacted for a preliminary interview, followed by a skills assessment if applicable.'
-    },
-    {
-      id: 4,
-      question: 'Do you offer internships?',
-      answer: 'Absolutely! We have internship programs specifically designed for language students. These positions offer real-world experience and mentorship opportunities.'
-    },
-    {
-      id: 5,
-      question: 'What benefits do you offer?',
-      answer: 'Benefits vary by position type. Full-time roles include health insurance, professional development budget, and language learning stipends. Freelancers enjoy flexible schedules and competitive project rates.'
-    },
-    {
-      id: 6,
-      question: 'Can I work on multiple projects?',
-      answer: 'Yes, especially for freelance positions. We encourage our team members to work on diverse projects to expand their skills and experience across different domains.'
-    }
-  ];
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -216,7 +185,6 @@ const handleSubmit = async (e) => {
       portfolioUrl: '',
       availability: 'immediate',
       workType: 'remote',
-      expectedSalary: '',
       referralSource: '',
       country: ''
     });
@@ -421,20 +389,7 @@ const handleSubmit = async (e) => {
                   ))}
                 </select>
               </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Expected Salary (USD/month)
-                </label>
-                <input
-                  type="text"
-                  name="expectedSalary"
-                  value={formData.expectedSalary}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g., $3000-5000"
-                />
-              </div>
+            
             </div>
 
             <div>
@@ -605,50 +560,7 @@ const handleSubmit = async (e) => {
       <div className="relative -mt-10 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Open Positions Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12 border border-gray-100 dark:border-gray-700 animate-fade-in-up">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Open Positions</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {positions.map((position, index) => (
-                <div
-                  key={position.id}
-                  className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all duration-300 group animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors duration-200">
-                        {position.title}
-                      </h3>
-                      <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
-                        position.type === 'Freelance' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                        position.type === 'Remote' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                      }`}>
-                        {position.type}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                    {position.description}
-                  </p>
-                  
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Requirements:</h4>
-                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      {position.requirements.map((req, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <span className="text-blue-500 mr-2 mt-1">•</span>
-                          {req}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        
 
           {/* Application Form Section with Stepper */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 animate-fade-in-up">
@@ -841,48 +753,7 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* FAQ Section with Accordions */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-16 border border-gray-100 dark:border-gray-700 animate-fade-in">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Frequently Asked Questions</h2>
-            
-            <div className="max-w-4xl mx-auto">
-              {faqData.map((faq, index) => (
-                <div
-                  key={faq.id}
-                  className="border border-gray-200 dark:border-gray-600 rounded-xl mb-4 overflow-hidden transition-all duration-200 hover:shadow-md"
-                >
-                  <button
-                    onClick={() => toggleAccordion(faq.id)}
-                    className="w-full px-6 py-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-between group"
-                  >
-                    <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors duration-200">
-                      {faq.question}
-                    </h3>
-                    <div className="ml-4 flex-shrink-0">
-                      {openAccordion === faq.id ? (
-                        <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 transition-colors duration-200" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 transition-colors duration-200" />
-                      )}
-                    </div>
-                  </button>
-                  
-                  <div
-                    className={`transition-all duration-300 ease-in-out ${
-                      openAccordion === faq.id
-                        ? 'max-h-96 opacity-100'
-                        : 'max-h-0 opacity-0 overflow-hidden'
-                    }`}
-                  >
-                    <div className="px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
-                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        
 
           {/* Contact Information */}
           <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl shadow-xl p-8 text-center border border-gray-100 dark:border-gray-700 animate-fade-in">
