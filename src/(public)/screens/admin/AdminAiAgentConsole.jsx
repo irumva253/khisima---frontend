@@ -3,6 +3,7 @@
 // src/(public)/screens/admin/AdminAiAgentConsole.jsx
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
+import { useSelector } from "react-redux";
 import { BASE_URL } from "@/constants";
 import {
   useGetPresenceQuery,
@@ -124,6 +125,10 @@ async function getImageDataURL(url) {
 export default function AdminAiAgentConsole() {
   const isDark = useIsDark();
 
+  // 🔐 Pull token from Redux so manual fetches also authenticate
+  const token = useSelector((s) => s.auth?.userInfo?.token);
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
   // Presence via RTK
   const { data: presenceData, isFetching: loadingPresence } = useGetPresenceQuery();
   const [setPresence, { isLoading: settingPresence }] = useSetPresenceMutation();
@@ -213,6 +218,7 @@ export default function AdminAiAgentConsole() {
       s.disconnect();
       socketRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom, selectedRoomEmail, refetchRooms]);
 
   // Init presence from REST
@@ -242,7 +248,10 @@ export default function AdminAiAgentConsole() {
     try {
       const res = await fetch(
         `${BASE_URL}/api/agent/rooms/${encodeURIComponent(selectedRoom)}/messages?page=1&limit=200`,
-        { credentials: "include" }
+        {
+          credentials: "include",
+          headers: { ...authHeaders },
+        }
       );
       if (res.ok) {
         const data = await res.json();
@@ -258,6 +267,10 @@ export default function AdminAiAgentConsole() {
         );
         if (data?.email && !selectedRoomEmail) setSelectedRoomEmail(data.email);
         setTimeout(scrollToBottom, 20);
+      } else if (res.status === 401) {
+        toast.error("Not authorized to load messages (401). Please re-login.");
+      } else {
+        toast.error("Failed to load history.");
       }
     } finally {
       if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
@@ -449,7 +462,7 @@ export default function AdminAiAgentConsole() {
         {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeaders },
           body: JSON.stringify({
             to: forwardTo.trim(),
             subject: forwardSubject?.trim() || `Chat transcript — Room ${selectedRoom}`,
@@ -474,7 +487,7 @@ export default function AdminAiAgentConsole() {
     try {
       const res = await fetch(
         `${BASE_URL}/api/agent/rooms/${encodeURIComponent(selectedRoom)}`,
-        { method: "DELETE", credentials: "include" }
+        { method: "DELETE", credentials: "include", headers: { ...authHeaders } }
       );
       if (!res.ok) throw new Error("delete failed");
       toast.success("Room deleted");
