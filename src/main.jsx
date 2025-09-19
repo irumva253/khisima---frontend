@@ -50,7 +50,7 @@ import AdminResourcesScreen from './(public)/screens/admin/AdminResourcesScreen.
 import AdminManageWorkPlace from './(public)/screens/admin/AdminManageWorkPlace.jsx';
 import AdminSubscribersManagement from './(public)/screens/admin/AdminSubscribersManagement.jsx';
 import ProfileScreen from './(public)/screens/admin/ProfileScreen.jsx';
-import AIAgentConsole from './(public)/screens/admin/AIAgentConsole.jsx';
+import AiAgentConsole from './(public)/screens/admin/AiAgentConsole.jsx';
 
 // Import the NotFound component
 import NotFound from './(public)/components/NotFound.jsx';
@@ -99,7 +99,7 @@ const router = createBrowserRouter(
           <Route path="workplaces" element={<AdminManageWorkPlace />} />
           <Route path="subscribers" element={<AdminSubscribersManagement />} />
           <Route path="profile" element={<ProfileScreen />} />
-          <Route path="ai-agent" element={<AIAgentConsole />} />
+          <Route path="ai-agent" element={<AiAgentConsole />} />
           
         </Route>
       </Route>

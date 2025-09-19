@@ -5,7 +5,7 @@ import { MessageSquare, Inbox, Shield, TerminalSquare } from 'lucide-react';
 import AdminAiAgentConsole from './AdminAiAgentConsole';
 import AdminInboxPage from './AdminInboxPage';
 
-const AIAgentConsole = () => {
+const AiAgentConsole = () => {
   const [params, setParams] = useSearchParams();
   const tab = (params.get('tab') || 'console').toLowerCase();
 
@@ -77,4 +77,4 @@ const AIAgentConsole = () => {
   )
 }
 
-export default AIAgentConsole
+export default AiAgentConsole
