@@ -1,4 +1,3 @@
-// src/(public)/screens/admin/AIAgentConsole.jsx
 import React from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { MessageSquare, Inbox, Power, Shield, TerminalSquare } from 'lucide-react';
@@ -6,14 +5,7 @@ import { MessageSquare, Inbox, Power, Shield, TerminalSquare } from 'lucide-reac
 import AdminAiAgentConsole from './AdminAiAgentConsole';
 import AdminInboxPage from './AdminInboxPage';
 
-/**
- * Single admin page that hosts:
- *  - Live real-time console (AdminAiAgentConsole)
- *  - Inbox follow-ups (AdminInboxPage)
- *
- * Uses a simple ?tab=console|inbox switch for deep-linkable tabs.
- */
-export default function AIAgentConsole() {
+const AIAgentConsole = () => {
   const [params, setParams] = useSearchParams();
   const tab = (params.get('tab') || 'console').toLowerCase();
 
@@ -27,7 +19,7 @@ export default function AIAgentConsole() {
   const isInbox = tab === 'inbox';
 
   return (
-    <div className="w-full p-4 md:p-6">
+   <div className="w-full p-4 md:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -45,7 +37,7 @@ export default function AIAgentConsole() {
         {/* Quick tips / status area (purely visual, you can wire up real status) */}
         <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
           <Shield className="h-4 w-4" />
-          Admin access
+            Admin Only
         </div>
       </div>
 
@@ -82,5 +74,7 @@ export default function AIAgentConsole() {
         {isInbox && <AdminInboxPage />}
       </div>
     </div>
-  );
+  )
 }
+
+export default AIAgentConsole
