@@ -4,11 +4,11 @@ import {
   IconDashboard,
   IconFileAi,
   IconFileDescription,
-  IconHelp,
   IconInnerShadowTop,
   IconListDetails,
-  IconSearch,
+  IconCircleDottedLetterK,
   IconUsersGroup,
+  IconMessageChatbot, 
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -135,9 +135,9 @@ const data = {
       icon: IconUserExclamation,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
+      title: "Khisima Ai Agent",
+      url: "/admin/ai-agent",
+      icon: IconMessageChatbot,
     },
   ],
 
@@ -152,8 +152,8 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link to="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
+              <Link to="/admin/dashboard">
+                <IconCircleDottedLetterK className="!size-8" />
                 <span className="text-base font-semibold">Khisima.</span>
               </Link>
             </SidebarMenuButton>

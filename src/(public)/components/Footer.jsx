@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -22,27 +22,16 @@ import {
 } from 'lucide-react';
 import { IconBrandX, IconCircleChevronUp } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
+import KhismaAiAgent from './KhismaAiAgent';
 
 const Footer = () => {
-  const [showTopButton, setShowTopButton] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Newsletter subscription mutation
   const [createSubscriber, { isLoading: isSubscribing }] = useCreateSubscriberMutation();
 
-  const handleScroll = () => {
-    setShowTopButton(window.scrollY > 300);
-  };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -354,16 +343,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Move to Top Button with Fade + Slide */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg z-50 transform transition-all duration-500 ${
-          showTopButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
-        }`}
-        aria-label="Scroll to top"
-      >
-        <IconCircleChevronUp stroke={2} className="w-5 h-5" />
-      </button>
+     {/* Ai Agent */}
+     <KhismaAiAgent />
     </footer>
   );
 };

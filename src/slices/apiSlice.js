@@ -27,6 +27,6 @@ const serializableBaseQuery = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: serializableBaseQuery,
-  tagTypes: ['User', 'Auth', 'CareerApplication'],
+  tagTypes: ['User', 'Auth', 'CareerApplication', 'AgentPresence', 'AgentRoom', 'AgentRoomMessages', 'AgentInbox'],
   endpoints: (builder) => ({}),
 });

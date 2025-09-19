@@ -30,6 +30,7 @@ export const CAREERS_URL = "/api/careers";
 export const QUOTES_URL = "/api/quotes";
 export const S3_URL = "/api/s3";
 
+
 export const API_ENDPOINTS = {
   USERS: {
     BASE: USERS_URL,
@@ -154,5 +155,25 @@ export const API_ENDPOINTS = {
     CREATE: "/api/subscribers",
     UPDATE: (id) => `/api/subscribers/${id}`,
     DELETE: (id) => `/api/subscribers/${id}`,
+  },
+ AGENT: {
+    PRESENCE: {
+      GET: '/api/agent/status',
+      SET: '/api/agent/status',
+    },
+    SEARCH: (q, room) => `/api/agent/search?q=${encodeURIComponent(q)}&room=${encodeURIComponent(room || '')}`,
+    INBOX_CREATE: '/api/agent/inbox',
+    INBOX_LIST: ({ page = 1, limit = 50, status = '' } = {}) =>
+      `/api/agent/inbox?page=${page}&limit=${limit}${status ? `&status=${encodeURIComponent(status)}` : ''}`,
+    INBOX_UPDATE: (id) => `/api/agent/inbox/${id}`,
+
+    ROOMS: {
+      LIST: ({ page = 1, limit = 50, search = '' } = {}) =>
+        `/api/agent/rooms?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`,
+      MESSAGES: (roomId, page = 1, limit = 200) =>
+        `/api/agent/rooms/${encodeURIComponent(roomId)}/messages?page=${page}&limit=${limit}`,
+      FORWARD: (roomId) => `/api/agent/rooms/${encodeURIComponent(roomId)}/forward`,
+      DELETE: (roomId) => `/api/agent/rooms/${encodeURIComponent(roomId)}`,
+    },
   },
 };
