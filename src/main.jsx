@@ -100,6 +100,7 @@ const router = createBrowserRouter(
           <Route path="subscribers" element={<AdminSubscribersManagement />} />
           <Route path="profile" element={<ProfileScreen />} />
           <Route path="ai-agent" element={<AIAgentConsole />} />
+          
         </Route>
       </Route>
     </>

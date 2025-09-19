@@ -1,6 +1,6 @@
 import React from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { MessageSquare, Inbox, Power, Shield, TerminalSquare } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { MessageSquare, Inbox, Shield, TerminalSquare } from 'lucide-react';
 
 import AdminAiAgentConsole from './AdminAiAgentConsole';
 import AdminInboxPage from './AdminInboxPage';
