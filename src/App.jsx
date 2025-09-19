@@ -1,6 +1,5 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@//(public)/components/Navbar";
@@ -44,7 +43,6 @@ function App() {
           <main className="pt-20">
             <div>
               <Outlet />
-              <SpeedInsights />
             </div>
           </main>
           {/* Don't show footer on 404 page */}
