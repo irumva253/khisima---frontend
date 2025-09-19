@@ -12,48 +12,48 @@ import {
 import { Provider } from 'react-redux';
 import store from './store';
 
-import HomeScreen from './(public)/screens/HomeScreen';
-import AboutScreen from './(public)/screens/AboutScreen';
-import ContactScreen from './(public)/screens/ContactScreen';
-import CareerScreen from './(public)/screens/CareerScreen';
-import ResourcesScreen from './(public)/screens/ResourcesScreen';
-import QuoteScreen from './(public)/screens/QuoteScreen';
+import HomeScreen from './(public)/screens/HomeScreen.jsx';
+import AboutScreen from './(public)/screens/AboutScreen.jsx';
+import ContactScreen from './(public)/screens/ContactScreen.jsx';
+import CareerScreen from './(public)/screens/CareerScreen.jsx';
+import ResourcesScreen from './(public)/screens/ResourcesScreen.jsx';
+import QuoteScreen from './(public)/screens/QuoteScreen.jsx';
 
-import WorkPlaceScreen from './(public)/screens/WorkPlaceScreen';
-import ReviewWorkPlace  from './(public)/screens/ReviewWorkPlace';
+import WorkPlaceScreen from './(public)/screens/WorkPlaceScreen.jsx';
+import ReviewWorkPlace  from './(public)/screens/ReviewWorkPlace.jsx';
 
-import LoginScreen from './(public)/screens/LoginScreen';
-import SignupScreen from './(public)/screens/SignupScreen';
-import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen';
-import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen';
+import LoginScreen from './(public)/screens/LoginScreen.jsx';
+import SignupScreen from './(public)/screens/SignupScreen.jsx';
+import ForgotPasswordScreen from './(public)/screens/ForgotPasswordScreen.jsx';
+import ResetPasswordScreen from './(public)/screens/ResetPasswordScreen.jsx';
 
-import ServiceScreen from './(public)/screens/ServiceScreen';
-import SolutionScreen from './(public)/screens/SolutionScreen';
+import ServiceScreen from './(public)/screens/ServiceScreen.jsx';
+import SolutionScreen from './(public)/screens/SolutionScreen.jsx';
 
 import ServicePageScreen from './(public)/screens/ServicePageScreen.jsx';
-import SolutionPageScreen from './(public)/screens/SolutionPageScreen';
+import SolutionPageScreen from './(public)/screens/SolutionPageScreen.jsx';
 
-import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen';
-import CreateNewSolutionScreen from './(public)/screens/admin/CreateNewSolutionScreen';
+import SolutionsManagementScreen from './(public)/screens/admin/SolutionsManagementScreen.jsx';
+import CreateNewSolutionScreen from './(public)/screens/admin/CreateNewSolutionScreen.jsx';
 
-import PrivateRoute from './(public)/components/PrivateRoute';
+import PrivateRoute from './(public)/components/PrivateRoute.jsx';
 import AdminDashboard from './layouts/admin-layout.jsx';
 import AdminIndexPage from './(public)/screens/admin/AdminIndexPage.jsx';
 
-import NotificationScreen from './(public)/screens/admin/NotificationScreen';
+import NotificationScreen from './(public)/screens/admin/NotificationScreen.jsx';
 import ServiceManagementScreen from './(public)/screens/admin/ServiceManagementScreen.jsx';
-import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen';
-import PartnersManagementScreen from './(public)/screens/admin/PartnersManagementScreen';
-import AdminCheckQuoteScreen from './(public)/screens/admin/AdminCheckQuoteScreen';
-import AdminCarrersManagementScreen from './(public)/screens/admin/AdminCarrersManagementScreen';
-import AdminResourcesScreen from './(public)/screens/admin/AdminResourcesScreen';
-import AdminManageWorkPlace from './(public)/screens/admin/AdminManageWorkPlace';
-import AdminSubscribersManagement from './(public)/screens/admin/AdminSubscribersManagement';
-import ProfileScreen from './(public)/screens/admin/ProfileScreen';
-import AIAgentConsole from './(public)/screens/admin/AIAgentConsole';
+import CreateNewServiceScreen from './(public)/screens/admin/CreateNewServiceScreen.jsx';
+import PartnersManagementScreen from './(public)/screens/admin/PartnersManagementScreen.jsx';
+import AdminCheckQuoteScreen from './(public)/screens/admin/AdminCheckQuoteScreen.jsx';
+import AdminCarrersManagementScreen from './(public)/screens/admin/AdminCarrersManagementScreen.jsx';
+import AdminResourcesScreen from './(public)/screens/admin/AdminResourcesScreen.jsx';
+import AdminManageWorkPlace from './(public)/screens/admin/AdminManageWorkPlace.jsx';
+import AdminSubscribersManagement from './(public)/screens/admin/AdminSubscribersManagement.jsx';
+import ProfileScreen from './(public)/screens/admin/ProfileScreen.jsx';
+import AIAgentConsole from './(public)/screens/admin/AIAgentConsole.jsx';
 
 // Import the NotFound component
-import NotFound from './(public)/components/NotFound';
+import NotFound from './(public)/components/NotFound.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
