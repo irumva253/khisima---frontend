@@ -4,9 +4,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
-import {
-  Mail, Send, X, Loader2, Info, Power, Trash2
-} from "lucide-react";
+import { Mail, Send, X, Loader2, Power, Trash2 } from "lucide-react";
 import { IconCircleDottedLetterK, IconUserCircle } from "@tabler/icons-react";
 import { BASE_URL } from "@/constants";
 import logo from "@/assets/images/agent-logo.png";
@@ -97,14 +95,12 @@ function formatStamp(ts) {
   if (sameDay) return `Today ${time}`;
   if (yesterday) return `Yesterday ${time}`;
 
-  // within last 7 days → weekday
   const diffDays = Math.floor(diffMs / 86400000);
   if (diffDays < 7) {
     const weekday = d.toLocaleDateString([], { weekday: "short" });
     return `${weekday} ${time}`;
   }
 
-  // older → full date
   return d.toLocaleString([], {
     year: "numeric",
     month: "short",
@@ -244,7 +240,7 @@ function decideLocalAnswer(text) {
   return { ok: false, answer: null, intent };
 }
 
-/* Avatar components */
+/* Avatars */
 const BlueAvatar = ({ children, title }) => (
   <div
     className="flex-none inline-flex items-center justify-center rounded-full"
@@ -312,8 +308,6 @@ export default function KhismaAiAgent() {
       path: "/socket.io",
       withCredentials: true,
       query: { role: "user", room },
-      // don't force websocket-only; allow fallback for proxies
-      // transports: ["websocket"],
     });
     socketRef.current = s;
 
@@ -345,11 +339,6 @@ export default function KhismaAiAgent() {
       appendMessage({ role: "agent", text: text || "", ts: ts || nowISO() })
     );
 
-    s.on("agent:echo_user", ({ text, ts }) => {
-      // Optional: if you want server echo timestamps; we already append locally.
-      // If you do, guard against duplicates.
-    });
-
     s.on("agent:user_ended", () => {
       appendMessage({
         role: "agent",
@@ -358,7 +347,6 @@ export default function KhismaAiAgent() {
       });
     });
 
-    // ✅ NEW: admin requests user's email (live)
     s.on("agent:request_email", () => {
       appendMessage({
         role: "agent",
@@ -406,14 +394,12 @@ export default function KhismaAiAgent() {
     appendMessage({ role: "user", text, ts: nowISO() });
     setInput("");
 
-    // Local small talk & FAQs
     const local = decideLocalAnswer(text);
     if (local.ok) {
       appendMessage({ role: "agent", text: local.answer, ts: nowISO() });
       return;
     }
 
-    // Admin online → forward to room
     if (adminOnline && socketRef.current?.connected) {
       try {
         socketRef.current.emit("agent:user_message", { room, text });
@@ -421,7 +407,6 @@ export default function KhismaAiAgent() {
       return;
     }
 
-    // Admin offline → try REST search (your backend quick/site/wiki)
     const meaningful = text.split(/\s+/).filter(Boolean).length >= 2;
     if (!meaningful) {
       appendMessage({
@@ -451,7 +436,6 @@ export default function KhismaAiAgent() {
     setSearching(false);
     setSending(false);
 
-    // Still no answer & offline → email capture
     appendMessage({
       role: "agent",
       text:
@@ -557,29 +541,19 @@ export default function KhismaAiAgent() {
   const card =
     "rounded-xl border border-neutral-200 p-3 dark:border-neutral-800 dark:bg-neutral-900/60";
 
-  /* Message row with avatar + time */
+  /* Message row */
   const MessageRow = ({ m }) => {
     const isUser = m.role === "user";
     const isAdmin = m.role === "admin";
-    const isAgent = m.role === "agent";
 
-    const bubble =
-      isUser ? bubbleUser : isAdmin ? bubbleAdmin : bubbleAgent;
-
-    const avatar =
-      isUser ? <UserAvatar /> : isAdmin ? <AdminAvatar /> : null;
-
+    const bubble = isUser ? bubbleUser : isAdmin ? bubbleAdmin : bubbleAgent;
+    const avatar = isUser ? <UserAvatar /> : isAdmin ? <AdminAvatar /> : null;
     const time = formatStamp(m.ts);
 
     return (
-      <div
-        className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
-      >
-        {/* left avatar (admin/agent) */}
+      <div className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}>
         {!isUser && avatar}
-
-        {/* bubble + time */}
-        <div className="max-w-[80%]">
+        <div className="max-w-[80%] sm:max-w-[85%]">
           <div
             className={`rounded-2xl px-3 py-2 text-sm ${bubble}`}
             title={m.ts ? new Date(m.ts).toLocaleString() : ""}
@@ -590,26 +564,39 @@ export default function KhismaAiAgent() {
             {time}
           </div>
         </div>
-
-        {/* right avatar (user) */}
         {isUser && avatar}
       </div>
     );
   };
+
+  /* Responsive, compact floating card (not fullscreen on mobile) */
+  const panelClasses = `
+    fixed z-50
+    left-1/2 -translate-x-1/2 bottom-24
+    w-[min(94vw,520px)]
+    sm:translate-x-0 sm:left-auto sm:right-6
+    sm:w-[min(420px,92vw)]
+    rounded-2xl
+    ${surface}
+  `;
 
   return (
     <>
       {/* Launcher */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`fixed bottom-6 right-6 z-50 rounded-full transition-all
+        className={`fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 rounded-full transition-all
         ${isDark ? "bg-neutral-900 hover:shadow-[0_10px_30px_rgba(0,0,0,.45)]"
                  : "bg-white hover:shadow-[0_10px_30px_rgba(0,0,0,.15)]"}
         border ${isDark ? "border-white/10" : "border-black/5"} shadow-lg`}
         aria-label="Open Khisima Chat"
       >
         <span className="relative block">
-          <img src={logo} alt="Khisma Agent" className="h-14 w-14 p-2 rounded-full object-contain" />
+          <img
+            src={logo}
+            alt="Khisma Agent"
+            className="h-12 w-12 sm:h-14 sm:w-14 p-2 rounded-full object-contain"
+          />
           <span
             className={`absolute -right-1 -bottom-1 h-4 w-4 rounded-full ring-2 ${
               isDark ? "ring-neutral-900" : "ring-white"
@@ -621,139 +608,164 @@ export default function KhismaAiAgent() {
 
       {/* Chat panel */}
       {open && (
-        <div className={`fixed bottom-24 right-6 z-50 w-[min(400px,92vw)] rounded-2xl overflow-hidden ${surface}`} role="dialog" aria-modal="true">
-          {/* Header */}
-          <div className={`relative text-white p-3 ${headerGrad}`}>
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Khisma Agent" className="h-8 w-8 rounded-md bg-white/10 p-1 ring-1 ring-white/10" />
-              <div className="leading-tight">
-                <div className="font-semibold tracking-wide">Khisima AI Assistant</div>
-                <div className="text-[11px] opacity-95">
-                  Let your words travel. Let your data speak.
+        <div
+          className={panelClasses}
+          role="dialog"
+          aria-modal="true"
+          style={{
+            paddingBottom: "max(0px, env(safe-area-inset-bottom))",
+          }}
+        >
+          {/* Column layout; capped height even on mobile; rounded bottom edge */}
+          <div className="flex max-h-[72vh] flex-col sm:max-h-[70vh] rounded-2xl overflow-hidden">
+            {/* Header */}
+            <div className={`relative text-white p-3 ${headerGrad} rounded-t-2xl`}>
+              {/* Top row: logo + name + slogan */}
+              <div className="flex items-center gap-3">
+                <img
+                  src={logo}
+                  alt="Khisma Agent"
+                  className="h-8 w-8 rounded-md bg-white/10 p-1 ring-1 ring-white/10"
+                />
+                <div className="leading-tight">
+                  <div className="font-semibold tracking-wide">Khisima AI Assistant</div>
+                  <div className="text-[11px] opacity-95">
+                    Let your words travel. Let your data speak.
+                  </div>
                 </div>
               </div>
 
-              <div className="ml-auto flex items-center gap-2">
+              {/* Divider line */}
+              <div className="my-2 h-px bg-white/20" />
+
+              {/* Bottom row: status + actions */}
+              <div className="flex items-center justify-between">
                 <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] ring-1 ${
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] ring-1 ${
                     adminOnline ? "bg-white/10 ring-white/30" : "bg-black/10 ring-black/20"
                   }`}
                   title={adminOnline ? "Specialist online" : "Auto-assist"}
                 >
-                  <span className={`h-2 w-2 rounded-full ${adminOnline ? "bg-green-400" : "bg-neutral-300"}`} />
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      adminOnline ? "bg-green-400" : "bg-neutral-300"
+                    }`}
+                  />
                   {adminOnline ? "Specialist online" : "Auto-assist"}
                 </span>
 
-                {/* Clear chat */}
-                <button
-                  onClick={clearChat}
-                  className="rounded-md bg-white/10 hover:bg-white/20 px-2 py-1 text-[11px] font-medium"
-                  title="Clear chat"
-                >
-                  <Trash2 className="h-3.5 w-3.5 inline mr-1" />
-                  Clear
-                </button>
-
-                {/* End chat */}
-                <button
-                  onClick={endChat}
-                  className="rounded-md bg-white/10 hover:bg-white/20 px-2 py-1 text-[11px] font-medium"
-                  title="End chat"
-                >
-                  <Power className="h-3.5 w-3.5 inline mr-1" />
-                  End
-                </button>
-
-                <button
-                  onClick={() => setOpen(false)}
-                  className="rounded-md hover:bg-white/10 p-1"
-                  aria-label="Close chat"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className={`max-h-[64vh] overflow-y-auto p-3 space-y-3 ${isDark ? "bg-neutral-950/40" : "bg-neutral-50"}`}>
-            {messages.map((m) => (
-              <MessageRow key={m.id} m={m} />
-            ))}
-
-            {searching && (
-              <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                <Loader2 className="h-4 w-4 animate-spin" /> Searching for a relevant answer…
-              </div>
-            )}
-
-            {emailNeeded && !adminOnline && (
-              <div className={`${card} mt-2`}>
-                <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                  <Mail className="h-4 w-4" /> Leave your email
-                </div>
                 <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className={`w-full pl-10 pr-3 ${field}`}
-                    />
-                  </div>
+                  {/* Clear chat */}
                   <button
-                    onClick={submitEmailAndQuestion}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-60"
-                    disabled={sending}
+                    onClick={clearChat}
+                    className="rounded-md bg-white/10 hover:bg-white/20 px-2 py-1 text-[11px] font-medium"
+                    title="Clear chat"
                   >
-                    {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                    Send
+                    <Trash2 className="h-3.5 w-3.5 inline mr-1" />
+                    Clear
+                  </button>
+
+                  {/* End chat */}
+                  <button
+                    onClick={endChat}
+                    className="rounded-md bg-white/10 hover:bg-white/20 px-2 py-1 text-[11px] font-medium"
+                    title="End chat"
+                  >
+                    <Power className="h-3.5 w-3.5 inline mr-1" />
+                    End
+                  </button>
+
+                  {/* Close */}
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="rounded-md hover:bg-white/10 p-1"
+                    aria-label="Close chat"
+                  >
+                    <X className="h-5 w-5" />
                   </button>
                 </div>
-                <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                  We’ll only use your email to reply to this question.
-                </p>
               </div>
-            )}
+            </div>
 
-            {!emailNeeded && (
-              <div className={`${card} text-xs text-neutral-600 dark:text-neutral-400`}>
-                <div className="flex items-center gap-2 font-medium text-neutral-800 dark:text-neutral-200 mb-1">
-                  <Info className="h-3.5 w-3.5" /> Tip
+            {/* Messages */}
+            <div
+              className={`flex-1 overflow-y-auto p-3 space-y-3 ${
+                isDark ? "bg-neutral-950/40" : "bg-neutral-50"
+              }`}
+            >
+              {messages.map((m) => (
+                <MessageRow key={m.id} m={m} />
+              ))}
+
+              {searching && (
+                <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Searching for a relevant answer…
                 </div>
-                Try: “What languages do you support?”, “How fast is turnaround?”, or “Do you collect/annotate data for LLMs?”.
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Input */}
-          <form onSubmit={handleSend} className={`border-t ${isDark ? "border-white/10" : "border-black/10"} p-2`}>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about services, languages, timelines…"
-                className={`flex-1 ${field}`}
-                aria-label="Message input"
-              />
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
-                disabled={!input.trim() || sending}
-              >
-                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                <span className="hidden sm:inline">Send</span>
-              </button>
+              {emailNeeded && !adminOnline && (
+                <div className={`${card} mt-2`}>
+                  <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <Mail className="h-4 w-4" /> Leave your email
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className={`w-full pl-10 pr-3 ${field}`}
+                      />
+                    </div>
+                    <button
+                      onClick={submitEmailAndQuestion}
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-60"
+                      disabled={sending}
+                    >
+                      {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      <span className="sm:inline">Send</span>
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    We’ll only use your email to reply to this question.
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="px-1 pt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
-              {adminOnline
-                ? "A human specialist is available now."
-                : "I’ll answer directly or ask to email you if the team is offline."}
-            </div>
-          </form>
+
+            {/* Input (rounded bottom) */}
+            <form
+              onSubmit={handleSend}
+              className={`border-t ${isDark ? "border-white/10" : "border-black/10"} p-2 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-neutral-900/80 rounded-b-2xl`}
+              style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
+            >
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about services, languages, timelines…"
+                  className={`flex-1 ${field}`}
+                  aria-label="Message input"
+                />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  disabled={!input.trim() || sending}
+                >
+                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  <span className="hidden sm:inline">Send</span>
+                </button>
+              </div>
+              <div className="px-1 pt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                {adminOnline
+                  ? "A human specialist is available now."
+                  : "I’ll answer directly or ask to email you if the team is offline."}
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </>
