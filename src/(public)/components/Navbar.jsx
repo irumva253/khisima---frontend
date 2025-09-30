@@ -3,17 +3,14 @@ import { useState, useEffect } from "react";
 import { 
   IconPhone,
   IconApps,
-  IconLanguage,
-  IconHome,
   IconInfoSquareRounded,
   IconCircleDottedLetterK,     
-  IconUser,
   IconBriefcase,
-  IconBook,
   IconChevronDown,
-  IconMenu2,
   IconX,
-  IconSparkles,
+  IconMenu2,
+  IconHome,
+  IconBook,
   IconMapPin,
   IconMail,
   IconGlobe,
@@ -161,7 +158,7 @@ const Navbar = () => {
   const companyItems = [
     { name: "Home", path: "/", icon: <IconHome size={20} />, desc: "Back to homepage" },
     { name: "About Us", path: "/about-us", icon: <IconInfoSquareRounded size={20} />, desc: "Our story & mission" },
-    { name: "Contact", path: "/contact", icon: <IconPhone size={20} />, desc: "Get in touch" },
+    { name: "Contact", path: "/contact", icon: <IconMail size={20} />, desc: "Get in touch" },
   ];
 
   const handleLinkClick = () => {
@@ -182,7 +179,9 @@ const Navbar = () => {
     <div className="relative">
       <div className={`fixed w-full z-40 bg-white/95 backdrop-blur-md transition-all duration-500 border-b border-gray-100 top-0 ${scrolled ? "py-3 shadow-lg" : "py-5"}`}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+          {/* Make the row relative, so we can absolutely-center the nav */}
+          <div className="relative flex items-center justify-between">
+            {/* Left: menu (mobile) + logo */}
             <div className="flex items-center space-x-8">
               <button
                 className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-[#4993f2]/10 hover:text-[#4993f2] transition-all duration-300 group"
@@ -209,165 +208,167 @@ const Navbar = () => {
                   <div className="text-xs text-gray-500 font-medium -mt-1">Connecting Voices</div>
                 </div>
               </Link>
-
-              <nav className="hidden lg:flex items-center space-x-1">
-                {companyItems.filter(item => item.name !== "Contact").map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className={getNavLinkClasses(item.path)}
-                  >
-                    {item.name}
-                    <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                      isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}></div>
-                  </Link>
-                ))}
-                
-                <div className="group relative">
-                  <button className={getDropdownClasses(isSolutionActive)}>
-                    Solutions
-                    <ChevronDownIcon />
-                    {isSolutionActive() && (
-                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
-                    )}
-                  </button>
-                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
-                        <IconApps size={18} className="mr-2" />
-                        Our Solutions
-                      </h3>
-                    </div>
-                    {displayedSolutionCategories.map((cat) => (
-                      <Link
-                        key={cat._id}
-                        to={`/solutions/${cat._id}`}
-                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                          isActive(`/solutions/${cat._id}`)
-                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]'
-                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                        }`}
-                      >
-                        {cat.iconSvg ? (
-                          <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
-                        ) : (
-                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
-                        )}
-                        <div>
-                          <div className="font-medium">{cat.title}</div>
-                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional solution'}</div>
-                        </div>
-                      </Link>
-                    ))}
-                    
-                    <Link
-                      to="/solutions"
-                      className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
-                    >
-                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
-                        <IconApps size={14} />
-                      </div>
-                      <div>
-                        <div className="font-semibold">View All Solutions</div>
-                        <div className="text-xs text-gray-500">
-                          {solutionCategories.length > 0 ? `See all ${solutionCategories.length} solutions` : 'Browse all solutions'}
-                        </div>
-                      </div>
-                      <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="group relative">
-                  <button className={getDropdownClasses(isServiceActive)}>
-                    Services
-                    <ChevronDownIcon />
-                    {isServiceActive() && (
-                      <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
-                    )}
-                  </button>
-                  <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <h3 className="text-sm font-semibold text-gray-800 flex items-center">
-                        <IconApps size={18} className="mr-2" />
-                        Our Services
-                      </h3>
-                    </div>
-                    {displayedCategories.map((cat) => (
-                      <Link
-                        key={cat._id}
-                        to={`/services/${cat._id}`}
-                        className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
-                          isActive(`/services/${cat._id}`) 
-                            ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
-                            : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
-                        }`}
-                      >
-                        {cat.iconSvg ? (
-                          <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
-                        ) : (
-                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
-                        )}
-                        <div>
-                          <div className="font-medium">{cat.title}</div>
-                          <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional service'}</div>
-                        </div>
-                      </Link>
-                    ))}
-                    
-                    <Link
-                      to="/services"
-                      className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
-                    >
-                      <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
-                        <IconApps size={14} />
-                      </div>
-                      <div>
-                        <div className="font-semibold">View All Services</div>
-                        <div className="text-xs text-gray-500">
-                          {categories.length > 0 ? `See all ${categories.length} services` : 'Browse all services'}
-                        </div>
-                      </div>
-                      <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
-                    </Link>
-                  </div>
-                </div>
-
-                <Link
-                  to="/resources"
-                  className={getNavLinkClasses("/resources")}
-                >
-                  Resources
-                  <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                    isActive("/resources") ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></div>
-                </Link>
-
-                <Link
-                  to="/careers"
-                  className={getNavLinkClasses("/careers")}
-                >
-                  Career
-                  <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
-                    isActive("/careers") ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></div>
-                </Link>
-              </nav>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="relative group hidden lg:block">
-                {/* <button
-                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
+            {/* Center: desktop nav truly centered across the whole header */}
+            <nav className="hidden lg:flex items-center space-x-1 absolute left-1/2 -translate-x-1/2">
+              {companyItems.filter(item => item.name !== "Contact").map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={getNavLinkClasses(item.path)}
                 >
-                  <GlobeIcon />
-                  <span className="font-medium">{currentLang.flag}</span>
-                  <span className="font-medium">{currentLang.code.toUpperCase()}</span>
-                  <IconChevronDown size={16} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
-                </button> */}
-                
+                  {item.name}
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                    isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></div>
+                </Link>
+              ))}
+              
+              <div className="group relative">
+                <button className={getDropdownClasses(isSolutionActive)}>
+                  Solutions
+                  <ChevronDownIcon />
+                  {isSolutionActive() && (
+                    <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
+                  )}
+                </button>
+                <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                      <IconApps size={18} className="mr-2" />
+                      Our Solutions
+                    </h3>
+                  </div>
+                  {displayedSolutionCategories.map((cat) => (
+                    <Link
+                      key={cat._id}
+                      to={`/solutions/${cat._id}`}
+                      className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                        isActive(`/solutions/${cat._id}`)
+                          ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]'
+                          : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                      }`}
+                    >
+                      {cat.iconSvg ? (
+                        <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
+                      )}
+                      <div>
+                        <div className="font-medium">{cat.title}</div>
+                        <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional solution'}</div>
+                      </div>
+                    </Link>
+                  ))}
+                  
+                  <Link
+                    to="/solutions"
+                    className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
+                      <IconApps size={14} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">View All Solutions</div>
+                      <div className="text-xs text-gray-500">
+                        {solutionCategories.length > 0 ? `See all ${solutionCategories.length} solutions` : 'Browse all solutions'}
+                      </div>
+                    </div>
+                    <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="group relative">
+                <button className={getDropdownClasses(isServiceActive)}>
+                  Services
+                  <ChevronDownIcon />
+                  {isServiceActive() && (
+                    <div className="absolute -bottom-1 left-4 right-4 h-0.5 bg-[#4993f2]"></div>
+                  )}
+                </button>
+                <div className="absolute left-0 mt-2 w-80 bg-white shadow-2xl rounded-2xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-gray-100">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <h3 className="text-sm font-semibold text-gray-800 flex items-center">
+                      <IconApps size={18} className="mr-2" />
+                      Our Services
+                    </h3>
+                  </div>
+                  {displayedCategories.map((cat) => (
+                    <Link
+                      key={cat._id}
+                      to={`/services/${cat._id}`}
+                      className={`flex items-center px-4 py-3 transition-all duration-300 group/item ${
+                        isActive(`/services/${cat._id}`) 
+                          ? 'text-[#4993f2] bg-blue-50 border-r-2 border-[#4993f2]' 
+                          : 'text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]'
+                      }`}
+                    >
+                      {cat.iconSvg ? (
+                        <div className="w-6 h-6 mr-3 group-hover/item:scale-110 transition-transform" dangerouslySetInnerHTML={{ __html: cat.iconSvg }} />
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-200 rounded-full mr-3 group-hover/item:scale-110 transition-transform" />
+                      )}
+                      <div>
+                        <div className="font-medium">{cat.title}</div>
+                        <div className="text-xs text-gray-500 line-clamp-1">{cat.caption || 'Professional service'}</div>
+                      </div>
+                    </Link>
+                  ))}
+                  
+                  <Link
+                    to="/services"
+                    className="flex items-center px-4 py-3 text-[#4993f2] hover:bg-blue-50 transition-all duration-300 border-t border-gray-100 group/item"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-[#4993f2] to-[#3b82f6] rounded-full mr-3 flex items-center justify-center text-white group-hover/item:scale-110 transition-transform">
+                      <IconApps size={14} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">View All Services</div>
+                      <div className="text-xs text-gray-500">
+                        {categories.length > 0 ? `See all ${categories.length} services` : 'Browse all services'}
+                      </div>
+                    </div>
+                    <IconChevronDown size={16} className="ml-auto transform rotate-90 text-gray-400" />
+                  </Link>
+                </div>
+              </div>
+
+              <Link
+                to="/resources"
+                className={getNavLinkClasses("/resources")}
+              >
+                Resources
+                <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                  isActive("/resources") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></div>
+              </Link>
+
+              <Link
+                to="/careers"
+                className={getNavLinkClasses("/careers")}
+              >
+                Career
+                <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                  isActive("/careers") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></div>
+              </Link>
+
+              <Link
+                to="/contact"
+                className={getNavLinkClasses("/contact")}
+              >
+                Contact
+                <div className={`absolute bottom-0 left-0 h-0.5 bg-[#4993f2] transition-all duration-300 ${
+                  isActive("/contact") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></div>
+              </Link>
+            </nav>
+
+            {/* Right: actions */}
+            <div className="flex items-center justify-end space-x-4">
+              <div className="relative group hidden lg:block">
                 {langDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white text-gray-800 shadow-2xl rounded-xl py-2 border border-gray-100">
                     {languages.map((lang) => (
@@ -390,30 +391,20 @@ const Navbar = () => {
               </div>
 
               <Link
-                to="/contact"
-                className={`hidden md:flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 group ${
-                  isActive("/contact") 
-                    ? 'text-[#4993f2] bg-blue-50' 
-                    : 'text-gray-700 hover:text-[#4993f2]'
-                }`}
-              >
-                <IconPhone size={18} className="mr-2 group-hover:scale-110 transition-transform" />
-                Contact
-              </Link>
-              
-              <Link
                 to="/quote"
-                className="bg-gradient-to-r from-[#4993f2] to-[#3b82f6] 
-                          hover:from-[#3b82f6] hover:to-[#2563eb] 
-                          text-white px-4 py-2 rounded-md text-sm font-medium
-                          transition-all duration-300 shadow-md 
-                          hover:shadow-lg hover:scale-105 
-                          flex items-center gap-2"
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 shadow-md flex items-center gap-2
+                  ${
+                    isActive("/quote")
+                      ? "text-black shadow-lg scale-105 border border-blue-500 bg-blue-50"
+                      : "bg-gradient-to-r from-[#4993f2] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#2563eb] text-white hover:shadow-lg hover:scale-105"
+                  }`}
               >
                 <span>Get Quote</span>
               </Link>
+
               <ModeToggle className="ml-4" />
             </div>
+
           </div>
         </div>
       </div>
@@ -631,51 +622,6 @@ const Navbar = () => {
                   )}
                 </Link>
               </div>
-
-              {/* <div>
-                <h3 className="text-gray-400 uppercase text-xs font-bold mb-3 flex items-center">
-                  <IconLanguage size={16} className="mr-2" />
-                  Language
-                </h3>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => setMobileLangOpen(!mobileLangOpen)}
-                    className="w-full flex items-center py-3 px-4 rounded-xl transition-all duration-300 group text-gray-700 hover:bg-blue-50 hover:text-[#4993f2]"
-                  >
-                    <GlobeIcon />
-                    <div className="ml-3 flex-1">
-                      <div className="font-medium flex items-center">
-                        <span className="mr-2">{currentLang.flag}</span>
-                        {currentLang.name}
-                      </div>
-                      <div className="text-xs text-gray-500">Change language</div>
-                    </div>
-                    <IconChevronDown size={16} className={`transition-transform duration-200 ${mobileLangOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {mobileLangOpen && (
-                    <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-4">
-                      {languages.map((lang) => (
-                        <button
-                          key={lang.code}
-                          onClick={() => handleLanguageChange(lang)}
-                          className={`w-full flex items-center py-2 px-3 rounded-lg transition-all duration-300 ${
-                            currentLang.code === lang.code 
-                              ? 'text-[#4993f2] bg-blue-50 border border-blue-200' 
-                              : 'text-gray-600 hover:bg-gray-50 hover:text-[#4993f2]'
-                          }`}
-                        >
-                          <span className="text-lg mr-3">{lang.flag}</span>
-                          <span className="font-medium">{lang.name}</span>
-                          {currentLang.code === lang.code && (
-                            <div className="ml-auto w-2 h-2 bg-[#4993f2] rounded-full"></div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div> */}
             </nav>
 
             <div className="mt-auto pt-6 border-t border-gray-200 space-y-4">
